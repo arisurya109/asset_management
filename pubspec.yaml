@@ -1,0 +1,33 @@
+name: asset_management
+description: "A new Flutter project."
+publish_to: "none"
+version: 0.1.0
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  archive: ^3.6.1
+  bloc: ^9.0.0
+  dartz: ^0.10.1
+  excel: ^4.0.5
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  # flutter_thermal_printer: ^1.2.1+1
+  get_it: ^8.2.0
+  intl: ^0.20.2
+  open_file: ^3.5.10
+  path: ^1.9.1
+  path_provider: ^2.1.5
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
