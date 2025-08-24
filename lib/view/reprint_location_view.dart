@@ -60,7 +60,7 @@ class _ReprintLocationViewState extends State<ReprintLocationView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         children: [
           AppTextField(

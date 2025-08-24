@@ -1,3 +1,5 @@
+import 'package:asset_management/core/utils/assets.dart';
+
 import '../bloc/printer/printer_bloc.dart';
 import 'home_view.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,17 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(body: Center(child: Text('Splash View')));
+    return Scaffold(
+      backgroundColor: Color(0XFF29A198),
+      body: Center(
+        child: Container(
+          height: 180,
+          width: 180,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage(Assets.iWatsons)),
+          ),
+        ),
+      ),
+    );
   }
 }

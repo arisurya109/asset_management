@@ -29,6 +29,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: SplashView(),
         theme: ThemeData(
+          fontFamily: 'Poppins',
           drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
           appBarTheme: AppBarTheme(
             centerTitle: true,
