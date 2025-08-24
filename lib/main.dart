@@ -1,11 +1,11 @@
-import 'package:asset_management/features/home/presentation/cubit/home_cubit.dart';
-import 'package:asset_management/features/home/presentation/home_view.dart';
-import 'package:asset_management/features/printer/presentation/cubit/printer_cubit.dart';
-import 'package:asset_management/features/reprint/presentation/bloc/reprint_bloc.dart';
-import 'package:asset_management/injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'bloc/printer/printer_bloc.dart';
+import 'bloc/reprint/reprint_bloc.dart';
+import 'injection.dart';
+import 'view/splash_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,28 +21,30 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (_) => locator<HomeCubit>()),
-        BlocProvider(create: (_) => locator<PrinterCubit>()),
-        BlocProvider(create: (_) => locator<ReprintBloc>()),
+        BlocProvider(create: (context) => locator<ReprintBloc>()),
+        BlocProvider(create: (context) => locator<PrinterBloc>()),
       ],
       child: MaterialApp(
+        title: 'Asset Management',
+        debugShowCheckedModeBanner: false,
+        home: SplashView(),
         theme: ThemeData(
           drawerTheme: const DrawerThemeData(backgroundColor: Colors.white),
-          appBarTheme: const AppBarTheme(
+          appBarTheme: AppBarTheme(
             centerTitle: true,
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.white,
             titleTextStyle: TextStyle(
-              color: Colors.white,
+              color: Colors.teal,
               fontSize: 20,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 1.5,
             ),
-            iconTheme: IconThemeData(color: Colors.white),
+            iconTheme: IconThemeData(color: Colors.teal),
           ),
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
           scaffoldBackgroundColor: Colors.white,
         ),
-        home: HomeView(),
       ),
     );
   }

@@ -1,2 +1,3 @@
-// ignore: constant_identifier_names
-enum PrinterType { ZEBRA, TSC }
+enum StatusReprint { initial, loading, failed, success }
+
+enum StatusPrinter { initial, loading, failed, success }

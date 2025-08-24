@@ -3,17 +3,21 @@
 import 'package:flutter/material.dart';
 
 class AppButton extends StatelessWidget {
+  String title;
   void Function()? onPressed;
-  String? title;
-  double? width;
-  double? height;
+  double width;
+  double height;
+  Color? backgroundColor;
+  Color? titleColor;
 
   AppButton({
     super.key,
-    this.height = 45,
-    this.width = 200,
-    this.onPressed,
     this.title = 'Title',
+    this.onPressed,
+    this.width = 150,
+    this.height = 45,
+    this.backgroundColor = Colors.teal,
+    this.titleColor = Colors.white,
   });
 
   @override
@@ -21,18 +25,16 @@ class AppButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.teal,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.circular(8),
-        ),
-        fixedSize: Size(width!, height!),
+        backgroundColor: backgroundColor,
+        fixedSize: Size(width, height),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       ),
       child: Text(
-        title!,
+        title,
         style: TextStyle(
           fontSize: 16,
-          color: Colors.white,
-          fontWeight: FontWeight.w600,
+          color: titleColor,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );
