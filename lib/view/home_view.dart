@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'view.dart';
+import '../core/utils/colors.dart';
+import '../features/asset_count/presentation/view/asset_count_view.dart';
+import '../features/asset_count/presentation/view/create_asset_count_view.dart';
 import '../bloc/printer/printer_bloc.dart';
 import '../core/extension/context_ext.dart';
 import '../core/utils/assets.dart';
@@ -24,13 +26,15 @@ class _HomeViewState extends State<HomeView> {
     {'value': 0, 'icon': Assets.iDashboard, 'title': 'DASHBOARD'},
     {'value': 1, 'icon': Assets.iReprint, 'title': 'REPRINT ASSET ID'},
     {'value': 2, 'icon': Assets.iReprint, 'title': 'REPRINT LOCATION'},
-    {'value': 3, 'icon': Assets.iPrinter, 'title': 'PRINTER'},
+    {'value': 3, 'icon': Assets.iCount, 'title': 'ASSET COUNT'},
+    {'value': 4, 'icon': Assets.iPrinter, 'title': 'PRINTER'},
   ];
 
   final List<Widget> _body = [
     DashboardView(),
     ReprintAssetIdView(),
     ReprintLocationView(),
+    AssetCountView(),
     PrinterView(),
   ];
 
@@ -56,6 +60,21 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: Text(_drawerItem[_drawerSelected]['title']),
         centerTitle: true,
+        actions: [
+          _drawerSelected == 3
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CreateAssetCountView(),
+                      ),
+                    );
+                  },
+                  icon: Icon(Icons.add),
+                )
+              : SizedBox(),
+        ],
         backgroundColor: Colors.white,
         elevation: 0, // biar flat
         bottom: PreferredSize(
@@ -64,7 +83,7 @@ class _HomeViewState extends State<HomeView> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
               height: 1,
-              color: Colors.teal, // warna garis
+              color: AppColors.kBase, // warna garis
             ),
           ),
         ),
