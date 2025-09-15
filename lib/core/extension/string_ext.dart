@@ -1,6 +1,6 @@
 extension StringExt on String? {
   bool isFilled() {
-    return this != null && this!.trim().isNotEmpty;
+    return this != null && this!.trim().isNotEmpty && this != '';
   }
 
   bool isNumber() {

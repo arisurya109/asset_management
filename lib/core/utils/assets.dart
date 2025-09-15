@@ -1,5 +1,7 @@
 class Assets {
   static const iPrinter = 'assets/icons/icons_printer.png';
+  static const iAssetMaster = 'assets/icons/icons_asset_master.png';
+  static const iPreparation = 'assets/icons/icons_preparation.png';
   static const iReprint = 'assets/icons/icons_reprint.png';
   static const iDashboard = 'assets/icons/icons_dashboard.png';
   static const iDrawer = 'assets/icons/icons_drawer.png';

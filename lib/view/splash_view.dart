@@ -1,9 +1,10 @@
 import 'package:asset_management/core/utils/assets.dart';
 
 import '../bloc/printer/printer_bloc.dart';
-import 'home_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../features/home/presentation/view/home_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
