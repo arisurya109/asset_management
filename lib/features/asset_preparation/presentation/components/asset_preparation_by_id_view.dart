@@ -27,6 +27,14 @@ class _AssetPreparationByIdViewState extends State<AssetPreparationByIdView> {
   String? type;
 
   @override
+  void dispose() {
+    asset.dispose();
+    location.dispose();
+    box.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     asset = TextEditingController();
     location = TextEditingController();
@@ -76,7 +84,10 @@ class _AssetPreparationByIdViewState extends State<AssetPreparationByIdView> {
         AppSpace.vertical(24),
         BlocConsumer<AssetPreparationDetailBloc, AssetPreparationDetailState>(
           listenWhen: (previous, current) {
-            if (previous.status != current.status) {
+            debugPrint(previous.status.toString());
+            debugPrint(current.status.toString());
+            debugPrint(current.message);
+            if (previous.status != current.status && current.message != null) {
               return true;
             } else {
               return false;
@@ -90,12 +101,13 @@ class _AssetPreparationByIdViewState extends State<AssetPreparationByIdView> {
                 backgroundColor: AppColors.kRed,
               );
             }
-            if (state.status == StatusPreparationDetail.success) {
+            if (state.status == StatusPreparationDetail.created) {
               context.showSnackbar(
                 state.message!,
                 backgroundColor: AppColors.kBase,
               );
             }
+            state.copyWith(message: null);
           },
           builder: (context, state) {
             return AppButton(
@@ -126,17 +138,28 @@ class _AssetPreparationByIdViewState extends State<AssetPreparationByIdView> {
     } else if (!newAsset.isFilled()) {
       context.showSnackbar('Asset cannot be empty');
     } else {
-      context.read<AssetPreparationDetailBloc>().add(
-        OnInsertPreparationDetails(
-          AssetPreparationDetail(
-            preparationId: widget.preparation.id,
-            asset: newAsset,
-            location: newLocation,
-            box: newBox,
-            type: newType,
-            quantity: 1,
-          ),
-        ),
+      context.showDialogConfirm(
+        title: 'Add Asset Preparation ?',
+        content:
+            'Asset : $newAsset\nType : $newType\nQuantity : 1\nLocation : $newLocation\nBox : $newBox',
+        onCancelText: 'Cancel',
+        onConfirmText: 'Yes',
+        onCancel: () => Navigator.pop(context),
+        onConfirm: () {
+          context.read<AssetPreparationDetailBloc>().add(
+            OnInsertPreparationDetails(
+              AssetPreparationDetail(
+                preparationId: widget.preparation.id,
+                asset: newAsset,
+                location: newLocation,
+                box: newBox,
+                type: newType,
+                quantity: 1,
+              ),
+            ),
+          );
+          Navigator.pop(context);
+        },
       );
     }
   }

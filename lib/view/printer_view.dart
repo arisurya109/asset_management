@@ -6,6 +6,7 @@ import 'package:asset_management/core/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../core/utils/colors.dart';
 import '../core/utils/enum.dart';
 import '../core/widgets/app_space.dart';
 
@@ -57,35 +58,48 @@ class _PrinterViewState extends State<PrinterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          AppTextField(
-            title: 'IP Printer',
-            hintText: 'Example : 10.110.117.101',
-            controller: controller,
-            keyboardType: TextInputType.number,
-            textInputAction: TextInputAction.go,
-            onSubmitted: (_) => _onSubmit(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('PRINTER'),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(height: 1, color: AppColors.kBase),
           ),
-          AppSpace.vertical(24),
-          BlocListener<PrinterBloc, PrinterState>(
-            listener: (context, state) {
-              if (state.status == StatusPrinter.failed) {
-                context.showSnackbar(
-                  state.message!,
-                  backgroundColor: Colors.red,
-                );
-              }
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            AppTextField(
+              title: 'IP Printer',
+              hintText: 'Example : 10.110.117.101',
+              controller: controller,
+              keyboardType: TextInputType.number,
+              textInputAction: TextInputAction.go,
+              onSubmitted: (_) => _onSubmit(),
+            ),
+            AppSpace.vertical(24),
+            BlocListener<PrinterBloc, PrinterState>(
+              listener: (context, state) {
+                if (state.status == StatusPrinter.failed) {
+                  context.showSnackbar(
+                    state.message!,
+                    backgroundColor: Colors.red,
+                  );
+                }
 
-              if (state.status == StatusPrinter.success) {
-                context.showSnackbar('Successfully set default printer');
-              }
-            },
-            child: AppButton(title: 'Submit', onPressed: _onSubmit),
-          ),
-        ],
+                if (state.status == StatusPrinter.success) {
+                  context.showSnackbar('Successfully set default printer');
+                }
+              },
+              child: AppButton(title: 'Submit', onPressed: _onSubmit),
+            ),
+          ],
+        ),
       ),
     );
   }

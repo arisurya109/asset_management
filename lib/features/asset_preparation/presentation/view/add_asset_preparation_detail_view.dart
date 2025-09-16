@@ -1,12 +1,13 @@
-import 'package:asset_management/features/asset_preparation/asset_preparation.dart';
-import 'package:asset_management/features/asset_preparation/presentation/components/asset_preparation_by_id_view.dart';
-import 'package:asset_management/features/asset_preparation/presentation/components/asset_preparation_non_id_view.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'asset_preparation_detail_list_view.dart';
+import '../components/asset_preparation_by_id_view.dart';
+import '../components/asset_preparation_non_id_view.dart';
+import '../../asset_preparation.dart';
 import '../../../../core/utils/colors.dart';
 import '../../../../core/widgets/app_segmented_button.dart';
 import '../../../../core/widgets/app_space.dart';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddAssetPreparationDetailView extends StatefulWidget {
   const AddAssetPreparationDetailView({super.key});
@@ -39,7 +40,23 @@ class _AddAssetPreparationDetailViewState
           Padding(
             padding: const EdgeInsets.only(right: 6),
             child: IconButton(
-              onPressed: () {},
+              onPressed: () {
+                final preparationId = context
+                    .read<AssetPreparationBloc>()
+                    .state
+                    .preparation!
+                    .id;
+                context.read<AssetPreparationDetailBloc>().add(
+                  OnFindAllPreparationDetails(preparationId!),
+                );
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => AssetPreparationDetailListView(),
+                  ),
+                );
+              },
               icon: Icon(Icons.list_alt_outlined),
             ),
           ),

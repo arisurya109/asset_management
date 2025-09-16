@@ -30,8 +30,9 @@ class AssetPreparationDetailBloc
         ),
         (preparations) => emit(
           state.copyWith(
-            status: StatusPreparationDetail.success,
+            status: StatusPreparationDetail.loaded,
             preparations: preparations,
+            message: null,
           ),
         ),
       );
@@ -50,7 +51,7 @@ class AssetPreparationDetailBloc
         ),
         (preparation) => emit(
           state.copyWith(
-            status: StatusPreparationDetail.success,
+            status: StatusPreparationDetail.created,
             message: 'Successfully add ${preparation.asset}',
             preparations: state.preparations?..add(preparation),
           ),
@@ -60,7 +61,7 @@ class AssetPreparationDetailBloc
     on<OnDeletedPreparationDetails>((event, emit) async {
       emit(state.copyWith(status: StatusPreparationDetail.loading));
 
-      final failureOrDelete = await _delete(event.params);
+      final failureOrDelete = await _delete(event.preparationId, event.params);
 
       return failureOrDelete.fold(
         (failure) => emit(
@@ -71,10 +72,10 @@ class AssetPreparationDetailBloc
         ),
         (message) => emit(
           state.copyWith(
-            status: StatusPreparationDetail.success,
+            status: StatusPreparationDetail.delete,
             message: message,
             preparations: state.preparations
-              ?..removeWhere((element) => element.asset == event.params.asset),
+              ?..removeWhere((element) => element.asset == event.params),
           ),
         ),
       );

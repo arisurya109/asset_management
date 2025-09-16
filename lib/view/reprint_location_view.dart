@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/reprint/reprint_bloc.dart';
 import '../core/extension/context_ext.dart';
 import '../core/extension/string_ext.dart';
+import '../core/utils/colors.dart';
 import '../core/utils/enum.dart';
 import '../core/widgets/app_button.dart';
 import '../core/widgets/app_space.dart';
@@ -59,35 +60,48 @@ class _ReprintLocationViewState extends State<ReprintLocationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        children: [
-          AppTextField(
-            controller: controller,
-            title: 'Location',
-            hintText: 'Example : LD.01.01.01',
-            keyboardType: TextInputType.text,
-            textInputAction: TextInputAction.go,
-            onSubmitted: (_) => _onSubmit(),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('REPRINT ASSET LOCATION'),
+        elevation: 0,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(height: 1, color: AppColors.kBase),
           ),
-          AppSpace.vertical(24),
-          BlocListener<ReprintBloc, ReprintState>(
-            listener: (context, state) {
-              if (state.status == StatusReprint.failed) {
-                context.showSnackbar(
-                  state.message!,
-                  backgroundColor: Colors.red,
-                );
-              }
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            AppTextField(
+              controller: controller,
+              title: 'Location',
+              hintText: 'Example : LD.01.01.01',
+              keyboardType: TextInputType.text,
+              textInputAction: TextInputAction.go,
+              onSubmitted: (_) => _onSubmit(),
+            ),
+            AppSpace.vertical(24),
+            BlocListener<ReprintBloc, ReprintState>(
+              listener: (context, state) {
+                if (state.status == StatusReprint.failed) {
+                  context.showSnackbar(
+                    state.message!,
+                    backgroundColor: Colors.red,
+                  );
+                }
 
-              if (state.status == StatusReprint.success) {
-                context.showSnackbar('Successfully reprint Location');
-              }
-            },
-            child: AppButton(title: 'Submit', onPressed: _onSubmit),
-          ),
-        ],
+                if (state.status == StatusReprint.success) {
+                  context.showSnackbar('Successfully reprint Location');
+                }
+              },
+              child: AppButton(title: 'Submit', onPressed: _onSubmit),
+            ),
+          ],
+        ),
       ),
     );
   }

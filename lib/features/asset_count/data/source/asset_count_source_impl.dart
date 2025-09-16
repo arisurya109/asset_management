@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:excel/excel.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/config/database_helper.dart';
 import '../../../../core/error/exception.dart';
@@ -27,13 +28,13 @@ class AssetCountSourceImpl implements AssetCountSource {
 
       int lastId;
 
-      if (rawIdListMap.firstOrNull?['id'] == null) {
+      debugPrint(rawIdListMap.toString());
+
+      if (rawIdListMap.first['id'] == null) {
         lastId = 1;
       } else {
-        lastId = rawIdListMap.first['id'] as int;
+        lastId = (rawIdListMap.first['id'] as int) + 1;
       }
-
-      debugPrint(lastId.toString());
 
       if (lastId < 10) {
         lastId = int.parse('000$lastId');
@@ -43,7 +44,8 @@ class AssetCountSourceImpl implements AssetCountSource {
         lastId = int.parse('0$lastId');
       }
 
-      final countCode = 'CT${DateFormat('dMy').format(DateTime.now())}$lastId';
+      final countCode =
+          'CT${DateFormat('HHmmss').format(DateTime.now())}$lastId';
 
       final titleCheck = await txn.rawQuery(
         'SELECT * FROM t_asset_count WHERE title = ?',
@@ -133,6 +135,8 @@ class AssetCountSourceImpl implements AssetCountSource {
       ''',
         [params],
       );
+
+      debugPrint(assetsCountDetails.toString());
 
       if (assetsCountDetails.firstOrNull == null) {
         throw CreateException(message: 'Failed to export, please try again');
@@ -225,17 +229,27 @@ class AssetCountSourceImpl implements AssetCountSource {
         }
       }
 
-      var dir = Directory('/storage/emulated/0/Download');
-      final filePath = '${dir.path}/$code.xlsx';
+      // var dir = Directory('/storage/emulated/0/Download');
+      // debugPrint(dir.path);
+      // debugPrint(dir.toString());
+      // final filePath = '${dir.path}/$code.xlsx';
       final fileBytes = excel.save();
-      final file = File(filePath)
-        ..createSync(recursive: true)
-        ..writeAsBytesSync(fileBytes!);
+      // final file = File(filePath)
+      //   ..createSync(recursive: true)
+      //   ..writeAsBytesSync(fileBytes!);
 
-      debugPrint('Exported to ::::: $filePath');
+      final directory = await getExternalStorageDirectory();
+      final filePath = '${directory!.path}/$code.xlsx';
+
+      final file = File(filePath);
+      await file.create(recursive: true);
+      await file.writeAsBytes(fileBytes!);
+
+      debugPrint(file.path);
 
       return file.path;
     } catch (e) {
+      debugPrint('error : $e');
       throw CreateException(message: 'Failed to exported, please try again');
     }
   }

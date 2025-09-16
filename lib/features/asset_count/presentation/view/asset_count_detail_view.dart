@@ -158,7 +158,7 @@ class _AssetCountDetailViewState extends State<AssetCountDetailView> {
                 );
               }
 
-              if (state.status == StatusAssetCountDetail.success &&
+              if (state.status == StatusAssetCountDetail.created &&
                   state.message != null) {
                 assetIdC.clear();
                 context.showSnackbar(

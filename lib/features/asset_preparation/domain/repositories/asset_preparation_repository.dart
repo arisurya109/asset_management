@@ -22,6 +22,7 @@ abstract class AssetPreparationRepository {
     AssetPreparationDetail params,
   );
   Future<Either<Failure, String>> deleteAssetPreparationDetail(
-    AssetPreparationDetail params,
+    int preparationId,
+    String params,
   );
 }

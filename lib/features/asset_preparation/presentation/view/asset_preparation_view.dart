@@ -38,12 +38,14 @@ class _AssetPreparationViewState extends State<AssetPreparationView> {
         ),
         actions: [
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddAssetPreparationView(),
-              ),
-            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddAssetPreparationView(),
+                ),
+              );
+            },
             icon: Icon(Icons.add),
           ),
         ],
@@ -103,6 +105,9 @@ class _AssetPreparationViewState extends State<AssetPreparationView> {
                                 ),
                               );
                               Navigator.pop(context);
+                              context.read<AssetPreparationDetailBloc>().add(
+                                OnFindAllPreparationDetails(preparation.id!),
+                              );
                               context.read<AssetPreparationBloc>().add(
                                 OnSelectedPreparation(preparation),
                               );
@@ -117,6 +122,9 @@ class _AssetPreparationViewState extends State<AssetPreparationView> {
                             },
                           );
                         } else {
+                          context.read<AssetPreparationDetailBloc>().add(
+                            OnFindAllPreparationDetails(preparation.id!),
+                          );
                           context.read<AssetPreparationBloc>().add(
                             OnSelectedPreparation(preparation),
                           );

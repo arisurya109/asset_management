@@ -36,7 +36,7 @@ class AssetCountDetailBloc
       ),
       (asset) => emit(
         state.copyWith(
-          status: StatusAssetCountDetail.success,
+          status: StatusAssetCountDetail.deleted,
           assets: state.assets
             ?..removeWhere((element) => element.assetId == event.params),
         ),
@@ -61,7 +61,7 @@ class AssetCountDetailBloc
       ),
       (asset) => emit(
         state.copyWith(
-          status: StatusAssetCountDetail.success,
+          status: StatusAssetCountDetail.created,
           assets: state.assets?..add(asset),
           message: 'Successfully Add ${asset.assetId} To ${asset.location}',
         ),
@@ -85,7 +85,7 @@ class AssetCountDetailBloc
         ),
       ),
       (assets) => emit(
-        state.copyWith(status: StatusAssetCountDetail.success, assets: assets),
+        state.copyWith(status: StatusAssetCountDetail.loaded, assets: assets),
       ),
     );
   }

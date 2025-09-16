@@ -256,11 +256,15 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                   if (state.status == StatusAssetCount.failed &&
                       state.message != null) {
                     context.showSnackbar(state.message!);
-                  }
-                  if (state.status == StatusAssetCount.success &&
-                      state.message != null) {
+                  } else if (state.status == StatusAssetCount.updated) {
                     context.showSnackbar(
-                      'Successfully Exported : ${state.message}',
+                      'Asset Counting Completed : ${state.message}',
+                    );
+
+                    await of.OpenFile.open(state.message);
+                  } else if (state.status == StatusAssetCount.exported) {
+                    context.showSnackbar(
+                      'Successfully Exported : ${state.assetCountDetail!.title}',
                     );
 
                     await of.OpenFile.open(state.message);

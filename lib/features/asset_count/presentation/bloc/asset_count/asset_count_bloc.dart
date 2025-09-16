@@ -38,8 +38,9 @@ class AssetCountBloc extends Bloc<AssetCountEvent, AssetCountState> {
           message: failure.message,
         ),
       ),
-      (path) =>
-          emit(state.copyWith(status: StatusAssetCount.success, message: path)),
+      (path) => emit(
+        state.copyWith(status: StatusAssetCount.exported, message: path),
+      ),
     );
   }
 
@@ -51,12 +52,7 @@ class AssetCountBloc extends Bloc<AssetCountEvent, AssetCountState> {
       (element) => element.id == event.params,
     );
 
-    emit(
-      state.copyWith(
-        status: StatusAssetCount.success,
-        assetCountDetail: assetCount,
-      ),
-    );
+    emit(state.copyWith(assetCountDetail: assetCount));
   }
 
   void _updateAsset(
@@ -76,7 +72,7 @@ class AssetCountBloc extends Bloc<AssetCountEvent, AssetCountState> {
       ),
       (asset) => emit(
         state.copyWith(
-          status: StatusAssetCount.success,
+          status: StatusAssetCount.updated,
           assetsCount: state.assetsCount
             ?..removeWhere((element) => element.id == event.countId)
             ..add(asset),
@@ -103,7 +99,7 @@ class AssetCountBloc extends Bloc<AssetCountEvent, AssetCountState> {
       ),
       (asset) => emit(
         state.copyWith(
-          status: StatusAssetCount.success,
+          status: StatusAssetCount.created,
           message: 'Successfully Create Asset Count ${asset.title}',
           assetsCount: state.assetsCount?..add(asset),
         ),
@@ -127,7 +123,7 @@ class AssetCountBloc extends Bloc<AssetCountEvent, AssetCountState> {
         ),
       ),
       (assets) => emit(
-        state.copyWith(status: StatusAssetCount.success, assetsCount: assets),
+        state.copyWith(status: StatusAssetCount.loaded, assetsCount: assets),
       ),
     );
   }

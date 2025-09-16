@@ -25,20 +25,21 @@ class AssetPreparationSourceImpl implements AssetPreparationSource {
 
   @override
   Future<String> deleteAssetPreparation(
-    AssetPreparationDetailModel params,
+    int preparationId,
+    String params,
   ) async {
     final db = await _db.database;
 
     final response = await db.delete(
       't_asset_preparation_details',
       where: 'asset_preparation_id = ? AND asset = ?',
-      whereArgs: [params.preparationId, params.asset],
+      whereArgs: [preparationId, params],
     );
 
     if (response > 0) {
-      return 'Successfully Deleted ${params.asset}';
+      return 'Successfully Deleted $params';
     } else {
-      throw DeleteException(message: 'Failed to delete ${params.asset}');
+      throw DeleteException(message: 'Failed to delete $params');
     }
   }
 

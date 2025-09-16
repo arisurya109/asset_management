@@ -2,7 +2,15 @@
 
 part of 'asset_preparation_bloc.dart';
 
-enum StatusPreparation { initial, loading, success, failed }
+enum StatusPreparation {
+  initial,
+  loading,
+  updated,
+  created,
+  loaded,
+  failed,
+  exported,
+}
 
 class AssetPreparationState extends Equatable {
   StatusPreparation? status;

@@ -1,6 +1,10 @@
 import 'package:asset_management/core/widgets/app_space.dart';
+import 'package:asset_management/features/asset_count/presentation/view/asset_count_view.dart';
 import 'package:asset_management/features/asset_master/presentation/view/asset_master_view.dart';
 import 'package:asset_management/features/home/presentation/cubit/home/home_cubit.dart';
+import 'package:asset_management/view/reprint_asset_id_view.dart';
+import 'package:asset_management/view/reprint_location_view.dart';
+import 'package:asset_management/view/view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -75,10 +79,36 @@ class HomeView extends StatelessWidget {
                                 );
                                 break;
                               case 2:
-                                // Navigator.push(context, MaterialPageRoute(builder: (_) => CountingAssetView()));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => AssetCountView(),
+                                  ),
+                                );
                                 break;
                               case 3:
-                                // Navigator.push(context, MaterialPageRoute(builder: (_) => PrinterView()));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ReprintAssetIdView(),
+                                  ),
+                                );
+                                break;
+                              case 4:
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => ReprintLocationView(),
+                                  ),
+                                );
+                                break;
+                              case 5:
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => PrinterView(),
+                                  ),
+                                );
                                 break;
                             }
                           },

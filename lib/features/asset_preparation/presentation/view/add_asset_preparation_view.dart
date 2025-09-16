@@ -116,7 +116,7 @@ class _AddAssetPreparationViewState extends State<AddAssetPreparationView> {
                       backgroundColor: AppColors.kRed,
                     );
                   }
-                  if (state.status == StatusPreparation.success) {
+                  if (state.status == StatusPreparation.created) {
                     context.showSnackbar(
                       state.message!,
                       backgroundColor: AppColors.kBase,
@@ -190,6 +190,7 @@ class _AddAssetPreparationViewState extends State<AddAssetPreparationView> {
               ),
             ),
           );
+          Navigator.pop(context);
         },
       );
     }

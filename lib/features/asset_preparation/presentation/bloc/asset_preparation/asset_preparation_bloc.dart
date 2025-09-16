@@ -30,7 +30,7 @@ class AssetPreparationBloc
         ),
         (preparation) => emit(
           state.copyWith(
-            status: StatusPreparation.success,
+            status: StatusPreparation.created,
             message:
                 'Successfully Created Preparation ${preparation.storeName}',
             preparations: state.preparations?..add(preparation),
@@ -52,8 +52,9 @@ class AssetPreparationBloc
         ),
         (preparations) => emit(
           state.copyWith(
-            status: StatusPreparation.success,
+            status: StatusPreparation.loaded,
             preparations: preparations,
+            message: null,
           ),
         ),
       );
@@ -72,7 +73,8 @@ class AssetPreparationBloc
         ),
         (preparation) => emit(
           state.copyWith(
-            status: StatusPreparation.success,
+            message: null,
+            status: StatusPreparation.updated,
             preparations: state.preparations
               ?..removeWhere((element) => element.id == preparation.id)
               ..add(preparation)

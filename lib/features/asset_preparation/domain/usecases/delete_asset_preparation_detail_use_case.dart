@@ -1,5 +1,4 @@
 import '../../../../core/error/failure.dart';
-import '../entities/asset_preparation_detail.dart';
 import '../repositories/asset_preparation_repository.dart';
 
 import 'package:dartz/dartz.dart';
@@ -9,7 +8,7 @@ class DeleteAssetPreparationDetailUseCase {
 
   DeleteAssetPreparationDetailUseCase(this._repository);
 
-  Future<Either<Failure, String>> call(AssetPreparationDetail params) async {
-    return _repository.deleteAssetPreparationDetail(params);
+  Future<Either<Failure, String>> call(int preparationId, String params) async {
+    return _repository.deleteAssetPreparationDetail(preparationId, params);
   }
 }

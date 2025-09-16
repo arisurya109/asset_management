@@ -15,5 +15,5 @@ abstract class AssetPreparationSource {
   Future<AssetPreparationDetailModel> insertAssetPreparation(
     AssetPreparationDetailModel params,
   );
-  Future<String> deleteAssetPreparation(AssetPreparationDetailModel params);
+  Future<String> deleteAssetPreparation(int preparationId, String params);
 }

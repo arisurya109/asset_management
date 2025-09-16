@@ -14,9 +14,10 @@ class OnInsertPreparationDetails extends AssetPreparationDetailEvent {
 }
 
 class OnDeletedPreparationDetails extends AssetPreparationDetailEvent {
-  final AssetPreparationDetail params;
+  final int preparationId;
+  final String params;
 
-  const OnDeletedPreparationDetails(this.params);
+  const OnDeletedPreparationDetails(this.preparationId, this.params);
 }
 
 class OnFindAllPreparationDetails extends AssetPreparationDetailEvent {

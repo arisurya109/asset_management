@@ -54,4 +54,30 @@ extension ContextExt on BuildContext {
       },
     );
   }
+
+  void showDialogOption({
+    String title = 'Title',
+    required List<Widget> children,
+  }) async {
+    await showDialog(
+      context: this,
+      builder: (context) {
+        return SimpleDialog(
+          alignment: Alignment.center,
+          title: Center(
+            child: Text(
+              title,
+              style: TextStyle(fontWeight: FontWeight.w500, fontSize: 18),
+            ),
+          ),
+          contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 24),
+          // insetPadding: EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadiusGeometry.circular(12),
+          ),
+          children: children,
+        );
+      },
+    );
+  }
 }

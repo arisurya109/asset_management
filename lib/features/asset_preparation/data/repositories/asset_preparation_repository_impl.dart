@@ -30,11 +30,13 @@ class AssetPreparationRepositoryImpl implements AssetPreparationRepository {
 
   @override
   Future<Either<Failure, String>> deleteAssetPreparationDetail(
-    AssetPreparationDetail params,
+    int preparationId,
+    String params,
   ) async {
     try {
       final response = await _source.deleteAssetPreparation(
-        AssetPreparationDetailModel.fromEntity(params),
+        preparationId,
+        params,
       );
       return Right(response);
     } on DeleteException catch (e) {
