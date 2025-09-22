@@ -12,6 +12,7 @@ class DataSource extends DataTableSource {
     String location,
     String box,
     String condition,
+    int quantity,
   )?
   onTap;
 
@@ -29,6 +30,7 @@ class DataSource extends DataTableSource {
         item.location!,
         item.box ?? '',
         item.condition ?? '',
+        (item.quantity) as int,
       ),
       decoration: BoxDecoration(
         color: index.isEven ? Colors.white70 : Colors.black12,
@@ -40,6 +42,7 @@ class DataSource extends DataTableSource {
         DataCell(Center(child: Text(item.location ?? ''))),
         DataCell(Center(child: Text(item.box ?? ''))),
         DataCell(Center(child: Text(item.condition ?? ''))),
+        DataCell(Center(child: Text(item.quantity.toString()))),
       ],
     );
   }

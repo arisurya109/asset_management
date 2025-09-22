@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 abstract class AssetPreparationRepository {
   // Preparation
   Future<Either<Failure, List<AssetPreparation>>> findAllPreparations();
+  Future<Either<Failure, AssetPreparation>> findPreparationById(int id);
   Future<Either<Failure, AssetPreparation>> createPreparation(
     AssetPreparation params,
   );

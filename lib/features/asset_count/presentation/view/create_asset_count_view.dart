@@ -109,6 +109,7 @@ class _CreateAssetCountViewState extends State<CreateAssetCountView> {
 
                   if (state.status == StatusAssetCount.created) {
                     _clearController();
+                    Navigator.pop(context);
                     context.showSnackbar(
                       state.message ?? 'Successfully Created Asset Count',
                     );

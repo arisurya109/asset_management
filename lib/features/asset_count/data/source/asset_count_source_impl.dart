@@ -45,7 +45,7 @@ class AssetCountSourceImpl implements AssetCountSource {
       }
 
       final countCode =
-          'CT${DateFormat('HHmmss').format(DateTime.now())}$lastId';
+          'AC${DateFormat('HHmmss').format(DateTime.now())}$lastId';
 
       final titleCheck = await txn.rawQuery(
         'SELECT * FROM t_asset_count WHERE title = ?',
@@ -125,7 +125,8 @@ class AssetCountSourceImpl implements AssetCountSource {
         td.asset_name AS asset_name,
         td.location AS location,
         td.box AS box,
-        td.condition AS condition
+        td.condition AS condition,
+        td.quantity AS quantity
       FROM
         t_asset_count_detail AS td
       LEFT JOIN
@@ -186,11 +187,12 @@ class AssetCountSourceImpl implements AssetCountSource {
 
       final headers = [
         'no',
-        'asset_id',
+        'asset',
         'asset_name',
         'location',
         'box',
         'condition',
+        'quantity',
       ];
 
       for (var col = 0; col < headers.length; col++) {
@@ -217,6 +219,7 @@ class AssetCountSourceImpl implements AssetCountSource {
           TextCellValue(assetsCountDetails[i]['location'] as String? ?? ''),
           TextCellValue(assetsCountDetails[i]['box'] as String? ?? ''),
           TextCellValue(assetsCountDetails[i]['condition'] as String? ?? ''),
+          IntCellValue(assetsCountDetails[i]['quantity'] as int),
         ];
 
         for (var col = 0; col < rowData.length; col++) {
@@ -229,14 +232,7 @@ class AssetCountSourceImpl implements AssetCountSource {
         }
       }
 
-      // var dir = Directory('/storage/emulated/0/Download');
-      // debugPrint(dir.path);
-      // debugPrint(dir.toString());
-      // final filePath = '${dir.path}/$code.xlsx';
       final fileBytes = excel.save();
-      // final file = File(filePath)
-      //   ..createSync(recursive: true)
-      //   ..writeAsBytesSync(fileBytes!);
 
       final directory = await getExternalStorageDirectory();
       final filePath = '${directory!.path}/$code.xlsx';
@@ -273,7 +269,7 @@ class AssetCountSourceImpl implements AssetCountSource {
       'SELECT * FROM t_asset_count_detail WHERE count_id = ?',
       [params],
     );
-
+    debugPrint('Response DB : ${response}');
     return response.map((e) => AssetCountDetailModel.fromMap(e)).toList();
   }
 
@@ -302,9 +298,9 @@ class AssetCountSourceImpl implements AssetCountSource {
       final response = await txn.rawInsert(
         '''
         INSERT INTO t_asset_count_detail 
-          (count_id, asset_id, serial_number, asset_name, location, status, condition)
+          (count_id, asset_id, serial_number, asset_name, location, status, condition, quantity)
         VALUES
-          (?, ?, ?, ?, ?, ?, ?)
+          (?, ?, ?, ?, ?, ?, ?, ?)
         ''',
         [
           countId,
@@ -314,6 +310,7 @@ class AssetCountSourceImpl implements AssetCountSource {
           params.location,
           params.status,
           params.condition,
+          params.quantity,
         ],
       );
 

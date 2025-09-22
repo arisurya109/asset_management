@@ -46,7 +46,13 @@ Future<void> injection() async {
     () => AssetMasterBloc(locator(), locator(), locator()),
   );
   locator.registerFactory(
-    () => AssetPreparationBloc(locator(), locator(), locator(), locator()),
+    () => AssetPreparationBloc(
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+    ),
   );
   locator.registerFactory(
     () => AssetPreparationDetailBloc(locator(), locator(), locator()),
@@ -72,6 +78,7 @@ Future<void> injection() async {
   locator.registerLazySingleton(() => FindAllAssetMasterUseCase(locator()));
   locator.registerLazySingleton(() => UpdateAssetMasterUseCase(locator()));
   locator.registerLazySingleton(() => FindAllPreparationsUseCase(locator()));
+  locator.registerLazySingleton(() => FindPreparationByIdUseCase(locator()));
   locator.registerLazySingleton(
     () => FindAllAssetPreparationDetailUseCase(locator()),
   );

@@ -1,7 +1,8 @@
+import 'package:asset_management/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
-  void showSnackbar(String message, {Color backgroundColor = Colors.green}) {
+  void showSnackbar(String message, {Color backgroundColor = AppColors.kBase}) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(

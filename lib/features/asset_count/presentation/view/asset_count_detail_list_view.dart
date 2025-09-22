@@ -1,17 +1,13 @@
-import 'package:asset_management/core/widgets/app_button.dart';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart' as of;
 
-import '../../../../core/utils/enum.dart';
 import '../components/data_source.dart';
 import '../bloc/asset_count/asset_count_bloc.dart';
 import '../bloc/asset_count_detail/asset_count_detail_bloc.dart';
-import '../../../../core/extension/context_ext.dart';
-import '../../../../core/widgets/app_space.dart';
-import '../../../../core/utils/colors.dart';
+import '../../../../core/core.dart';
 
 class AssetCountDetailListView extends StatefulWidget {
   const AssetCountDetailListView({super.key});
@@ -24,62 +20,9 @@ class AssetCountDetailListView extends StatefulWidget {
 class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: BlocBuilder<AssetCountBloc, AssetCountState>(
-          builder: (context, state) {
-            return Text('${state.assetCountDetail!.title!} Detail');
-          },
-        ),
-        // actions: [
-        //   BlocConsumer<AssetCountBloc, AssetCountState>(
-        //     listener: (context, state) {
-        //       if (state.status == StatusAssetCount.failed) {
-        //         context.showSnackbar(
-        //           state.message!,
-        //           backgroundColor: Colors.red,
-        //         );
-        //       }
-
-        //       if (state.status == StatusAssetCount.success) {
-        //         context.showDialogConfirm(
-        //           title: 'Successfully Exported',
-        //           content: '${state.message}, Open this file ?',
-        //           onCancelText: 'No',
-        //           onConfirmText: 'Yes',
-        //           onCancel: () => Navigator.pop(context),
-        //           onConfirm: () async => await of.OpenFile.open(state.message),
-        //         );
-        //       }
-        //     },
-        //     builder: (context, state) {
-        //       return Padding(
-        //         padding: const EdgeInsets.only(right: 24),
-        //         child: InkWell(
-        //           onTap: () => context.read<AssetCountBloc>().add(
-        //             OnExportAssetCount(state.assetCountDetail!.id!),
-        //           ),
-        //           overlayColor: WidgetStatePropertyAll(Colors.transparent),
-        //           splashColor: Colors.transparent,
-        //           child: AppAssetImg(
-        //             Assets.iExport,
-        //             color: AppColors.kBase,
-        //             height: 24,
-        //             width: 24,
-        //           ),
-        //         ),
-        //       );
-        //     },
-        //   ),
-        // ],
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(height: 1, color: AppColors.kBase),
-          ),
-        ),
-      ),
+    final title = context.watch<AssetCountBloc>().state.assetCountDetail!.title;
+    return AppScaffold(
+      title: '${title?.toUpperCase()} DETAIL',
       body: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
         child: Column(
@@ -91,7 +34,6 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                 return Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  // direction: Axis.vertical,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -138,9 +80,11 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                     .state
                     .assetCountDetail;
 
+                debugPrint(assets.toString());
+
                 final dataSource = DataSource(
                   assets ?? [],
-                  (asset, name, location, box, condition) =>
+                  (asset, name, location, box, condition, quantity) =>
                       assetCount?.status == StatusCount.COMPLETED
                       ? null
                       : context.showDialogConfirm(
@@ -151,6 +95,7 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                           onCancelText: 'Cancel',
                           onConfirmText: 'Yes',
                           onConfirm: () {
+                            Navigator.pop(context);
                             context.read<AssetCountDetailBloc>().add(
                               OnDeleteAssetCountDetail(assetCount!.id!, asset),
                             );
@@ -159,7 +104,7 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                 );
                 return Expanded(
                   child: PaginatedDataTable2(
-                    minWidth: 1100,
+                    minWidth: 1200,
                     empty: Container(
                       decoration: BoxDecoration(color: Colors.grey.shade100),
                       child: Center(child: Text('Not Found')),
@@ -186,7 +131,7 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                       DataColumn2(
                         label: Center(
                           child: Text(
-                            'ASSET ID',
+                            'ASSET',
                             style: TextStyle(
                               fontWeight: FontWeight.w600,
                               color: Colors.white,
@@ -217,7 +162,7 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                             ),
                           ),
                         ),
-                        fixedWidth: 200,
+                        fixedWidth: 150,
                       ),
                       DataColumn2(
                         label: Center(
@@ -229,7 +174,7 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                             ),
                           ),
                         ),
-                        fixedWidth: 200,
+                        fixedWidth: 150,
                       ),
                       DataColumn2(
                         label: Center(
@@ -241,7 +186,19 @@ class _AssetCountDetailListViewState extends State<AssetCountDetailListView> {
                             ),
                           ),
                         ),
-                        fixedWidth: 200,
+                        fixedWidth: 170,
+                      ),
+                      DataColumn2(
+                        label: Center(
+                          child: Text(
+                            'QUANTITY',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        fixedWidth: 100,
                       ),
                     ],
                     source: dataSource,

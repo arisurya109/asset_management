@@ -1,4 +1,3 @@
-import 'package:asset_management/features/asset_master/presentation/view/asset_master_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -6,6 +5,7 @@ import 'add_asset__master_view.dart';
 import '../../../../core/utils/colors.dart';
 import '../../../../core/widgets/app_space.dart';
 import '../bloc/asset_master/asset_master_bloc.dart';
+import 'asset_master_detail_view.dart';
 
 class AssetMasterView extends StatefulWidget {
   const AssetMasterView({super.key});
@@ -15,12 +15,6 @@ class AssetMasterView extends StatefulWidget {
 }
 
 class _AssetMasterViewState extends State<AssetMasterView> {
-  @override
-  void initState() {
-    context.read<AssetMasterBloc>().add(OnFindAllAssetMaster());
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

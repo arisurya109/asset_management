@@ -11,3 +11,4 @@ export 'presentation/bloc/asset_preparation/asset_preparation_bloc.dart';
 export 'presentation/bloc/asset_preparation_detail/asset_preparation_detail_bloc.dart';
 export 'presentation/view/asset_preparation_view.dart';
 export 'presentation/view/add_asset_preparation_view.dart';
+export 'presentation/view/add_asset_preparation_detail_view.dart';

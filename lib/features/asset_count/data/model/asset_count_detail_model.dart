@@ -11,6 +11,7 @@ class AssetCountDetailModel extends Equatable {
   String? brandName;
   String? location;
   String? box;
+  int? quantity;
   String? status;
   String? condition;
 
@@ -22,6 +23,7 @@ class AssetCountDetailModel extends Equatable {
     this.brandName,
     this.location,
     this.box,
+    this.quantity,
     this.status,
     this.condition,
   });
@@ -34,6 +36,7 @@ class AssetCountDetailModel extends Equatable {
       brandName: params['brand_name'],
       condition: params['condition'],
       location: params['location'],
+      quantity: params['quantity'],
       box: params['box'],
       serialNumber: params['serial_number'],
       status: params['status'],
@@ -48,6 +51,7 @@ class AssetCountDetailModel extends Equatable {
       brandName: params.brandName,
       condition: params.condition,
       location: params.location,
+      quantity: params.quantity,
       box: params.box,
       serialNumber: params.serialNumber,
       status: params.status,
@@ -62,6 +66,7 @@ class AssetCountDetailModel extends Equatable {
       brandName: brandName,
       condition: condition,
       location: location,
+      quantity: quantity,
       box: box,
       serialNumber: serialNumber,
       status: status,
@@ -76,6 +81,7 @@ class AssetCountDetailModel extends Equatable {
       'brand_name': brandName,
       'condition': condition,
       'location': location,
+      'quantity': quantity,
       'box': box,
       'serial_number': serialNumber,
       'status': status,
@@ -90,6 +96,7 @@ class AssetCountDetailModel extends Equatable {
     assetName,
     brandName,
     location,
+    quantity,
     box,
     status,
     condition,

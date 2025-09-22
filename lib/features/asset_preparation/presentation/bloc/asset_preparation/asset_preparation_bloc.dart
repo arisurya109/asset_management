@@ -14,8 +14,15 @@ class AssetPreparationBloc
   final FindAllPreparationsUseCase _find;
   final UpdateStatusPreparationUseCase _update;
   final ExportPreparationUseCase _export;
-  AssetPreparationBloc(this._create, this._find, this._update, this._export)
-    : super(AssetPreparationState()) {
+  final FindPreparationByIdUseCase _findById;
+
+  AssetPreparationBloc(
+    this._create,
+    this._find,
+    this._update,
+    this._export,
+    this._findById,
+  ) : super(AssetPreparationState()) {
     on<OnCreatePreparation>((event, emit) async {
       emit(state.copyWith(status: StatusPreparation.loading));
 
@@ -83,9 +90,42 @@ class AssetPreparationBloc
         ),
       );
     });
-    on<OnSelectedPreparation>((event, emit) {
-      emit(state.copyWith(preparation: event.params));
+    on<OnFindPreparationById>((event, emit) async {
+      emit(state.copyWith(status: StatusPreparation.loading));
+
+      final failureOrPreparation = await _findById(event.id);
+
+      return failureOrPreparation.fold(
+        (failure) => emit(
+          state.copyWith(
+            status: StatusPreparation.failed,
+            message: failure.message,
+          ),
+        ),
+        (preparation) => emit(
+          state.copyWith(
+            status: StatusPreparation.loaded,
+            preparation: preparation,
+          ),
+        ),
+      );
     });
-    on<OnExportPreparation>((event, emit) async {});
+    on<OnExportPreparation>((event, emit) async {
+      emit(state.copyWith(status: StatusPreparation.loading));
+
+      final failureOrExported = await _export(event.preparationId);
+
+      return failureOrExported.fold(
+        (failure) => emit(
+          state.copyWith(
+            status: StatusPreparation.failed,
+            message: failure.message!,
+          ),
+        ),
+        (path) => emit(
+          state.copyWith(status: StatusPreparation.exported, message: path),
+        ),
+      );
+    });
   }
 }

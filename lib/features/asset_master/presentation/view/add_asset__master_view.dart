@@ -86,12 +86,14 @@ class _AddAssetMasterViewState extends State<AddAssetMasterView> {
                     nameC.clear();
                   });
                   if (state.status == StatusAssetMaster.failed) {
+                    Navigator.pop(context);
                     context.showSnackbar(
                       state.message!,
                       backgroundColor: AppColors.kRed,
                     );
                   }
                   if (state.status == StatusAssetMaster.success) {
+                    Navigator.pop(context);
                     context.showSnackbar(
                       state.message!,
                       backgroundColor: AppColors.kBase,

@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 
 class AssetPreparation extends Equatable {
   int? id;
+  String? preparationCode;
   String? storeName;
   int? storeCode;
   String? storeInitial;
@@ -14,6 +15,7 @@ class AssetPreparation extends Equatable {
 
   AssetPreparation({
     this.id,
+    this.preparationCode,
     this.storeName,
     this.storeCode,
     this.storeInitial,
@@ -28,6 +30,7 @@ class AssetPreparation extends Equatable {
   List<Object?> get props {
     return [
       id,
+      preparationCode,
       storeName,
       storeCode,
       storeInitial,

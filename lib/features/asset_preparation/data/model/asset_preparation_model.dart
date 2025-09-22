@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 
 class AssetPreparationModel extends Equatable {
   int? id;
+  String? preparationCode;
   String? storeName;
   int? storeCode;
   String? storeInitial;
@@ -16,6 +17,7 @@ class AssetPreparationModel extends Equatable {
 
   AssetPreparationModel({
     this.id,
+    this.preparationCode,
     this.storeName,
     this.storeCode,
     this.storeInitial,
@@ -30,6 +32,7 @@ class AssetPreparationModel extends Equatable {
   List<Object?> get props {
     return [
       id,
+      preparationCode,
       storeName,
       storeCode,
       storeInitial,
@@ -43,6 +46,7 @@ class AssetPreparationModel extends Equatable {
 
   Map<String, dynamic> toDatabase() {
     return <String, dynamic>{
+      'preparation_code': preparationCode,
       'store_name': storeName,
       'store_code': storeCode,
       'store_initial': storeInitial,
@@ -55,6 +59,7 @@ class AssetPreparationModel extends Equatable {
   AssetPreparation toEntity() {
     return AssetPreparation(
       id: id,
+      preparationCode: preparationCode,
       storeName: storeName,
       storeCode: storeCode,
       storeInitial: storeInitial,
@@ -69,6 +74,7 @@ class AssetPreparationModel extends Equatable {
   factory AssetPreparationModel.fromEntity(AssetPreparation params) {
     return AssetPreparationModel(
       id: params.id,
+      preparationCode: params.preparationCode,
       storeName: params.storeName,
       storeCode: params.storeCode,
       storeInitial: params.storeInitial,
@@ -83,6 +89,9 @@ class AssetPreparationModel extends Equatable {
   factory AssetPreparationModel.fromDatabase(Map<String, dynamic> map) {
     return AssetPreparationModel(
       id: map['id'] != null ? map['id'] as int : null,
+      preparationCode: map['preparation_code'] != null
+          ? map['preparation_code'] as String
+          : null,
       storeName: map['store_name'] != null ? map['store_name'] as String : null,
       storeCode: map['store_code'] != null ? map['store_code'] as int : null,
       storeInitial: map['store_initial'] != null

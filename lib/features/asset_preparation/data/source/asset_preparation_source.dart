@@ -3,6 +3,7 @@ import '../model/asset_preparation_model.dart';
 
 abstract class AssetPreparationSource {
   Future<List<AssetPreparationModel>> findAllPreparations();
+  Future<AssetPreparationModel> findPreparationById(int id);
   Future<AssetPreparationModel> createPreparation(AssetPreparationModel params);
   Future<AssetPreparationModel> updateStatusPreparation(
     AssetPreparationModel params,

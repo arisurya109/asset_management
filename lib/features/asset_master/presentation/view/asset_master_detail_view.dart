@@ -34,7 +34,7 @@ class _AssetMasterDetailViewState extends State<AssetMasterDetailView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('ADD ASSET MASTER'),
+        title: Text('DETAIL ASSET MASTER'),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),

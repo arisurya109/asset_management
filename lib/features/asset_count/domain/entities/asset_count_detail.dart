@@ -9,6 +9,7 @@ class AssetCountDetail extends Equatable {
   String? assetName;
   String? brandName;
   String? location;
+  int? quantity;
   String? box;
   String? status;
   String? condition;
@@ -20,6 +21,7 @@ class AssetCountDetail extends Equatable {
     this.assetName,
     this.brandName,
     this.location,
+    this.quantity,
     this.box,
     this.status,
     this.condition,
@@ -32,6 +34,7 @@ class AssetCountDetail extends Equatable {
     assetName,
     brandName,
     location,
+    quantity,
     box,
     status,
     condition,

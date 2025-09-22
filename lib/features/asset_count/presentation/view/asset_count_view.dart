@@ -1,15 +1,17 @@
-import '../../../../core/extension/context_ext.dart';
-import 'create_asset_count_view.dart';
-import 'package:intl/intl.dart';
-
-import '../../../../core/utils/colors.dart';
-import '../../../../core/utils/enum.dart';
-import '../../../../core/widgets/app_space.dart';
-import '../bloc/asset_count_detail/asset_count_detail_bloc.dart';
-import '../bloc/asset_count/asset_count_bloc.dart';
-import 'asset_count_detail_view.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
+
+import '../../../../core/extension/context_ext.dart';
+import '../../../../core/utils/colors.dart';
+import '../../../../core/utils/enum.dart';
+import '../../../../core/widgets/app_scaffold.dart';
+import '../../../../core/widgets/app_space.dart';
+import '../bloc/asset_count/asset_count_bloc.dart';
+import '../bloc/asset_count_detail/asset_count_detail_bloc.dart';
+import 'asset_count_detail_view.dart';
+import 'create_asset_count_view.dart';
 
 class AssetCountView extends StatefulWidget {
   const AssetCountView({super.key});
@@ -27,32 +29,19 @@ class _AssetCountViewState extends State<AssetCountView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('ASSET COUNT'),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(height: 1, color: AppColors.kBase),
-          ),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => CreateAssetCountView()),
-              );
-            },
-            icon: Icon(Icons.add),
-          ),
-        ],
+    return AppScaffold(
+      title: 'ASSET COUNT',
+      appBarActions: IconButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreateAssetCountView()),
+          );
+        },
+        icon: Icon(Icons.add),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-
         child: BlocBuilder<AssetCountBloc, AssetCountState>(
           builder: (context, state) {
             if (state.status == StatusAssetCount.loading) {
@@ -60,7 +49,6 @@ class _AssetCountViewState extends State<AssetCountView> {
                 child: CircularProgressIndicator(color: AppColors.kBase),
               );
             }
-
             if (state.assetsCount == null || state.assetsCount!.isEmpty) {
               return Center(
                 child: Text(state.message ?? 'Asset count is still empty'),
@@ -233,77 +221,6 @@ class _AssetCountViewState extends State<AssetCountView> {
                   );
                 },
               );
-              // return ListView.builder(
-              //   padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
-              //   itemCount: state.assetsCount!.length,
-              //   itemBuilder: (context, index) {
-              //     final assetCount = state.assetsCount![index];
-              //     return Padding(
-              //       padding: const EdgeInsets.only(bottom: 5),
-              //       child: ListTile(
-              //         contentPadding: EdgeInsets.symmetric(horizontal: 8),
-              //         onTap: () {
-              //           if (assetCount.status == StatusCount.CREATED) {
-              //             context.showDialogConfirm(
-              //               title: 'Start Counting',
-              //               content: 'Do you want to start counting your assets?',
-              //               onCancelText: 'No',
-              //               onCancel: () => Navigator.pop(context),
-              //               onConfirmText: 'Ya',
-              //               onConfirm: () {
-              //                 context.read<AssetCountBloc>().add(
-              //                   OnUpdateStatusAssetCount(
-              //                     assetCount.id!,
-              //                     StatusCount.ONPROCESS,
-              //                   ),
-              //                 );
-              //                 Navigator.pop(context);
-              //                 context.read<AssetCountDetailBloc>().add(
-              //                   OnGetAllAssetCountDetailById(assetCount.id!),
-              //                 );
-              //                 context.read<AssetCountBloc>().add(
-              //                   OnSelectedAssetCountDetail(assetCount.id!),
-              //                 );
-              //                 Future.delayed(Duration(seconds: 5));
-              //                 Navigator.push(
-              //                   context,
-              //                   MaterialPageRoute(
-              //                     builder: (_) => AssetCountDetailView(),
-              //                   ),
-              //                 );
-              //               },
-              //             );
-              //           } else {
-              //             context.read<AssetCountDetailBloc>().add(
-              //               OnGetAllAssetCountDetailById(assetCount.id!),
-              //             );
-              //             context.read<AssetCountBloc>().add(
-              //               OnSelectedAssetCountDetail(assetCount.id!),
-              //             );
-              //             Navigator.push(
-              //               context,
-              //               MaterialPageRoute(
-              //                 builder: (_) => AssetCountDetailView(),
-              //               ),
-              //             );
-              //           }
-              //         },
-              //         title: Text(assetCount.title!),
-              //         leading: CircleAvatar(
-              //           radius: 18,
-              //           backgroundColor: AppColors.kBase,
-              //           child: Text(
-              //             '${index + 1}',
-              //             style: TextStyle(
-              //               color: Colors.white,
-              //               fontWeight: FontWeight.w600,
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     );
-              //   },
-              // );
             }
           },
         ),

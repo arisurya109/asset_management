@@ -102,4 +102,14 @@ class AssetPreparationRepositoryImpl implements AssetPreparationRepository {
       return Left(UpdateFailure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, AssetPreparation>> findPreparationById(int id) async {
+    try {
+      final response = await _source.findPreparationById(id);
+      return Right(response.toEntity());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
 }

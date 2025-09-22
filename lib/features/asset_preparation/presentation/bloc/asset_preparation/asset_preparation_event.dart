@@ -27,8 +27,8 @@ class OnExportPreparation extends AssetPreparationEvent {
   const OnExportPreparation(this.preparationId);
 }
 
-class OnSelectedPreparation extends AssetPreparationEvent {
-  final AssetPreparation params;
+class OnFindPreparationById extends AssetPreparationEvent {
+  final int id;
 
-  const OnSelectedPreparation(this.params);
+  const OnFindPreparationById(this.id);
 }

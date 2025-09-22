@@ -24,10 +24,20 @@ class _AddAssetPreparationDetailViewState
 
   @override
   Widget build(BuildContext context) {
-    final preparation = context.watch<AssetPreparationBloc>().state.preparation;
     return Scaffold(
       appBar: AppBar(
-        title: Text(preparation!.storeName!),
+        title:
+            BlocSelector<AssetPreparationBloc, AssetPreparationState, String?>(
+              selector: (state) {
+                return state.preparation?.storeName;
+              },
+              builder: (context, state) {
+                if (state != null) {
+                  return Text(state);
+                }
+                return Text('');
+              },
+            ),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
@@ -65,21 +75,33 @@ class _AddAssetPreparationDetailViewState
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              AppSegmentedButton(
-                options: segmentedTypeList,
-                selected: selectedType,
-                onSelectionChanged: (value) => setState(() {
-                  selectedType = value.first;
-                }),
+          child:
+              BlocSelector<
+                AssetPreparationBloc,
+                AssetPreparationState,
+                AssetPreparation
+              >(
+                selector: (state) {
+                  return state.preparation!;
+                },
+                builder: (context, state) {
+                  return Column(
+                    children: [
+                      AppSegmentedButton(
+                        options: segmentedTypeList,
+                        selected: selectedType,
+                        onSelectionChanged: (value) => setState(() {
+                          selectedType = value.first;
+                        }),
+                      ),
+                      AppSpace.vertical(12),
+                      selectedType == 'ASSET-ID'
+                          ? AssetPreparationByIdView(preparation: state)
+                          : AssetPreparationNonIdView(preparation: state),
+                    ],
+                  );
+                },
               ),
-              AppSpace.vertical(12),
-              selectedType == 'ASSET-ID'
-                  ? AssetPreparationByIdView(preparation: preparation)
-                  : AssetPreparationNonIdView(preparation: preparation),
-            ],
-          ),
         ),
       ),
     );

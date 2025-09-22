@@ -60,6 +60,7 @@ class DatabaseHelper {
     serial_number TEXT,
     asset_name TEXT,
     location TEXT NOT NULL,
+    quantity INT NOT NULL,
     box TEXT,
     status TEXT,
     condition TEXT,
@@ -70,6 +71,7 @@ class DatabaseHelper {
     await db.execute('''
     CREATE TABLE t_asset_preparations (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    preparation_code TEXT NOT NULL,
     store_name TEXT NOT NULL,
     store_code INT NOT NULL,
     store_initial TEXT NOT NULL,

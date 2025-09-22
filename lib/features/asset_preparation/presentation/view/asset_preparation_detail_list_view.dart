@@ -1,15 +1,11 @@
-import 'package:asset_management/core/widgets/app_text_field.dart';
+import 'package:asset_management/core/core.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:open_file/open_file.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import '../../../../core/widgets/app_button.dart';
 import '../components/data_source_preparation.dart';
 import '../../asset_preparation.dart';
-import '../../../../core/extension/context_ext.dart';
-import '../../../../core/widgets/app_space.dart';
-import '../../../../core/utils/colors.dart';
-import '../../../../core/utils/constant.dart';
 
 class AssetPreparationDetailListView extends StatefulWidget {
   const AssetPreparationDetailListView({super.key});
@@ -21,6 +17,20 @@ class AssetPreparationDetailListView extends StatefulWidget {
 
 class _AssetPreparationDetailListViewState
     extends State<AssetPreparationDetailListView> {
+  late TextEditingController boxC;
+
+  @override
+  void initState() {
+    boxC = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    boxC.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,7 +51,12 @@ class _AssetPreparationDetailListViewState
           children: [
             BlocBuilder<AssetPreparationBloc, AssetPreparationState>(
               builder: (context, state) {
-                final preparation = state.preparation;
+                final preparation = context
+                    .watch<AssetPreparationBloc>()
+                    .state
+                    .preparation;
+
+                debugPrint(preparation.toString());
                 return Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -98,6 +113,7 @@ class _AssetPreparationDetailListViewState
                           onCancelText: 'Cancel',
                           onConfirmText: 'Yes',
                           onConfirm: () {
+                            Navigator.pop(context);
                             context.read<AssetPreparationDetailBloc>().add(
                               OnDeletedPreparationDetails(
                                 preparationDoc.id!,
@@ -109,14 +125,13 @@ class _AssetPreparationDetailListViewState
                 );
                 return Expanded(
                   child: PaginatedDataTable2(
-                    minWidth: 1200,
+                    minWidth: 900,
                     empty: Container(
                       decoration: BoxDecoration(color: Colors.grey.shade100),
                       child: Center(child: Text('Not Found')),
                     ),
-                    renderEmptyRowsInTheEnd: false,
-                    rowsPerPage: 10,
                     wrapInCard: false,
+                    renderEmptyRowsInTheEnd: false,
                     border: TableBorder.all(),
                     headingRowDecoration: BoxDecoration(color: Colors.teal),
                     columns: [
@@ -130,68 +145,62 @@ class _AssetPreparationDetailListViewState
                             ),
                           ),
                         ),
-                        fixedWidth: 45,
+                        fixedWidth: 50,
+                      ),
+                      DataColumn2(
+                        label: Text(
+                          'ASSET',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        fixedWidth: 200,
                         headingRowAlignment: MainAxisAlignment.center,
                       ),
                       DataColumn2(
-                        label: Center(
-                          child: Text(
-                            'ASSET',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                        label: Text(
+                          'TYPE',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
-                        fixedWidth: 220,
+                        headingRowAlignment: MainAxisAlignment.center,
+                        fixedWidth: 150,
                       ),
                       DataColumn2(
-                        label: Center(
-                          child: Text(
-                            'TYPE',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                        label: Text(
+                          'QTY',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
-                        fixedWidth: 170,
+                        headingRowAlignment: MainAxisAlignment.center,
+                        fixedWidth: 90,
                       ),
                       DataColumn2(
-                        label: Center(
-                          child: Text(
-                            'QUANTITY',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                        label: Text(
+                          'LOCATION',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
-                        fixedWidth: 120,
+                        headingRowAlignment: MainAxisAlignment.center,
+                        fixedWidth: 150,
                       ),
                       DataColumn2(
-                        label: Center(
-                          child: Text(
-                            'LOCATION',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
+                        label: Text(
+                          'BOX',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
                           ),
                         ),
-                        fixedWidth: 170,
-                      ),
-                      DataColumn2(
-                        label: Center(
-                          child: Text(
-                            'BOX',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                        fixedWidth: 170,
+                        headingRowAlignment: MainAxisAlignment.center,
+                        fixedWidth: 150,
                       ),
                     ],
                     source: dataSource,
@@ -208,12 +217,17 @@ class _AssetPreparationDetailListViewState
                   return false;
                 }
               },
-              listener: (context, state) {
+              listener: (context, state) async {
                 if (state.status == StatusPreparation.updated) {
                   context.showSnackbar('Preparation Completed');
+                  context.read<AssetPreparationBloc>().add(
+                    OnFindPreparationById(state.preparation!.id!),
+                  );
                 }
                 if (state.status == StatusPreparation.exported) {
                   context.showSnackbar('Exported completed');
+                  Future.delayed(Duration(seconds: 5));
+                  await OpenFile.open(state.message);
                 }
               },
               builder: (context, state) {
@@ -229,7 +243,13 @@ class _AssetPreparationDetailListViewState
                         : preparation.status == PreparationStatus.inprogress
                         ? 'Completed'
                         : 'Exported',
-                    onPressed: () => _completed(preparation),
+                    onPressed: state.status == StatusPreparation.loading
+                        ? null
+                        : preparation.status == PreparationStatus.inprogress
+                        ? () => _completed(preparation)
+                        : () => context.read<AssetPreparationBloc>().add(
+                            OnExportPreparation(preparation.id!),
+                          ),
                     width: double.maxFinite,
                   ),
                 );
@@ -241,16 +261,28 @@ class _AssetPreparationDetailListViewState
     );
   }
 
+  _submit(int preparationId) {
+    final box = boxC.value.text.trim();
+
+    if (!box.isFilled() && box.isNumber()) {
+      Navigator.pop(context);
+      context.showSnackbar('The total box must not be empty');
+    } else {
+      Navigator.pop(context);
+      context.read<AssetPreparationBloc>().add(
+        OnUpdateStatusPreparaion(
+          AssetPreparation(
+            status: PreparationStatus.completed,
+            totalBox: int.tryParse(box),
+            updatedAt: DateTime.now().toIso8601String(),
+            id: preparationId,
+          ),
+        ),
+      );
+    }
+  }
+
   _completed(AssetPreparation preparation) {
-    // context.showDialogOption(
-    //   title: 'Completed Preparation',
-    //   children: [
-    //     AppSpace.vertical(24),
-    //     AppTextField(title: 'Total Box'),
-    //     AppSpace.vertical(24),
-    //     AppButton(title: 'Submit', onPressed: () {}),
-    //   ],
-    // );
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -276,13 +308,21 @@ class _AssetPreparationDetailListViewState
                 textInputAction: TextInputAction.go,
                 hintText: 'Example : 24',
                 keyboardType: TextInputType.number,
+                controller: boxC,
+                onSubmitted: (_) => _submit(preparation.id!),
               ),
               AppSpace.vertical(48),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  AppButton(title: 'Submit'),
-                  AppButton(title: 'Cancel'),
+                  AppButton(
+                    title: 'Submit',
+                    onPressed: () => _submit(preparation.id!),
+                  ),
+                  AppButton(
+                    title: 'Cancel',
+                    onPressed: () => Navigator.pop(context),
+                  ),
                 ],
               ),
               AppSpace.vertical(24),
