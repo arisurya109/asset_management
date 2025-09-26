@@ -1,53 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/reprint/reprint_bloc.dart';
-import '../core/extension/context_ext.dart';
-import '../core/extension/string_ext.dart';
-import '../core/utils/colors.dart';
-import '../core/utils/enum.dart';
-import '../core/widgets/app_button.dart';
-import '../core/widgets/app_space.dart';
-import '../core/widgets/app_text_field.dart';
+import '../../../../core/core.dart';
+import '../../reprint.dart';
 
-class ReprintAssetIdView extends StatefulWidget {
-  const ReprintAssetIdView({super.key});
+class ReprintLocationView extends StatefulWidget {
+  const ReprintLocationView({super.key});
 
   @override
-  State<ReprintAssetIdView> createState() => _ReprintAssetIdViewState();
+  State<ReprintLocationView> createState() => _ReprintLocationViewState();
 }
 
-class _ReprintAssetIdViewState extends State<ReprintAssetIdView> {
-  late TextEditingController controller;
-
-  @override
-  void dispose() {
-    controller.clear();
-    controller.dispose();
-    super.dispose();
-  }
+class _ReprintLocationViewState extends State<ReprintLocationView> {
+  late TextEditingController locationC;
 
   @override
   void initState() {
+    locationC = TextEditingController();
     super.initState();
-    controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    locationC.clear();
+    locationC.dispose();
+    super.dispose();
   }
 
   _onSubmit() {
-    if (controller.value.text.isFilled()) {
+    if (locationC.value.text.isFilled()) {
       context.showDialogConfirm(
-        title: 'Reprint Asset ID ?',
+        title: 'Reprint Location ?',
         content:
-            'Are you sure you want to reprint the \n${controller.value.text.trim()}?',
+            'Are you sure you want to reprint the \n${locationC.value.text.trim()}?',
         onCancelText: 'Cancel',
         onConfirmText: 'Yes',
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<ReprintBloc>().add(
-            OnReprintAssetIdByAssetId(controller.value.text.trim()),
+            OnReprintLocation(locationC.value.text.trim()),
           );
           Navigator.pop(context);
-          controller.clear();
+          locationC.clear();
         },
       );
     } else {
@@ -62,7 +56,7 @@ class _ReprintAssetIdViewState extends State<ReprintAssetIdView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('REPRINT ASSET ID'),
+        title: Text('REPRINT LOCATION'),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
@@ -73,21 +67,20 @@ class _ReprintAssetIdViewState extends State<ReprintAssetIdView> {
         ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16),
         child: Column(
           children: [
             AppTextField(
-              controller: controller,
-              title: 'Asset ID',
-              hintText: 'Contoh : AST-PRN-2508230001',
+              controller: locationC,
+              hintText: 'Example : LD.01.01.01',
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.go,
+              title: 'Location',
               onSubmitted: (_) => _onSubmit(),
             ),
             AppSpace.vertical(24),
             BlocListener<ReprintBloc, ReprintState>(
               listener: (context, state) {
-                debugPrint(state.status.toString());
                 if (state.status == StatusReprint.failed) {
                   context.showSnackbar(
                     state.message!,
@@ -96,7 +89,7 @@ class _ReprintAssetIdViewState extends State<ReprintAssetIdView> {
                 }
 
                 if (state.status == StatusReprint.success) {
-                  context.showSnackbar('Successfully reprint Asset ID');
+                  context.showSnackbar('Successfully reprint Location');
                 }
               },
               child: AppButton(title: 'Submit', onPressed: _onSubmit),

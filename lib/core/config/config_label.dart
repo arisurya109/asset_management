@@ -1,6 +1,29 @@
 class ConfigLabel {
   // ignore: non_constant_identifier_names
-  static AssetId(String assetId) {
+  static String AssetIdLarge(String assetId) {
+    return '''
+     ^XA
+      ^PW530
+      ^LL530
+      ^MD30
+      ^PS3
+
+      // Barcode atas
+      ^FO30,20
+      ^BY2,3,200
+      ^BCN,480,N,N,N
+      ^FD$assetId^FS
+
+      // Text di bawah barcode atas
+      ^FO70,530
+      ^A0N,40,40
+      ^FD$assetId^FS
+    ^XZ    
+    ''';
+  }
+
+  // ignore: non_constant_identifier_names
+  static String AssetIdNormal(String assetId) {
     return '''
       ^XA
       ^PW530

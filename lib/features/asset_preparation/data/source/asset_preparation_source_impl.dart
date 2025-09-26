@@ -51,7 +51,21 @@ class AssetPreparationSourceImpl implements AssetPreparationSource {
 
       params.preparationCode = preparationCode;
 
-      final id = await txn.insert('t_asset_preparations', params.toDatabase());
+      final id = await txn.rawInsert(
+        '''
+        INSERT INTO t_asset_preparations (preparation_code, store_name, store_code, store_initial, status, type, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''',
+        [
+          preparationCode,
+          params.storeName,
+          params.storeCode,
+          params.storeInitial,
+          params.status,
+          params.type,
+          params.createdAt,
+        ],
+      );
 
       params.id = id;
 
@@ -176,8 +190,8 @@ class AssetPreparationSourceImpl implements AssetPreparationSource {
         ).format(DateTime.parse(rawData['updated_at'] as String)),
       );
 
-      var a8 = sheet.cell(CellIndex.indexByString('A7'));
-      var b8 = sheet.cell(CellIndex.indexByString('B7'));
+      var a8 = sheet.cell(CellIndex.indexByString('A8'));
+      var b8 = sheet.cell(CellIndex.indexByString('B8'));
       a8.value = TextCellValue('Total Box :');
       b8.value = IntCellValue(rawData['total_box'] as int);
 

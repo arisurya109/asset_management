@@ -283,15 +283,31 @@ class AssetCountSourceImpl implements AssetCountSource {
       final assetId = params.assetId;
       final countId = params.countId;
 
-      final assetIdCheck = await txn.rawQuery(
-        'SELECT * FROM t_asset_count_detail WHERE count_id = ? AND asset_id = ?',
-        [countId, assetId],
+      if (params.quantity == 1) {
+        final assetIdCheck = await txn.rawQuery(
+          'SELECT * FROM t_asset_count_detail WHERE count_id = ? AND asset_id = ?',
+          [countId, assetId],
+        );
+        if (assetIdCheck.firstOrNull != null) {
+          throw CreateException(
+            message:
+                'Asset already accounted, Location : ${assetIdCheck.first['location']}',
+          );
+        }
+      }
+
+      final checkAssetLocationAndBox = await txn.rawQuery(
+        'SELECT * FROM t_asset_count_detail WHERE count_id = ? AND asset_id = ? AND location = ? AND box = ?',
+        [countId, assetId, params.location, params.box],
       );
 
-      if (assetIdCheck.firstOrNull != null) {
+      print('Check Asset Location : $checkAssetLocationAndBox');
+
+      if (checkAssetLocationAndBox.firstOrNull != null ||
+          checkAssetLocationAndBox.isNotEmpty) {
         throw CreateException(
           message:
-              'Asset already accounted, Location : ${assetIdCheck.first['location']}',
+              'Asset already counted, Location : ${checkAssetLocationAndBox.first['location']}, Box : ${checkAssetLocationAndBox.first['box']}',
         );
       }
 

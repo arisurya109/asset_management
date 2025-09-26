@@ -1,6 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
 part of 'reprint_bloc.dart';
 
+enum StatusReprint { initial, loading, failed, success }
+
+// ignore: must_be_immutable
 class ReprintState extends Equatable {
   StatusReprint? status;
   String? message;

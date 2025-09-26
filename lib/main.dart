@@ -1,19 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
-
-import 'core/utils/colors.dart';
-import 'injection.dart';
-import 'view/splash_view.dart';
-import 'bloc/printer/printer_bloc.dart';
-import 'bloc/reprint/reprint_bloc.dart';
-
-import 'features/asset_master/presentation/bloc/asset_master/asset_master_bloc.dart';
-import 'features/asset_preparation/asset_preparation.dart';
-import 'features/home/presentation/cubit/home/home_cubit.dart';
-import 'features/asset_count/presentation/bloc/asset_count/asset_count_bloc.dart';
-import 'features/asset_count/presentation/bloc/asset_count_detail/asset_count_detail_bloc.dart';
+import 'main_export.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

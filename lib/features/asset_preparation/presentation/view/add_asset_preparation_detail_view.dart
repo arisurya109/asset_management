@@ -75,33 +75,30 @@ class _AddAssetPreparationDetailViewState
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: SingleChildScrollView(
-          child:
-              BlocSelector<
-                AssetPreparationBloc,
-                AssetPreparationState,
-                AssetPreparation
-              >(
-                selector: (state) {
-                  return state.preparation!;
-                },
-                builder: (context, state) {
-                  return Column(
-                    children: [
-                      AppSegmentedButton(
-                        options: segmentedTypeList,
-                        selected: selectedType,
-                        onSelectionChanged: (value) => setState(() {
-                          selectedType = value.first;
-                        }),
-                      ),
-                      AppSpace.vertical(12),
-                      selectedType == 'ASSET-ID'
-                          ? AssetPreparationByIdView(preparation: state)
-                          : AssetPreparationNonIdView(preparation: state),
-                    ],
-                  );
-                },
-              ),
+          child: BlocBuilder<AssetPreparationBloc, AssetPreparationState>(
+            builder: (context, state) {
+              final preparation = state.preparation;
+              if (preparation != null) {
+                return Column(
+                  children: [
+                    AppSegmentedButton(
+                      options: segmentedTypeList,
+                      selected: selectedType,
+                      onSelectionChanged: (value) => setState(() {
+                        selectedType = value.first;
+                      }),
+                    ),
+                    AppSpace.vertical(12),
+                    selectedType == 'ASSET-ID'
+                        ? AssetPreparationByIdView(preparation: preparation)
+                        : AssetPreparationNonIdView(preparation: preparation),
+                  ],
+                );
+              }
+
+              return SizedBox();
+            },
+          ),
         ),
       ),
     );

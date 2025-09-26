@@ -121,7 +121,7 @@ class _AssetPreparationViewState extends State<AssetPreparationView> {
           context.read<AssetPreparationDetailBloc>().add(
             OnFindAllPreparationDetails(preparation.id!),
           );
-          Future.delayed(Duration(seconds: 5));
+          Future.delayed(Duration(seconds: 9));
           Navigator.push(
             context,
             MaterialPageRoute(builder: (_) => AddAssetPreparationDetailView()),

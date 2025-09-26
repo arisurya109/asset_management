@@ -28,8 +28,25 @@ class DatabaseHelper {
 
     String path = join(dir.path, _databaseName);
 
-    return openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return openDatabase(
+      path,
+      version: _databaseVersion,
+      onCreate: _onCreate,
+      // onUpgrade: _onUpgrade,
+    );
   }
+
+  // Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+  //   if (oldVersion < 2) {
+  //     await db.execute(
+  //       'ALTER TABLE t_asset_preparations ADD COLUMN preparation_code TEXT NOT NULL',
+  //     );
+  //   } else if (oldVersion < 3) {
+  //     await db.execute(
+  //       'ALTER TABLE t_asset_count_detail ADD COLUMN quantity INT NOT NULL,',
+  //     );
+  //   }
+  // }
 
   Future<void> _onCreate(Database db, int version) async {
     await db.execute('PRAGMA foreign_keys = ON');
@@ -60,8 +77,8 @@ class DatabaseHelper {
     serial_number TEXT,
     asset_name TEXT,
     location TEXT NOT NULL,
-    quantity INT NOT NULL,
     box TEXT,
+    quantity INT NOT NULL,
     status TEXT,
     condition TEXT,
     FOREIGN KEY (count_id) REFERENCES t_asset_count(id)
