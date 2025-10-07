@@ -41,12 +41,12 @@ class _HomeViewState extends State<HomeView> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            AppSpace.vertical(12),
-            Container(
-              height: 300,
-              width: double.infinity,
-              color: AppColors.kBase,
-            ),
+            // AppSpace.vertical(12),
+            // Container(
+            //   height: 300,
+            //   width: double.infinity,
+            //   color: AppColors.kBase,
+            // ),
             AppSpace.vertical(24),
             Expanded(
               child: BlocBuilder<HomeCubit, List<Map<String, dynamic>>>(
