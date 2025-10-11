@@ -29,7 +29,7 @@ final locator = GetIt.instance;
 Future<void> injection() async {
   final pref = await SharedPreferences.getInstance();
 
-  // BloC
+  // Bloc
   locator.registerFactory(() => HomeCubit());
   locator.registerFactory(() => ReprintBloc(locator(), locator(), locator()));
   locator.registerFactory(() => PrinterBloc(locator(), locator()));
