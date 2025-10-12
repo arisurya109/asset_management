@@ -1,3 +1,8 @@
+import 'package:asset_management/features/asset_master_new/asset_master_export.dart';
+import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
+import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
+import 'package:asset_management/features/user/presentation/view/splash_view.dart';
+
 import 'main_export.dart';
 
 void main() async {
@@ -14,7 +19,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => locator<HomeCubit>()..loadItems()),
+        BlocProvider(create: (context) => locator<HomeCubit>()),
         BlocProvider(create: (context) => locator<ReprintBloc>()),
         BlocProvider(create: (context) => locator<PrinterBloc>()),
         BlocProvider(create: (context) => locator<AssetCountBloc>()),
@@ -24,6 +29,12 @@ class MainApp extends StatelessWidget {
         BlocProvider(
           create: (context) => locator<AssetPreparationDetailBloc>(),
         ),
+        BlocProvider(create: (context) => locator<UserBloc>()),
+        BlocProvider(create: (context) => locator<AssetTypeBloc>()),
+        BlocProvider(create: (context) => locator<AssetCategoryBloc>()),
+        BlocProvider(create: (context) => locator<AssetBrandBloc>()),
+        BlocProvider(create: (context) => locator<AssetModelBloc>()),
+        BlocProvider(create: (context) => locator<AssetMasterNewCubit>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

@@ -4,7 +4,6 @@ export 'package:flutter_bloc/flutter_bloc.dart';
 export 'package:intl/date_symbol_data_local.dart';
 export 'core/utils/colors.dart';
 export 'injection.dart';
-export 'view/splash_view.dart';
 export 'bloc/printer/printer_bloc.dart';
 export 'features/asset_master/presentation/bloc/asset_master/asset_master_bloc.dart';
 export 'features/asset_preparation/asset_preparation.dart';

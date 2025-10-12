@@ -1,19 +1,76 @@
 import 'package:asset_management/core/utils/assets.dart';
-import 'package:bloc/bloc.dart';
+import 'package:asset_management/features/asset_master_new/presentation/view/asset_master_new_view.dart';
+
+import '../../../../../main_export.dart';
+import '../../../../../view/view.dart';
+import '../../../../asset_count/asset_count.dart';
+import '../../../../asset_master/asset_master.dart';
 
 class HomeCubit extends Cubit<List<Map<String, dynamic>>> {
   HomeCubit() : super([]);
 
   final List<Map<String, dynamic>> _items = [
-    {'value': 0, 'icons': Assets.iAssetMaster, 'name': 'Asset Master'},
-    {'value': 1, 'icons': Assets.iPreparation, 'name': 'Asset Preparation'},
-    {'value': 2, 'icons': Assets.iCount, 'name': 'Asset Count'},
-    {'value': 3, 'icons': Assets.iReprint, 'name': 'Reprint Asset'},
-    {'value': 4, 'icons': Assets.iReprint, 'name': 'Reprint Location'},
-    {'value': 5, 'icons': Assets.iPrinter, 'name': 'Printer'},
+    {
+      'value': 'asset_master_view',
+      'icons': Assets.iAssetMaster,
+      'name': 'Asset Master',
+      'view': AssetMasterView(),
+    },
+    {
+      'value': 'asset_preparation_view',
+      'icons': Assets.iPreparation,
+      'name': 'Asset Preparation',
+      'view': AssetPreparationView(),
+    },
+    {
+      'value': 'asset_count_view',
+      'icons': Assets.iCount,
+      'name': 'Asset Count',
+      'view': AssetCountView(),
+    },
+    {
+      'value': 'reprint_asset_view',
+      'icons': Assets.iReprint,
+      'name': 'Reprint Asset',
+      'view': ReprintAssetIdView(),
+    },
+    {
+      'value': 'reprint_location_view',
+      'icons': Assets.iReprint,
+      'name': 'Reprint Location',
+      'view': ReprintLocationView(),
+    },
+    {
+      'value': 'printer_view',
+      'icons': Assets.iPrinter,
+      'name': 'Printer',
+      'view': PrinterView(),
+    },
+    {
+      'value': 'master_view',
+      'icons': Assets.iAssetMaster,
+      'name': 'New Asset Master',
+      'view': AssetMasterNewView(),
+    },
   ];
 
-  void loadItems() {
-    emit(_items);
+  void loadItems(List<String> modules) {
+    final allowedItems = <Map<String, dynamic>>[
+      _items.firstWhere((e) => e['value'] == 'asset_master_view'),
+      _items.firstWhere((e) => e['value'] == 'asset_preparation_view'),
+      _items.firstWhere((e) => e['value'] == 'asset_count_view'),
+      _items.firstWhere((e) => e['value'] == 'reprint_asset_view'),
+      _items.firstWhere((e) => e['value'] == 'reprint_location_view'),
+      _items.firstWhere((e) => e['value'] == 'printer_view'),
+    ];
+
+    final userAllowed = _items
+        .where((item) => modules.contains(item['value']))
+        .toList();
+
+    final all = [...allowedItems, ...userAllowed];
+    final unique = {for (var item in all) item['value']: item}.values.toList();
+
+    emit(unique);
   }
 }

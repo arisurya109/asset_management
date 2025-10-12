@@ -9,4 +9,10 @@ class Assets {
   static const iCount = 'assets/icons/icons_count.png';
   static const iList = 'assets/icons/icons_list.png';
   static const iExport = 'assets/icons/icons_export.png';
+  static const iLogoWs = 'assets/icons/logo-ws.png';
+  static const iUserManagement = 'assets/icons/user-management.png';
+  static const iAssetBrand = 'assets/icons/asset-brand.png';
+  static const iAssetCategory = 'assets/icons/asset-category.png';
+  static const iAssetModel = 'assets/icons/asset-model.png';
+  static const iAssetTypes = 'assets/icons/asset-types.png';
 }

@@ -78,7 +78,6 @@ class _AssetMasterViewState extends State<AssetMasterView> {
                         context.read<AssetMasterBloc>().add(
                           OnSelectedAssetMaster(asset),
                         );
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(

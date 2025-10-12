@@ -1,13 +1,8 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
+import 'package:asset_management/features/user/presentation/view/login_view.dart';
 
 import '../../../../core/core.dart';
 import '../../../../main_export.dart';
-import '../../../../view/view.dart';
-import '../../../asset_count/asset_count.dart';
-import '../../../asset_master/asset_master.dart';
-import '../../../asset_preparation/asset_preparation.dart';
-import '../../../reprint/reprint.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -19,7 +14,15 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   @override
   void initState() {
-    context.read<AssetMasterBloc>().add(OnFindAllAssetMaster());
+    final modules = context
+        .read<UserBloc>()
+        .state
+        .user
+        ?.modules
+        ?.map((e) => e.toString())
+        .toList();
+
+    context.read<HomeCubit>().loadItems(modules!);
     super.initState();
   }
 
@@ -29,6 +32,24 @@ class _HomeViewState extends State<HomeView> {
       appBar: AppBar(
         title: Text('ASSET MANAGEMENT'),
         elevation: 0,
+        actions: [
+          BlocConsumer<UserBloc, UserState>(
+            listener: (context, state) {
+              if (state.status == StatusUser.success) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => LoginView()),
+                );
+              }
+            },
+            builder: (context, state) {
+              return IconButton(
+                onPressed: () => context.read<UserBloc>().add(OnLogoutUser()),
+                icon: Icon(Icons.logout),
+              );
+            },
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),
           child: Padding(
@@ -47,11 +68,12 @@ class _HomeViewState extends State<HomeView> {
             //   width: double.infinity,
             //   color: AppColors.kBase,
             // ),
-            AppSpace.vertical(24),
+            AppSpace.vertical(16),
             Expanded(
               child: BlocBuilder<HomeCubit, List<Map<String, dynamic>>>(
                 builder: (context, state) {
                   return GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
@@ -62,6 +84,7 @@ class _HomeViewState extends State<HomeView> {
                     itemCount: state.length,
                     itemBuilder: (context, index) {
                       final item = state[index];
+
                       return Material(
                         color: AppColors.kWhite,
                         borderRadius: BorderRadius.circular(8),
@@ -69,58 +92,12 @@ class _HomeViewState extends State<HomeView> {
                         elevation: 3,
                         shadowColor: Colors.black.withOpacity(0.7),
                         child: InkWell(
-                          onTap: () {
-                            switch (item['value']) {
-                              case 0:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => AssetMasterView(),
-                                  ),
-                                );
-                                break;
-                              case 1:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => AssetPreparationView(),
-                                  ),
-                                );
-                                break;
-                              case 2:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => AssetCountView(),
-                                  ),
-                                );
-                                break;
-                              case 3:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ReprintAssetIdView(),
-                                  ),
-                                );
-                                break;
-                              case 4:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => ReprintLocationView(),
-                                  ),
-                                );
-                                break;
-                              case 5:
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => PrinterView(),
-                                  ),
-                                );
-                                break;
-                            }
-                          },
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => item['view'],
+                            ),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(12),
                             child: Column(
