@@ -8,7 +8,9 @@ class CreateAssetRegistrationUseCase {
 
   CreateAssetRegistrationUseCase(this._repository);
 
-  Future<Either<Failure, String>> call(AssetRegistration params) async {
-    return _repository.create(params);
+  Future<Either<Failure, AssetRegistration>> call(
+    AssetRegistration params,
+  ) async {
+    return _repository.createAssetRegistration(params);
   }
 }

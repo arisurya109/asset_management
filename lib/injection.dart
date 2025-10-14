@@ -1,6 +1,18 @@
 import 'package:asset_management/core/config/token_helper.dart';
 import 'package:asset_management/features/asset_master_new/asset_master_export.dart';
 import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
+import 'package:asset_management/features/asset_registration/data/source/asset_registration_source.dart';
+import 'package:asset_management/features/asset_registration/domain/usecases/create_asset_registration_consumable_use_case.dart';
+import 'package:asset_management/features/asset_registration/domain/usecases/create_asset_registration_use_case.dart';
+import 'package:asset_management/features/asset_registration/domain/usecases/find_all_asset_registration_use_case.dart';
+import 'package:asset_management/features/asset_registration/domain/usecases/migration_asset_use_case.dart';
+import 'package:asset_management/features/asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
+import 'package:asset_management/features/locations/data/source/location_remote_data_source.dart';
+import 'package:asset_management/features/locations/data/source/location_remote_data_source_impl.dart';
+import 'package:asset_management/features/locations/domain/repositories/location_repository.dart';
+import 'package:asset_management/features/locations/domain/usecases/create_location_use_case.dart';
+import 'package:asset_management/features/locations/domain/usecases/find_all_location_use_case.dart';
+import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
 import 'package:asset_management/features/user/data/source/user_remote_data_source.dart';
 import 'package:asset_management/features/user/data/source/user_remote_data_source_impl.dart';
 import 'package:asset_management/features/user/domain/repositories/user_repository.dart';
@@ -13,8 +25,12 @@ import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'features/asset_preparation/asset_preparation.dart';
+import 'features/asset_registration/data/repositories/asset_registration_repository_impl.dart';
+import 'features/asset_registration/data/source/asset_registration_source_impl.dart';
+import 'features/asset_registration/domain/repositories/asset_registration_repository.dart';
 import 'features/home/presentation/cubit/home/home_cubit.dart';
 import 'bloc/printer/printer_bloc.dart';
+import 'features/locations/data/repositories/location_repository_impl.dart';
 import 'features/reprint/reprint.dart';
 import 'features/user/data/repositories/user_repository_impl.dart';
 import 'services/printer_service.dart';
@@ -83,6 +99,10 @@ Future<void> injection() async {
     () => AssetModelBloc(locator(), locator(), locator(), locator()),
   );
   locator.registerFactory(() => AssetMasterNewCubit());
+  locator.registerFactory(
+    () => AssetRegistrationBloc(locator(), locator(), locator(), locator()),
+  );
+  locator.registerFactory(() => LocationBloc(locator(), locator()));
 
   // Usecases
   locator.registerLazySingleton(() => ReprintAssetIdNormalUseCase(locator()));
@@ -138,6 +158,18 @@ Future<void> injection() async {
   locator.registerLazySingleton(() => FindByIdAssetTypeUseCase(locator()));
   locator.registerLazySingleton(() => FindByIdAssetCategoryUseCase(locator()));
   locator.registerLazySingleton(() => FindByIdAssetModelUseCase(locator()));
+  locator.registerLazySingleton(
+    () => FindAllAssetRegistrationUseCase(locator()),
+  );
+  locator.registerLazySingleton(
+    () => CreateAssetRegistrationUseCase(locator()),
+  );
+  locator.registerLazySingleton(
+    () => CreateAssetRegistrationConsumable(locator()),
+  );
+  locator.registerLazySingleton(() => MigrationAssetUseCase(locator()));
+  locator.registerLazySingleton(() => FindAllLocationUseCase(locator()));
+  locator.registerLazySingleton(() => CreateLocationUseCase(locator()));
 
   // Repositories
   locator.registerLazySingleton<ReprintRepository>(
@@ -161,6 +193,12 @@ Future<void> injection() async {
   locator.registerLazySingleton<AssetMasterNewRepository>(
     () => AssetMasterNewRepositoryImpl(locator()),
   );
+  locator.registerLazySingleton<AssetRegistrationRepository>(
+    () => AssetRegistrationRepositoryImpl(locator()),
+  );
+  locator.registerLazySingleton<LocationRepository>(
+    () => LocationRepositoryImpl(locator()),
+  );
 
   // Source
   locator.registerLazySingleton<AssetCountSource>(
@@ -180,6 +218,12 @@ Future<void> injection() async {
   );
   locator.registerLazySingleton<AssetMasterRemoteDataSource>(
     () => AssetMasterRemoteDataSourceImpl(locator(), locator()),
+  );
+  locator.registerLazySingleton<AssetRegistrationSource>(
+    () => AssetRegistrationSourceImpl(locator(), locator(), locator()),
+  );
+  locator.registerLazySingleton<LocationRemoteDataSource>(
+    () => LocationRemoteDataSourceImpl(locator(), locator()),
   );
 
   // Services

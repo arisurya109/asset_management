@@ -1,8 +1,11 @@
+import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
 import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/features/user/presentation/view/login_view.dart';
 
 import '../../../../core/core.dart';
 import '../../../../main_export.dart';
+import '../../../asset_master_new/asset_master_export.dart';
+import '../../../asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -23,6 +26,12 @@ class _HomeViewState extends State<HomeView> {
         .toList();
 
     context.read<HomeCubit>().loadItems(modules!);
+    context.read<AssetMasterNewCubit>().load();
+    context.read<AssetBrandBloc>().add(OnGetAllAssetBrand());
+    context.read<AssetCategoryBloc>().add(OnGetAllAssetCategory());
+    context.read<AssetModelBloc>().add(OnGetAllAssetModel());
+    context.read<AssetTypeBloc>().add(OnGetAllAssetType());
+    context.read<LocationBloc>().add(OnGetAllLocation());
     super.initState();
   }
 

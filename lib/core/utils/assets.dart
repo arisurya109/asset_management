@@ -15,4 +15,8 @@ class Assets {
   static const iAssetCategory = 'assets/icons/asset-category.png';
   static const iAssetModel = 'assets/icons/asset-model.png';
   static const iAssetTypes = 'assets/icons/asset-types.png';
+  static const iAssetManagement = 'assets/icons/asset-management.png';
+  static const iAssetMigration = 'assets/icons/asset-migration.png';
+  static const iAssetRegistration = 'assets/icons/asset-registration.png';
+  static const iLocation = 'assets/icons/asset-location.png';
 }

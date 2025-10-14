@@ -101,6 +101,14 @@ class AssetTypeView extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+                                Text(
+                                  asset.init ?? '',
+                                  style: TextStyle(
+                                    color: AppColors.kBase,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
                               ],
                             ),
                           ),

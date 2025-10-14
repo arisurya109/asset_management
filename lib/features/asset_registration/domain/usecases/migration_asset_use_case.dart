@@ -4,12 +4,14 @@ import '../repositories/asset_registration_repository.dart';
 
 import 'package:dartz/dartz.dart';
 
-class ReRegistrationUseCase {
+class MigrationAssetUseCase {
   final AssetRegistrationRepository _repository;
 
-  ReRegistrationUseCase(this._repository);
+  MigrationAssetUseCase(this._repository);
 
-  Future<Either<Failure, String>> call(AssetRegistration params) async {
-    return _repository.reRegistration(params);
+  Future<Either<Failure, AssetRegistration>> call(
+    AssetRegistration params,
+  ) async {
+    return _repository.migrationAsset(params);
   }
 }

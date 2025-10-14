@@ -1,5 +1,8 @@
 import 'package:asset_management/core/utils/assets.dart';
 import 'package:asset_management/features/asset_master_new/presentation/view/asset_master_new_view.dart';
+import 'package:asset_management/features/asset_registration/presentation/view/asset_migration_view.dart';
+import 'package:asset_management/features/asset_registration/presentation/view/asset_registration/asset_registration_view.dart';
+import 'package:asset_management/features/asset_registration/presentation/view/product_management_view.dart';
 
 import '../../../../../main_export.dart';
 import '../../../../../view/view.dart';
@@ -49,8 +52,26 @@ class HomeCubit extends Cubit<List<Map<String, dynamic>>> {
     {
       'value': 'master_view',
       'icons': Assets.iAssetMaster,
-      'name': 'New Asset Master',
+      'name': 'Master Data',
       'view': AssetMasterNewView(),
+    },
+    {
+      'value': 'product_management_view',
+      'icons': Assets.iAssetManagement,
+      'name': 'Asset Management',
+      'view': ProductManagementView(),
+    },
+    {
+      'value': 'asset_registration_view',
+      'icons': Assets.iAssetRegistration,
+      'name': 'Asset Registration',
+      'view': AssetRegistrationView(),
+    },
+    {
+      'value': 'asset_migration_view',
+      'icons': Assets.iAssetMigration,
+      'name': 'Asset Migration',
+      'view': AssetMigrationView(),
     },
   ];
 
@@ -62,6 +83,9 @@ class HomeCubit extends Cubit<List<Map<String, dynamic>>> {
       _items.firstWhere((e) => e['value'] == 'reprint_asset_view'),
       _items.firstWhere((e) => e['value'] == 'reprint_location_view'),
       _items.firstWhere((e) => e['value'] == 'printer_view'),
+      _items.firstWhere((e) => e['value'] == 'product_management_view'),
+      _items.firstWhere((e) => e['value'] == 'asset_registration_view'),
+      _items.firstWhere((e) => e['value'] == 'asset_migration_view'),
     ];
 
     final userAllowed = _items

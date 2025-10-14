@@ -1,5 +1,7 @@
 import 'package:asset_management/features/asset_master_new/asset_master_export.dart';
 import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
+import 'package:asset_management/features/asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
+import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
 import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/features/user/presentation/view/splash_view.dart';
 
@@ -35,6 +37,8 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => locator<AssetBrandBloc>()),
         BlocProvider(create: (context) => locator<AssetModelBloc>()),
         BlocProvider(create: (context) => locator<AssetMasterNewCubit>()),
+        BlocProvider(create: (context) => locator<AssetRegistrationBloc>()),
+        BlocProvider(create: (context) => locator<LocationBloc>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

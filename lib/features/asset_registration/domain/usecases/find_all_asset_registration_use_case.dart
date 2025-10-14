@@ -3,12 +3,12 @@ import 'package:asset_management/features/asset_registration/domain/entities/ass
 import 'package:asset_management/features/asset_registration/domain/repositories/asset_registration_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class FindAllAssetUseCase {
+class FindAllAssetRegistrationUseCase {
   final AssetRegistrationRepository _repository;
 
-  FindAllAssetUseCase(this._repository);
+  FindAllAssetRegistrationUseCase(this._repository);
 
   Future<Either<Failure, List<AssetRegistration>>> call() async {
-    return _repository.findAllAsset();
+    return _repository.findAllAssetRegistration();
   }
 }

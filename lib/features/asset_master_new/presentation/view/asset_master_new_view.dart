@@ -1,4 +1,3 @@
-import 'package:asset_management/features/asset_master_new/asset_master_export.dart';
 import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -14,20 +13,10 @@ class AssetMasterNewView extends StatefulWidget {
 
 class _AssetMasterNewViewState extends State<AssetMasterNewView> {
   @override
-  void initState() {
-    context.read<AssetMasterNewCubit>().load();
-    context.read<AssetBrandBloc>().add(OnGetAllAssetBrand());
-    context.read<AssetCategoryBloc>().add(OnGetAllAssetCategory());
-    context.read<AssetModelBloc>().add(OnGetAllAssetModel());
-    context.read<AssetTypeBloc>().add(OnGetAllAssetType());
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('NEW ASSET MASTER'),
+        title: Text('MASTER DATA'),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(1),

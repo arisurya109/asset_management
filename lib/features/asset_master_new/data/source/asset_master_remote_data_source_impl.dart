@@ -18,27 +18,23 @@ class AssetMasterRemoteDataSourceImpl implements AssetMasterRemoteDataSource {
 
   @override
   Future<AssetBrandModel> createAssetBrand(AssetBrandModel params) async {
-    try {
-      final token = await _tokenHelper.getToken();
+    final token = await _tokenHelper.getToken();
 
-      final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_brand'),
-        headers: ApiHelper.headersToken(token!),
-        body: jsonEncode(params.toJson()),
-      );
+    final response = await _client.post(
+      Uri.parse('${ApiHelper.baseUrl}/asset_brand'),
+      headers: ApiHelper.headersToken(token!),
+      body: jsonEncode(params.toJson()),
+    );
 
-      if (response.statusCode == 201) {
-        final body = jsonDecode(response.body);
+    if (response.statusCode == 201) {
+      final body = jsonDecode(response.body);
 
-        final datas = body['data'];
+      final datas = body['data'];
 
-        return AssetBrandModel.fromJson(datas);
-      } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw CreateException(message: message);
-      }
-    } catch (e) {
-      throw CreateException(message: e.toString());
+      return AssetBrandModel.fromJson(datas);
+    } else {
+      final message = ApiHelper.getErrorMessage(response.body);
+      throw CreateException(message: message);
     }
   }
 
@@ -92,7 +88,6 @@ class AssetMasterRemoteDataSourceImpl implements AssetMasterRemoteDataSource {
         throw CreateException(message: message);
       }
     } catch (e) {
-      print('Masuk sini');
       throw CreateException(message: e.toString());
     }
   }

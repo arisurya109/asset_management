@@ -4,9 +4,10 @@ import 'package:equatable/equatable.dart';
 class AssetType extends Equatable {
   int? id;
   String? name;
+  String? init;
 
-  AssetType({this.id, this.name});
+  AssetType({this.id, this.name, this.init});
 
   @override
-  List<Object?> get props => [id, name];
+  List<Object?> get props => [id, name, init];
 }
