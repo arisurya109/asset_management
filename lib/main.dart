@@ -2,6 +2,8 @@ import 'package:asset_management/features/asset_master_new/asset_master_export.d
 import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
 import 'package:asset_management/features/asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
 import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
+import 'package:asset_management/features/modules/asset_transfer/presentation/bloc/asset_transfer/asset_transfer_bloc.dart';
+import 'package:asset_management/features/modules/assets/cubit/modul_asset_cubit.dart';
 import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/features/user/presentation/view/splash_view.dart';
 
@@ -22,6 +24,7 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => locator<HomeCubit>()),
+        BlocProvider(create: (context) => locator<ModulAssetCubit>()),
         BlocProvider(create: (context) => locator<ReprintBloc>()),
         BlocProvider(create: (context) => locator<PrinterBloc>()),
         BlocProvider(create: (context) => locator<AssetCountBloc>()),
@@ -39,6 +42,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => locator<AssetMasterNewCubit>()),
         BlocProvider(create: (context) => locator<AssetRegistrationBloc>()),
         BlocProvider(create: (context) => locator<LocationBloc>()),
+        BlocProvider(create: (context) => locator<AssetTransferBloc>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 class AssetModelModel extends Equatable {
   int? id;
   String? name;
-  String? code;
   int? hasSerial;
   int? isConsumable;
   int? unit;
@@ -20,7 +19,6 @@ class AssetModelModel extends Equatable {
   AssetModelModel({
     this.id,
     this.name,
-    this.code,
     this.hasSerial,
     this.isConsumable,
     this.unit,
@@ -37,7 +35,6 @@ class AssetModelModel extends Equatable {
     return [
       id,
       name,
-      code,
       hasSerial,
       isConsumable,
       unit,
@@ -54,7 +51,6 @@ class AssetModelModel extends Equatable {
     return <String, dynamic>{
       'id': id,
       'name': name,
-      'code': code,
       'has_serial': hasSerial,
       'is_consumable': isConsumable,
       'unit': unit,
@@ -71,7 +67,6 @@ class AssetModelModel extends Equatable {
     return AssetModelModel(
       id: map['id'] != null ? map['id'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
-      code: map['code'] != null ? map['code'] as String : null,
       hasSerial: map['has_serial'] != null ? map['has_serial'] as int : null,
       isConsumable: map['is_consumable'] != null
           ? map['is_consumable'] as int
@@ -98,7 +93,6 @@ class AssetModelModel extends Equatable {
     return AssetModelModel(
       id: params.id,
       name: params.name,
-      code: params.code,
       hasSerial: params.hasSerial,
       isConsumable: params.isConsumable,
       unit: params.unit,
@@ -115,7 +109,6 @@ class AssetModelModel extends Equatable {
     return AssetModel(
       id: id,
       name: name,
-      code: code,
       hasSerial: hasSerial,
       isConsumable: isConsumable,
       unit: unit,

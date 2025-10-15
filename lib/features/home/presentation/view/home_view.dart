@@ -6,6 +6,7 @@ import '../../../../core/core.dart';
 import '../../../../main_export.dart';
 import '../../../asset_master_new/asset_master_export.dart';
 import '../../../asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
+import '../../../asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -32,6 +33,7 @@ class _HomeViewState extends State<HomeView> {
     context.read<AssetModelBloc>().add(OnGetAllAssetModel());
     context.read<AssetTypeBloc>().add(OnGetAllAssetType());
     context.read<LocationBloc>().add(OnGetAllLocation());
+    context.read<AssetRegistrationBloc>().add(OnFindAllAssetRegistration());
     super.initState();
   }
 
@@ -71,12 +73,12 @@ class _HomeViewState extends State<HomeView> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            // AppSpace.vertical(12),
-            // Container(
-            //   height: 300,
-            //   width: double.infinity,
-            //   color: AppColors.kBase,
-            // ),
+            AppSpace.vertical(12),
+            Container(
+              height: 300,
+              width: double.infinity,
+              color: AppColors.kBase,
+            ),
             AppSpace.vertical(16),
             Expanded(
               child: BlocBuilder<HomeCubit, List<Map<String, dynamic>>>(
@@ -101,12 +103,33 @@ class _HomeViewState extends State<HomeView> {
                         elevation: 3,
                         shadowColor: Colors.black.withOpacity(0.7),
                         child: InkWell(
-                          onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => item['view'],
-                            ),
-                          ),
+                          onTap: () {
+                            context.read<AssetMasterNewCubit>().load();
+                            context.read<AssetBrandBloc>().add(
+                              OnGetAllAssetBrand(),
+                            );
+                            context.read<AssetCategoryBloc>().add(
+                              OnGetAllAssetCategory(),
+                            );
+                            context.read<AssetModelBloc>().add(
+                              OnGetAllAssetModel(),
+                            );
+                            context.read<AssetTypeBloc>().add(
+                              OnGetAllAssetType(),
+                            );
+                            context.read<LocationBloc>().add(
+                              OnGetAllLocation(),
+                            );
+                            context.read<AssetRegistrationBloc>().add(
+                              OnFindAllAssetRegistration(),
+                            );
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => item['view'],
+                              ),
+                            );
+                          },
                           child: Padding(
                             padding: const EdgeInsets.all(12),
                             child: Column(

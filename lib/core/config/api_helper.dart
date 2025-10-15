@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class ApiHelper {
-  static const String _url = 'http://192.168.0.3';
+  static const String _url = 'http://10.110.114.145';
   static const String _port = '8080';
   static const String baseUrl = '$_url:$_port/api';
 

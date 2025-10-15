@@ -19,4 +19,5 @@ class Assets {
   static const iAssetMigration = 'assets/icons/asset-migration.png';
   static const iAssetRegistration = 'assets/icons/asset-registration.png';
   static const iLocation = 'assets/icons/asset-location.png';
+  static const iTransfer = 'assets/icons/asset-transfer.png';
 }

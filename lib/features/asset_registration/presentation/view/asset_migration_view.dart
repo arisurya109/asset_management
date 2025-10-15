@@ -86,12 +86,9 @@ class _AssetMigrationViewState extends State<AssetMigrationView> {
                     }),
                     hintText: 'Model',
                     value: model,
-                    displayFn: (item) => '${item.name} - ${item.code ?? ''}',
+                    displayFn: (item) => item.name ?? '',
                     filterFn: (item, query) =>
-                        item.name!.toUpperCase().contains(
-                          query.toUpperCase(),
-                        ) ||
-                        item.code!.toUpperCase().contains(query.toUpperCase()),
+                        item.name!.toUpperCase().contains(query.toUpperCase()),
                   );
                 },
               ),

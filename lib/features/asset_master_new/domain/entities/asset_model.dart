@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 class AssetModel extends Equatable {
   int? id;
   String? name;
-  String? code;
   int? hasSerial;
   int? isConsumable;
   int? unit;
@@ -18,7 +17,6 @@ class AssetModel extends Equatable {
   AssetModel({
     this.id,
     this.name,
-    this.code,
     this.hasSerial,
     this.isConsumable,
     this.unit,
@@ -35,7 +33,6 @@ class AssetModel extends Equatable {
     return [
       id,
       name,
-      code,
       hasSerial,
       isConsumable,
       unit,

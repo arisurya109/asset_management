@@ -74,17 +74,24 @@ class AssetRegistrationBloc
             message: l.message,
           ),
         ),
-        (r) => emit(
-          state.copyWith(
-            status: StatusAssetRegistration.success,
-            assetNonCunsumable: r
-                .where((element) => element.isConsumable == 0)
-                .toList(),
-            assetsConsumable: r
-                .where((element) => element.isConsumable == 1)
-                .toList(),
-          ),
-        ),
+        (r) {
+          print('Ini response : ${r.first.toString()}');
+          print(
+            'Asset Code : ${r.where((element) => element.uom == 1).toList()}',
+          );
+          print(
+            'Consumable : ${r.where((element) => element.uom == 0).toList()}',
+          );
+          emit(
+            state.copyWith(
+              status: StatusAssetRegistration.success,
+              assetNonCunsumable: r
+                  .where((element) => element.uom == 1)
+                  .toList(),
+              assetsConsumable: r.where((element) => element.uom == 0).toList(),
+            ),
+          );
+        },
       );
     });
 

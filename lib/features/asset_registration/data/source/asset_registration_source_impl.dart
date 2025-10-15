@@ -91,7 +91,7 @@ class AssetRegistrationSourceImpl implements AssetRegistrationSource {
         headers: ApiHelper.headersToken(token),
       );
 
-      if (response.statusCode == 201) {
+      if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
         List<dynamic> datas = body['data'];

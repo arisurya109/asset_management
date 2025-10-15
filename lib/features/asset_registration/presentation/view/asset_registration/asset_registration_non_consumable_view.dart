@@ -45,7 +45,7 @@ class _AssetRegistrationNonConsumableViewState
         BlocBuilder<LocationBloc, LocationState>(
           builder: (context, state) {
             return AppSearchableDropdown<Location>(
-              items: state.locations!,
+              items: state.locations ?? [],
               hintTextField: 'Find by name or code',
               onChanged: (value) => setState(() {
                 location = value;
@@ -72,10 +72,12 @@ class _AssetRegistrationNonConsumableViewState
               }),
               hintText: 'Model',
               value: model,
-              displayFn: (item) => '${item.name} - ${item.code ?? ''}',
+              displayFn: (item) => '${item.name} - ${item.categoryName ?? ''}',
               filterFn: (item, query) =>
                   item.name!.toUpperCase().contains(query.toUpperCase()) ||
-                  item.code!.toUpperCase().contains(query.toUpperCase()),
+                  item.categoryName!.toUpperCase().contains(
+                    query.toUpperCase(),
+                  ),
             );
           },
         ),

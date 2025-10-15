@@ -13,6 +13,11 @@ import 'package:asset_management/features/locations/domain/repositories/location
 import 'package:asset_management/features/locations/domain/usecases/create_location_use_case.dart';
 import 'package:asset_management/features/locations/domain/usecases/find_all_location_use_case.dart';
 import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
+import 'package:asset_management/features/modules/asset_transfer/data/repositories/asset_transfer_repository_impl.dart';
+import 'package:asset_management/features/modules/asset_transfer/data/source/asset_transfer_remote_data_source.dart';
+import 'package:asset_management/features/modules/asset_transfer/domain/usecases/create_asset_transfer_use_case.dart';
+import 'package:asset_management/features/modules/asset_transfer/presentation/bloc/asset_transfer/asset_transfer_bloc.dart';
+import 'package:asset_management/features/modules/assets/cubit/modul_asset_cubit.dart';
 import 'package:asset_management/features/user/data/source/user_remote_data_source.dart';
 import 'package:asset_management/features/user/data/source/user_remote_data_source_impl.dart';
 import 'package:asset_management/features/user/domain/repositories/user_repository.dart';
@@ -31,6 +36,8 @@ import 'features/asset_registration/domain/repositories/asset_registration_repos
 import 'features/home/presentation/cubit/home/home_cubit.dart';
 import 'bloc/printer/printer_bloc.dart';
 import 'features/locations/data/repositories/location_repository_impl.dart';
+import 'features/modules/asset_transfer/data/source/asset_transfer_remote_data_source_impl.dart';
+import 'features/modules/asset_transfer/domain/repositories/asset_transfer_repository.dart';
 import 'features/reprint/reprint.dart';
 import 'features/user/data/repositories/user_repository_impl.dart';
 import 'services/printer_service.dart';
@@ -60,6 +67,7 @@ Future<void> injection() async {
 
   // Bloc
   locator.registerFactory(() => HomeCubit());
+  locator.registerFactory(() => ModulAssetCubit());
   locator.registerFactory(() => ReprintBloc(locator(), locator(), locator()));
   locator.registerFactory(() => PrinterBloc(locator(), locator()));
   locator.registerFactory(
@@ -103,6 +111,7 @@ Future<void> injection() async {
     () => AssetRegistrationBloc(locator(), locator(), locator(), locator()),
   );
   locator.registerFactory(() => LocationBloc(locator(), locator()));
+  locator.registerFactory(() => AssetTransferBloc(locator()));
 
   // Usecases
   locator.registerLazySingleton(() => ReprintAssetIdNormalUseCase(locator()));
@@ -170,6 +179,7 @@ Future<void> injection() async {
   locator.registerLazySingleton(() => MigrationAssetUseCase(locator()));
   locator.registerLazySingleton(() => FindAllLocationUseCase(locator()));
   locator.registerLazySingleton(() => CreateLocationUseCase(locator()));
+  locator.registerLazySingleton(() => CreateAssetTransferUseCase(locator()));
 
   // Repositories
   locator.registerLazySingleton<ReprintRepository>(
@@ -199,6 +209,9 @@ Future<void> injection() async {
   locator.registerLazySingleton<LocationRepository>(
     () => LocationRepositoryImpl(locator()),
   );
+  locator.registerLazySingleton<AssetTransferRepository>(
+    () => AssetTransferRepositoryImpl(locator()),
+  );
 
   // Source
   locator.registerLazySingleton<AssetCountSource>(
@@ -224,6 +237,9 @@ Future<void> injection() async {
   );
   locator.registerLazySingleton<LocationRemoteDataSource>(
     () => LocationRemoteDataSourceImpl(locator(), locator()),
+  );
+  locator.registerLazySingleton<AssetTransferRemoteDataSource>(
+    () => AssetTransferRemoteDataSourceImpl(locator(), locator()),
   );
 
   // Services

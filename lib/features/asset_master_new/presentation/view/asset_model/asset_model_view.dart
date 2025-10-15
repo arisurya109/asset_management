@@ -79,7 +79,7 @@ class _AssetModelViewState extends State<AssetModelView> {
                       }
 
                       if (state.assetModels == null ||
-                          state.assetModels!.isEmpty) {
+                          state.assetModels == []) {
                         return Center(
                           child: Text(
                             state.message ?? '',
@@ -96,11 +96,9 @@ class _AssetModelViewState extends State<AssetModelView> {
                       // 🔍 Filter list berdasarkan searchQuery
                       final filteredList = state.assetModels!.where((asset) {
                         final name = asset.name?.toUpperCase() ?? '';
-                        final code = asset.code?.toUpperCase() ?? '';
                         final category =
                             asset.categoryName?.toUpperCase() ?? '';
                         return name.contains(searchQuery) ||
-                            code.contains(searchQuery) ||
                             category.contains(searchQuery);
                       }).toList();
 
@@ -136,7 +134,7 @@ class _AssetModelViewState extends State<AssetModelView> {
                                 : asset.typeName == 'POS'
                                 ? AppColors.kOrangeLight
                                 : AppColors.kGreenLight,
-                            descriptionLeft: asset.code,
+                            descriptionLeft: asset.brandName,
                             descriptionRight: asset.unit == 1 ? 'Unit' : 'Pcs',
                           );
                         },

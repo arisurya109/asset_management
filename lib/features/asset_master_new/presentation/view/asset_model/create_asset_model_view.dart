@@ -15,7 +15,6 @@ class CreateAssetModelView extends StatefulWidget {
 
 class _CreateAssetModelViewState extends State<CreateAssetModelView> {
   late TextEditingController nameC;
-  late TextEditingController codeC;
   String? assetType;
   int? assetTypeId;
   String? assetBrand;
@@ -39,7 +38,6 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
   @override
   void initState() {
     nameC = TextEditingController();
-    codeC = TextEditingController();
     super.initState();
   }
 
@@ -123,14 +121,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
               ),
-              AppSpace.vertical(12),
-              AppTextField(
-                controller: codeC,
-                title: 'Code',
-                hintText: 'Example : 1608922',
-                keyboardType: TextInputType.text,
-                textInputAction: TextInputAction.next,
-              ),
+
               AppSpace.vertical(12),
               AppRadioListOption(
                 options: optionQty,
@@ -176,7 +167,6 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
 
                     setState(() {
                       nameC.clear();
-                      codeC.clear();
                       isQty = null;
                       isSerialNumber = null;
                       isConsumable = null;
@@ -194,7 +184,6 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                             OnCreateAssetModel(
                               AssetModel(
                                 name: nameC.value.text.trim().toUpperCase(),
-                                code: codeC.value.text.trim().toUpperCase(),
                                 brandId: assetBrandId,
                                 categoryId: assetCategoryId,
                                 typeId: assetTypeId,

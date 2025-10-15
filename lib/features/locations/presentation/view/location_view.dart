@@ -67,7 +67,7 @@ class _LocationViewState extends State<LocationView> {
                     );
                   }
 
-                  if (state.locations == null || state.locations!.isEmpty) {
+                  if (state.locations == null || state.locations == []) {
                     return Center(
                       child: Text(
                         state.message ?? '',
