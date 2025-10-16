@@ -27,7 +27,7 @@ class AssetTransferRemoteDataSourceImpl
       );
 
       if (response.statusCode == 201) {
-        return 'Successfully Transfer ${params.assetCode} To ${params.toLocation}';
+        return 'Successfully Transfer ${params.assetCode}';
       } else {
         throw ApiHelper.getErrorMessage(response.body);
       }

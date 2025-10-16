@@ -22,7 +22,6 @@ class _SplashViewState extends State<SplashView> {
     Future.delayed(const Duration(seconds: 10), () async {
       final status = context.read<UserBloc>().state.status;
       debugPrint(status.toString());
-      print(status);
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

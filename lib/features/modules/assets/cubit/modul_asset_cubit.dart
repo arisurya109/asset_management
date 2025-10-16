@@ -1,11 +1,12 @@
-import 'package:asset_management/features/asset_registration/presentation/view/asset_registration/asset_registration_view.dart';
-import 'package:asset_management/features/modules/asset_transfer/presentation/view/asset_transfer_view.dart';
+import 'package:asset_management/features/asset_registration/presentation/view/asset_migration_view.dart';
 import 'package:bloc/bloc.dart';
 
 import '../../../../core/core.dart';
+import '../../../asset_registration/presentation/view/asset_registration/asset_registration_view.dart';
 import '../../../asset_count/asset_count.dart';
 import '../../../asset_preparation/asset_preparation.dart';
-import '../../../asset_registration/presentation/view/product_management_view.dart';
+import '../../inventories/inventory_export.dart';
+import '../../asset_transfer/presentation/view/asset_transfer_view.dart';
 
 class ModulAssetCubit extends Cubit<List<Map<String, dynamic>>> {
   ModulAssetCubit() : super([]);
@@ -16,6 +17,12 @@ class ModulAssetCubit extends Cubit<List<Map<String, dynamic>>> {
       'icons': Assets.iAssetRegistration,
       'name': 'Registration',
       'view': AssetRegistrationView(),
+    },
+    {
+      'value': 'migration_view',
+      'icons': Assets.iAssetMigration,
+      'name': 'Migration',
+      'view': AssetMigrationView(),
     },
     {
       'value': 'asset_preparation_view',
@@ -36,10 +43,10 @@ class ModulAssetCubit extends Cubit<List<Map<String, dynamic>>> {
       'view': AssetTransferView(),
     },
     {
-      'value': 'product_management_view',
+      'value': 'inventory_view',
       'icons': Assets.iAssetManagement,
       'name': 'Inventory',
-      'view': ProductManagementView(),
+      'view': InventoryView(),
     },
   ];
 
@@ -50,10 +57,11 @@ class ModulAssetCubit extends Cubit<List<Map<String, dynamic>>> {
 
     final allowedItems = <Map<String, dynamic>>[
       _items.firstWhere((e) => e['value'] == 'registration_view'),
+      _items.firstWhere((e) => e['value'] == 'migration_view'),
       _items.firstWhere((e) => e['value'] == 'asset_preparation_view'),
       _items.firstWhere((e) => e['value'] == 'asset_count_view'),
       _items.firstWhere((e) => e['value'] == 'asset_transfer_view'),
-      _items.firstWhere((e) => e['value'] == 'product_management_view'),
+      _items.firstWhere((e) => e['value'] == 'inventory_view'),
     ];
 
     final all = [...allowedItems, ...userAllowed];

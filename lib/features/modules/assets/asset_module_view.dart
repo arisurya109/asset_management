@@ -1,4 +1,5 @@
 import 'package:asset_management/features/modules/assets/cubit/modul_asset_cubit.dart';
+import 'package:asset_management/features/modules/inventories/inventory_export.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -65,6 +66,9 @@ class _AssetModuleViewState extends State<AssetModuleView> {
                   shadowColor: Colors.black.withOpacity(0.7),
                   child: InkWell(
                     onTap: () {
+                      if (item['value'] == 'inventory_view') {
+                        context.read<InventoryBloc>().add(OnGetAllInventory());
+                      }
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => item['view']),

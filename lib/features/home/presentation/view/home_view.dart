@@ -33,7 +33,6 @@ class _HomeViewState extends State<HomeView> {
     context.read<AssetModelBloc>().add(OnGetAllAssetModel());
     context.read<AssetTypeBloc>().add(OnGetAllAssetType());
     context.read<LocationBloc>().add(OnGetAllLocation());
-    context.read<AssetRegistrationBloc>().add(OnFindAllAssetRegistration());
     super.initState();
   }
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/core.dart';
-import '../../../../core/widgets/app_searchable_dropdown.dart';
+import '../../../../core/widgets/app_dropdown_search.dart';
 import '../../../asset_master_new/asset_master_export.dart';
 import '../../../locations/domain/entities/location.dart';
 import '../../../locations/presentation/bloc/bloc/location_bloc.dart';
@@ -56,39 +56,34 @@ class _AssetMigrationViewState extends State<AssetMigrationView> {
               AppSpace.vertical(12),
               BlocBuilder<LocationBloc, LocationState>(
                 builder: (context, state) {
-                  return AppSearchableDropdown<Location>(
-                    items: state.locations!,
-                    hintTextField: 'Find by name or code',
-                    onChanged: (value) => setState(() {
-                      location = value;
-                    }),
-                    hintText: 'Location',
-                    value: location,
-                    displayFn: (item) => '${item.name} - ${item.code ?? ''}',
-                    filterFn: (item, query) =>
-                        item.name!.toUpperCase().contains(
-                          query.toUpperCase(),
-                        ) ||
-                        item.code!.toUpperCase().contains(query.toUpperCase()),
+                  return AppDropDownSearch<Location>(
+                    title: "Location",
+                    hintText: "Select location",
+                    borderRadius: 5,
+                    items: state.locations ?? [],
+                    itemAsString: (item) => item.name ?? '',
+                    selectedItem: location,
+                    compareFn: (a, b) => a.name == b.name,
+                    onChanged: (value) {
+                      setState(() => location = value);
+                    },
                   );
                 },
               ),
               AppSpace.vertical(16),
               BlocBuilder<AssetModelBloc, AssetModelState>(
                 builder: (context, state) {
-                  return AppSearchableDropdown<AssetModel>(
-                    items: state.assetModels!
-                        .where((element) => element.isConsumable == 0)
-                        .toList(),
-                    hintTextField: 'Find by name or code',
-                    onChanged: (value) => setState(() {
-                      model = value;
-                    }),
-                    hintText: 'Model',
-                    value: model,
-                    displayFn: (item) => item.name ?? '',
-                    filterFn: (item, query) =>
-                        item.name!.toUpperCase().contains(query.toUpperCase()),
+                  return AppDropDownSearch<AssetModel>(
+                    title: "Model",
+                    hintText: "Select Model",
+                    borderRadius: 5,
+                    items: state.assetModels ?? [],
+                    itemAsString: (item) => item.name ?? '',
+                    selectedItem: model,
+                    compareFn: (a, b) => a.name == b.name,
+                    onChanged: (value) {
+                      setState(() => model = value);
+                    },
                   );
                 },
               ),

@@ -1,10 +1,11 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/features/asset_registration/domain/entities/asset_registration.dart';
-import 'package:asset_management/features/locations/domain/entities/location.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../../core/widgets/app_searchable_dropdown.dart';
+import '../../../domain/entities/asset_registration.dart';
+import '../../../../locations/domain/entities/location.dart';
+
+import '../../../../../core/widgets/app_dropdown_search.dart';
 import '../../../../asset_master_new/asset_master_export.dart';
 import '../../../../locations/presentation/bloc/bloc/location_bloc.dart';
 import '../../bloc/asset_registration/asset_registration_bloc.dart';
@@ -44,40 +45,34 @@ class _AssetRegistrationNonConsumableViewState
       children: [
         BlocBuilder<LocationBloc, LocationState>(
           builder: (context, state) {
-            return AppSearchableDropdown<Location>(
+            return AppDropDownSearch<Location>(
+              title: "Location",
+              hintText: "Select location",
+              borderRadius: 5,
               items: state.locations ?? [],
-              hintTextField: 'Find by name or code',
-              onChanged: (value) => setState(() {
-                location = value;
-              }),
-              hintText: 'Location',
-              value: location,
-              displayFn: (item) => '${item.name} - ${item.code ?? ''}',
-              filterFn: (item, query) =>
-                  item.name!.toUpperCase().contains(query.toUpperCase()) ||
-                  item.code!.toUpperCase().contains(query.toUpperCase()),
+              itemAsString: (item) => item.name ?? '',
+              selectedItem: location,
+              compareFn: (a, b) => a.name == b.name,
+              onChanged: (value) {
+                setState(() => location = value);
+              },
             );
           },
         ),
         AppSpace.vertical(16),
         BlocBuilder<AssetModelBloc, AssetModelState>(
           builder: (context, state) {
-            return AppSearchableDropdown<AssetModel>(
-              items: state.assetModels!
-                  .where((element) => element.isConsumable == 0)
-                  .toList(),
-              hintTextField: 'Find by name or code',
-              onChanged: (value) => setState(() {
-                model = value;
-              }),
-              hintText: 'Model',
-              value: model,
-              displayFn: (item) => '${item.name} - ${item.categoryName ?? ''}',
-              filterFn: (item, query) =>
-                  item.name!.toUpperCase().contains(query.toUpperCase()) ||
-                  item.categoryName!.toUpperCase().contains(
-                    query.toUpperCase(),
-                  ),
+            return AppDropDownSearch<AssetModel>(
+              title: "Model",
+              hintText: "Select Model",
+              borderRadius: 5,
+              items: state.assetModels ?? [],
+              itemAsString: (item) => item.name ?? '',
+              selectedItem: model,
+              compareFn: (a, b) => a.name == b.name,
+              onChanged: (value) {
+                setState(() => model = value);
+              },
             );
           },
         ),
@@ -206,7 +201,7 @@ class _AssetRegistrationNonConsumableViewState
             OnCreateAsset(
               AssetRegistration(
                 assetModelId: model!.id,
-                serialNumber: sn,
+                serialNumber: sn.isEmpty ? null : sn,
                 locationDetailId: location?.id,
                 colorId: colorId,
                 isConsumable: 0,

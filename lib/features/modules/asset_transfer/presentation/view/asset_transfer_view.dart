@@ -1,3 +1,5 @@
+import 'package:asset_management/features/asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
+import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
 import 'package:asset_management/features/modules/asset_transfer/domain/entities/asset_transfer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -129,16 +131,50 @@ class _AssetTransferViewState extends State<AssetTransferView> {
         'Asset Code cannot be emoty',
         backgroundColor: AppColors.kRed,
       );
+    } else if (from == to) {
+      context.showSnackbar(
+        'Failed, From the same location and destination',
+        backgroundColor: AppColors.kRed,
+      );
     } else {
+      final assetId = context
+          .read<AssetRegistrationBloc>()
+          .state
+          .assetNonConsumable
+          ?.firstWhere((element) => element.assetCode == asset)
+          .id;
+
+      final fromP = context
+          .read<LocationBloc>()
+          .state
+          .locations
+          ?.firstWhere((element) => element.name == from)
+          .id;
+      final toP = context
+          .read<LocationBloc>()
+          .state
+          .locations
+          ?.firstWhere((element) => element.name == to)
+          .id;
+
       context.showDialogConfirm(
         title: 'Are your sure transfer asset ?',
-        content: 'From : $from\nTo : $to\nAsset Code :$asset',
+        content: 'From : $from\nTo : $to\nAsset Code : $asset',
         onCancelText: 'No',
         onConfirmText: 'Yes',
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<AssetTransferBloc>().add(
-            OnCreateAssetTransfer(AssetTransfer()),
+            OnCreateAssetTransfer(
+              AssetTransfer(
+                assetId: assetId,
+                assetCode: asset,
+                fromLocationId: fromP,
+                toLocationId: toP,
+                movementType: 'TRANSFER',
+                quantity: 1,
+              ),
+            ),
           );
           Navigator.pop(context);
         },

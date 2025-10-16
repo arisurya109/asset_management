@@ -4,6 +4,7 @@ import 'package:asset_management/features/asset_registration/presentation/bloc/a
 import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
 import 'package:asset_management/features/modules/asset_transfer/presentation/bloc/asset_transfer/asset_transfer_bloc.dart';
 import 'package:asset_management/features/modules/assets/cubit/modul_asset_cubit.dart';
+import 'package:asset_management/features/modules/inventories/presentation/bloc/inventory_bloc.dart';
 import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/features/user/presentation/view/splash_view.dart';
 
@@ -43,6 +44,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => locator<AssetRegistrationBloc>()),
         BlocProvider(create: (context) => locator<LocationBloc>()),
         BlocProvider(create: (context) => locator<AssetTransferBloc>()),
+        BlocProvider(create: (context) => locator<InventoryBloc>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

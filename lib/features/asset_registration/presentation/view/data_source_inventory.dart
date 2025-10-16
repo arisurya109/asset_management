@@ -36,6 +36,7 @@ class DataSourceInventory extends DataTableSource {
       cells: [
         DataCell(Center(child: Text('${index + 1}'))),
         DataCell(Center(child: Text(item.assetCode ?? ''))),
+        DataCell(Center(child: Text(item.type ?? ''))),
         DataCell(Center(child: Text(item.model ?? ''))),
         DataCell(Center(child: Text('${item.quantity}'))),
         DataCell(Center(child: Text(item.locationDetail ?? ''))),

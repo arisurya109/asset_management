@@ -62,7 +62,7 @@ class _ProductManagementViewState extends State<ProductManagementView> {
                 AppSpace.vertical(12),
                 Expanded(
                   child: PaginatedDataTable2(
-                    minWidth: 1250,
+                    minWidth: 2000,
                     empty: Container(
                       decoration: BoxDecoration(color: Colors.grey.shade100),
                       child: Center(child: Text('Not Found')),
@@ -95,6 +95,17 @@ class _ProductManagementViewState extends State<ProductManagementView> {
                         ),
                         fixedWidth: 200,
                         headingRowAlignment: MainAxisAlignment.center,
+                      ),
+                      DataColumn2(
+                        label: Text(
+                          'TYPE',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                        headingRowAlignment: MainAxisAlignment.center,
+                        fixedWidth: 200,
                       ),
                       DataColumn2(
                         label: Text(

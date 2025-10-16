@@ -38,6 +38,7 @@ import 'bloc/printer/printer_bloc.dart';
 import 'features/locations/data/repositories/location_repository_impl.dart';
 import 'features/modules/asset_transfer/data/source/asset_transfer_remote_data_source_impl.dart';
 import 'features/modules/asset_transfer/domain/repositories/asset_transfer_repository.dart';
+import 'features/modules/inventories/inventory_export.dart';
 import 'features/reprint/reprint.dart';
 import 'features/user/data/repositories/user_repository_impl.dart';
 import 'services/printer_service.dart';
@@ -66,6 +67,7 @@ Future<void> injection() async {
   final pref = await SharedPreferences.getInstance();
 
   // Bloc
+  injectionInventory(locator);
   locator.registerFactory(() => HomeCubit());
   locator.registerFactory(() => ModulAssetCubit());
   locator.registerFactory(() => ReprintBloc(locator(), locator(), locator()));
