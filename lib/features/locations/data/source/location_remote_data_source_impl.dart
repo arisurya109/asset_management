@@ -9,11 +9,18 @@ import 'package:asset_management/features/locations/data/model/location_model.da
 import 'package:asset_management/features/locations/data/source/location_remote_data_source.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../../services/printer_service.dart';
+
 class LocationRemoteDataSourceImpl implements LocationRemoteDataSource {
   final http.Client _client;
   final TokenHelper _tokenHelper;
+  final PrinterServices _printerServices;
 
-  LocationRemoteDataSourceImpl(this._client, this._tokenHelper);
+  LocationRemoteDataSourceImpl(
+    this._client,
+    this._tokenHelper,
+    this._printerServices,
+  );
 
   @override
   Future<LocationModel> createLocation(LocationModel params) async {
@@ -32,6 +39,15 @@ class LocationRemoteDataSourceImpl implements LocationRemoteDataSource {
         final responseBody = jsonDecode(response.body);
 
         final body = responseBody['data'];
+
+        final printer = await _printerServices.getConnectionPrinter();
+
+        final command = ConfigLabel.Location(body['name']);
+
+        printer.write(command);
+
+        await printer.flush();
+        await printer.close();
 
         return LocationModel.fromAPI(body);
       } else {

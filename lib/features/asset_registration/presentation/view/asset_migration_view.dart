@@ -207,7 +207,7 @@ class _AssetMigrationViewState extends State<AssetMigrationView> {
             OnMigrationAsset(
               AssetRegistration(
                 assetModelId: model!.id,
-                locationDetailId: location?.id,
+                locationId: location?.id,
                 colorId: colorId,
                 assetIdOld: ast,
                 isConsumable: 0,

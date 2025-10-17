@@ -238,7 +238,7 @@ Future<void> injection() async {
     () => AssetRegistrationSourceImpl(locator(), locator(), locator()),
   );
   locator.registerLazySingleton<LocationRemoteDataSource>(
-    () => LocationRemoteDataSourceImpl(locator(), locator()),
+    () => LocationRemoteDataSourceImpl(locator(), locator(), locator()),
   );
   locator.registerLazySingleton<AssetTransferRemoteDataSource>(
     () => AssetTransferRemoteDataSourceImpl(locator(), locator()),

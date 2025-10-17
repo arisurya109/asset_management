@@ -20,7 +20,7 @@ class AssetRegistrationModel extends Equatable {
   String? color;
   String? purchaseOrder;
   int? quantity;
-  int? locationDetailId;
+  int? locationId;
   String? locationDetail;
   String? location;
   int? isConsumable;
@@ -44,7 +44,7 @@ class AssetRegistrationModel extends Equatable {
     this.color,
     this.purchaseOrder,
     this.quantity,
-    this.locationDetailId,
+    this.locationId,
     this.locationDetail,
     this.location,
     this.isConsumable,
@@ -67,7 +67,7 @@ class AssetRegistrationModel extends Equatable {
       'color': color,
       'quantity': quantity,
       'uom': uom,
-      'location_detail_id': locationDetailId,
+      'location_id': locationId,
       'location': location,
       'purchase_order': purchaseOrder,
       'is_consumable': isConsumable,
@@ -105,9 +105,7 @@ class AssetRegistrationModel extends Equatable {
           ? map['purchase_order'] as String
           : null,
       quantity: map['quantity'] != null ? map['quantity'] as int : null,
-      locationDetailId: map['location_detail_id'] != null
-          ? map['location_detail_id'] as int
-          : null,
+      locationId: map['location_id'] != null ? map['location_id'] as int : null,
       locationDetail: map['location_detail'] != null
           ? map['location_detail'] as String
           : null,
@@ -129,8 +127,6 @@ class AssetRegistrationModel extends Equatable {
       colorId: params.colorId,
       conditions: params.conditions,
       isConsumable: params.isConsumable,
-      locationDetail: params.locationDetail,
-      locationDetailId: params.locationDetailId,
       model: params.model,
       purchaseOrder: params.purchaseOrder,
       quantity: params.quantity,
@@ -138,6 +134,7 @@ class AssetRegistrationModel extends Equatable {
       remarks: params.remarks,
       brand: params.brand,
       location: params.location,
+      locationId: params.locationId,
       status: params.status,
       type: params.type,
       serialNumber: params.serialNumber,
@@ -157,8 +154,7 @@ class AssetRegistrationModel extends Equatable {
       colorId: colorId,
       conditions: conditions,
       location: location,
-      locationDetail: locationDetail,
-      locationDetailId: locationDetailId,
+      locationId: locationId,
       model: model,
       purchaseOrder: purchaseOrder,
       quantity: quantity,
@@ -189,7 +185,7 @@ class AssetRegistrationModel extends Equatable {
     color,
     purchaseOrder,
     quantity,
-    locationDetailId,
+    locationId,
     locationDetail,
     location,
     isConsumable,

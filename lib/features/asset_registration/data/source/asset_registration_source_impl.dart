@@ -25,7 +25,7 @@ class AssetRegistrationSourceImpl implements AssetRegistrationSource {
       throw CreateException(message: 'Expired token');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_migration/'),
+        Uri.parse('${ApiHelper.baseUrl}/assets/'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode(params.toAPI()),
       );
@@ -38,8 +38,10 @@ class AssetRegistrationSourceImpl implements AssetRegistrationSource {
         final printer = await _services.getConnectionPrinter();
 
         final command = ConfigLabel.AssetIdNormal(datas['asset_code']);
+        final command2 = ConfigLabel.AssetIdLarge(datas['asset_code']);
 
         printer.write(command);
+        printer.write(command2);
         await printer.flush();
         await printer.close();
 
@@ -60,8 +62,9 @@ class AssetRegistrationSourceImpl implements AssetRegistrationSource {
     if (token == null) {
       throw CreateException(message: 'Expired token');
     } else {
+      print(params.toAPI());
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_migration/'),
+        Uri.parse('${ApiHelper.baseUrl}/assets/'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode(params.toAPI()),
       );
@@ -127,8 +130,10 @@ class AssetRegistrationSourceImpl implements AssetRegistrationSource {
         final printer = await _services.getConnectionPrinter();
 
         final command = ConfigLabel.AssetIdNormal(datas['asset_code']);
+        final command2 = ConfigLabel.AssetIdLarge(datas['asset_code']);
 
         printer.write(command);
+        printer.write(command2);
         await printer.flush();
         await printer.close();
 

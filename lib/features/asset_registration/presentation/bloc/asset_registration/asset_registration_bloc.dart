@@ -94,7 +94,6 @@ class AssetRegistrationBloc
         },
       );
     });
-
     on<OnMigrationAsset>((event, emit) async {
       emit(state.copyWith(status: StatusAssetRegistration.loading));
 

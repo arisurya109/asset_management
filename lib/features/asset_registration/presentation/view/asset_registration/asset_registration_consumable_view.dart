@@ -127,8 +127,9 @@ class _AssetRegistrationConsumableViewState
           context.read<AssetRegistrationBloc>().add(
             OnCreateAssetConsumable(
               AssetRegistration(
+                serialNumber: '',
                 assetModelId: model!.id,
-                locationDetailId: location?.id,
+                locationId: location?.id,
                 isConsumable: 1,
                 quantity: int.parse(qty),
                 uom: 0,

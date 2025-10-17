@@ -48,7 +48,7 @@ class _InventoryViewState extends State<InventoryView> {
         child: Column(
           children: [
             AppTextField(
-              hintText: 'Search by Code or Location...',
+              hintText: 'Search',
               keyboardType: TextInputType.text,
               noTitle: true,
               onChanged: (value) =>
@@ -82,8 +82,8 @@ class _InventoryViewState extends State<InventoryView> {
                             ),
                           ),
                           title: asset?.assetCode ?? '',
-                          subtitle: asset?.location,
-                          leading: asset?.color,
+                          subtitle: asset?.serialNumber,
+                          leading: asset?.location,
                           descriptionLeft: asset?.status,
                           descriptionRight: asset?.conditions,
                         );

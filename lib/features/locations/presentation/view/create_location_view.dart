@@ -136,9 +136,6 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                   }
 
                   if (state.status == StatusLocation.success) {
-                    context.read<ReprintBloc>().add(
-                      OnReprintLocation(nameC.value.text.trim()),
-                    );
                     context.showSnackbar('Successfully create location');
                   }
                 },

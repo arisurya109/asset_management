@@ -201,8 +201,8 @@ class _AssetRegistrationNonConsumableViewState
             OnCreateAsset(
               AssetRegistration(
                 assetModelId: model!.id,
-                serialNumber: sn.isEmpty ? null : sn,
-                locationDetailId: location?.id,
+                serialNumber: sn.isEmpty ? '' : sn,
+                locationId: location?.id,
                 colorId: colorId,
                 isConsumable: 0,
                 conditions: conditions,

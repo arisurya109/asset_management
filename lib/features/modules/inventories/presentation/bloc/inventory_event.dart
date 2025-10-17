@@ -14,3 +14,9 @@ class OnSearchInventory extends InventoryEvent {
 
   const OnSearchInventory(this.params);
 }
+
+class OnReprintAsset extends InventoryEvent {
+  final String assetCode;
+
+  const OnReprintAsset(this.assetCode);
+}

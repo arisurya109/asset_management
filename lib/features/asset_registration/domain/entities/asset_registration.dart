@@ -19,8 +19,7 @@ class AssetRegistration extends Equatable {
   String? color;
   String? purchaseOrder;
   int? quantity;
-  int? locationDetailId;
-  String? locationDetail;
+  int? locationId;
   String? location;
   int? isConsumable;
   String? assetIdOld;
@@ -42,9 +41,8 @@ class AssetRegistration extends Equatable {
     this.color,
     this.purchaseOrder,
     this.quantity,
-    this.locationDetailId,
-    this.locationDetail,
     this.location,
+    this.locationId,
     this.isConsumable,
     this.assetIdOld,
   });
@@ -69,8 +67,7 @@ class AssetRegistration extends Equatable {
       color,
       purchaseOrder,
       quantity,
-      locationDetailId,
-      locationDetail,
+      locationId,
       location,
       isConsumable,
     ];

@@ -27,7 +27,7 @@ class DataSourceInventory extends DataTableSource {
         item.assetCode!,
         item.type ?? '',
         item.quantity!,
-        item.locationDetail ?? '',
+        item.location ?? '',
         item.location ?? '',
       ),
       decoration: BoxDecoration(
@@ -39,7 +39,7 @@ class DataSourceInventory extends DataTableSource {
         DataCell(Center(child: Text(item.type ?? ''))),
         DataCell(Center(child: Text(item.model ?? ''))),
         DataCell(Center(child: Text('${item.quantity}'))),
-        DataCell(Center(child: Text(item.locationDetail ?? ''))),
+        DataCell(Center(child: Text(item.location ?? ''))),
         DataCell(Center(child: Text(item.location ?? '-'))),
         DataCell(Center(child: Text(item.remarks ?? '-'))),
       ],
