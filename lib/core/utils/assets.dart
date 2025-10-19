@@ -20,4 +20,13 @@ class Assets {
   static const iAssetRegistration = 'assets/icons/asset-registration.png';
   static const iLocation = 'assets/icons/asset-location.png';
   static const iTransfer = 'assets/icons/asset-transfer.png';
+  static const iHomeUnselected = 'assets/icons/home_unselected.png';
+  static const iHomeSelected = 'assets/icons/home_selected.png';
+  static const iOperationUnselected = 'assets/icons/operation_unselected.png';
+  static const iOperationSelected = 'assets/icons/operation_selected.png';
+  static const iMasterUnselected = 'assets/icons/master_unselected.png';
+  static const iMasterSelected = 'assets/icons/master_selected.png';
+  static const iSettingSelected = 'assets/icons/settings_selected.png';
+  static const iSettingUnselected = 'assets/icons/settings_unselected.png';
+  static const iLogout = 'assets/icons/logout.png';
 }

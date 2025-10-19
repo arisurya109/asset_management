@@ -56,6 +56,21 @@ extension ContextExt on BuildContext {
     );
   }
 
+  pushReplacment(Widget params) {
+    Navigator.pushReplacement(
+      this,
+      MaterialPageRoute(builder: (context) => params),
+    );
+  }
+
+  push(Widget params) {
+    Navigator.push(this, MaterialPageRoute(builder: (context) => params));
+  }
+
+  pop() {
+    Navigator.pop(this);
+  }
+
   void showDialogOption({
     String title = 'Title',
     required List<Widget> children,

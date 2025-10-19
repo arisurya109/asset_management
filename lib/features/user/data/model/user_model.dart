@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:equatable/equatable.dart';
 
 import '../../domain/entities/user.dart';
@@ -10,8 +11,6 @@ class UserModel extends Equatable {
   String? password;
   String? name;
   int? isActive;
-  DateTime? createdAt;
-  String? createdBy;
   List<dynamic>? modules;
 
   UserModel({
@@ -20,23 +19,12 @@ class UserModel extends Equatable {
     this.password,
     this.name,
     this.isActive,
-    this.createdAt,
-    this.createdBy,
     this.modules,
   });
 
   @override
   List<Object?> get props {
-    return [
-      id,
-      username,
-      password,
-      name,
-      isActive,
-      createdAt,
-      createdBy,
-      modules,
-    ];
+    return [id, isActive, username, password, name, modules];
   }
 
   User toEntity() {
@@ -46,9 +34,7 @@ class UserModel extends Equatable {
       name: name,
       password: password,
       isActive: isActive,
-      createdBy: createdBy,
       modules: modules,
-      createdAt: createdAt,
     );
   }
 
@@ -59,36 +45,28 @@ class UserModel extends Equatable {
       password: params.password,
       name: params.name,
       isActive: params.isActive,
-      createdAt: params.createdAt,
-      createdBy: params.createdBy,
       modules: params.modules,
     );
   }
 
-  factory UserModel.fromResponse(Map<String, dynamic> map) {
+  factory UserModel.fromJson(Map<String, dynamic> map) {
     return UserModel(
       id: map['id'] != null ? map['id'] as int : null,
       username: map['username'] != null ? map['username'] as String : null,
       password: map['password'] != null ? map['password'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
       isActive: map['is_active'] != null ? map['is_active'] as int : null,
-      createdBy: map['created_by'] != null ? map['created_by'] as String : null,
-      createdAt: map['created_at'] != null
-          ? map['created_at'] as DateTime
-          : null,
       modules: map['modules'] != null ? map['modules'] as List<dynamic> : null,
     );
   }
 
-  Map<String, dynamic> toRequest() {
+  Map<String, dynamic> toJson() {
     return {
       'id': id,
       'username': username,
       'password': password,
       'name': name,
       'is_active': isActive,
-      'created_by': createdBy,
-      'created_at': createdAt,
       'modules': modules,
     };
   }

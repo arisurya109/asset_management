@@ -1,10 +1,9 @@
-import 'package:asset_management/features/user/domain/entities/user.dart';
-import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
-import 'package:asset_management/view/view.dart';
+import 'package:asset_management/core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/core.dart';
+import '../../../../modules/home/view/home_view.dart';
+import '../../user_export.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -18,17 +17,17 @@ class _LoginViewState extends State<LoginView> {
   late TextEditingController passwordC;
 
   @override
-  void dispose() {
-    usernameC.dispose();
-    passwordC.dispose();
-    super.dispose();
-  }
-
-  @override
   void initState() {
     usernameC = TextEditingController();
     passwordC = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    usernameC.dispose();
+    passwordC.dispose();
+    super.dispose();
   }
 
   loginSubmit() {
@@ -40,9 +39,7 @@ class _LoginViewState extends State<LoginView> {
     } else if (!password.isFilled()) {
       context.showSnackbar('Password cannot be empty');
     } else {
-      context.read<UserBloc>().add(
-        OnLoginUser(User(username: username, password: password)),
-      );
+      context.read<UserBloc>().add(OnLoginUser(username, password));
     }
   }
 
@@ -87,8 +84,8 @@ class _LoginViewState extends State<LoginView> {
                 title: 'Username',
                 controller: usernameC,
                 hintText: 'Username',
-                textInputAction: TextInputAction.next,
                 keyboardType: TextInputType.text,
+                textInputAction: TextInputAction.next,
               ),
               AppSpace.vertical(24),
               AppTextField(
@@ -100,7 +97,7 @@ class _LoginViewState extends State<LoginView> {
                 textInputAction: TextInputAction.go,
                 keyboardType: TextInputType.text,
               ),
-              AppSpace.vertical(32),
+              AppSpace.vertical(48),
               BlocConsumer<UserBloc, UserState>(
                 listener: (context, state) {
                   if (state.status == StatusUser.failed) {
@@ -110,10 +107,7 @@ class _LoginViewState extends State<LoginView> {
                     );
                   }
                   if (state.status == StatusUser.success) {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => HomeView()),
-                    );
+                    context.pushReplacment(HomeView());
                   }
                 },
                 builder: (context, state) {

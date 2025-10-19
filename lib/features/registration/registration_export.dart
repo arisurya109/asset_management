@@ -1,0 +1,13 @@
+export 'registration_injection.dart';
+export 'data/model/registration_model.dart';
+export 'data/repositories/registration_repository_impl.dart';
+export 'data/source/registration_remote_data_source.dart';
+export 'data/source/registration_remote_data_source_impl.dart';
+export 'domain/entities/registration.dart';
+export 'domain/repositories/registration_repository.dart';
+export 'domain/usecases/registration_asset_consumable_use_case.dart';
+export 'domain/usecases/registration_asset_non_consumable_use_case.dart';
+export 'presentation/bloc/registration/registration_bloc.dart';
+export 'presentation/view/registration_view.dart';
+export 'presentation/view/registration_consumable_view.dart';
+export 'presentation/view/registration_non_consumable_view.dart';

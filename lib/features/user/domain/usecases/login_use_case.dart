@@ -1,6 +1,7 @@
-import 'package:asset_management/core/core.dart';
-import 'package:asset_management/features/user/domain/entities/user.dart';
-import 'package:asset_management/features/user/domain/repositories/user_repository.dart';
+import '../../../../core/error/failure.dart';
+import '../entities/user.dart';
+import '../repositories/user_repository.dart';
+
 import 'package:dartz/dartz.dart';
 
 class LoginUseCase {
@@ -8,7 +9,7 @@ class LoginUseCase {
 
   LoginUseCase(this._repository);
 
-  Future<Either<Failure, User>> call(User params) async {
-    return _repository.login(params);
+  Future<Either<Failure, User>> call(String username, String password) async {
+    return _repository.login(username, password);
   }
 }

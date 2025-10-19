@@ -36,12 +36,13 @@ class AppCardItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: AppColors.kWhite,
-        borderRadius: BorderRadius.circular(8),
-        clipBehavior: Clip.antiAlias,
-        elevation: 3,
-        shadowColor: Colors.black.withOpacity(0.7),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+          side: BorderSide(color: AppColors.kBase),
+        ),
         child: InkWell(
           onTap: onTap,
+          borderRadius: BorderRadius.circular(5),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(

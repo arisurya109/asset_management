@@ -1,11 +1,11 @@
-import 'package:asset_management/core/utils/assets.dart';
+import 'package:asset_management/core/core.dart';
 import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/features/user/presentation/view/login_view.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../home/presentation/view/home_view.dart';
+import '../../../../modules/home/view/home_view.dart';
 
 class SplashView extends StatefulWidget {
   const SplashView({super.key});
@@ -18,16 +18,11 @@ class _SplashViewState extends State<SplashView> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(OnAutoLogin());
+    context.read<UserBloc>().add(OnAutoLoginUser());
     Future.delayed(const Duration(seconds: 10), () async {
       final status = context.read<UserBloc>().state.status;
-      debugPrint(status.toString());
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) =>
-              status == StatusUser.success ? HomeView() : LoginView(),
-        ),
+      context.pushReplacment(
+        status == StatusUser.success ? HomeView() : LoginView(),
       );
     });
   }

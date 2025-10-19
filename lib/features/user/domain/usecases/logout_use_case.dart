@@ -1,5 +1,6 @@
-import 'package:asset_management/core/core.dart';
-import 'package:asset_management/features/user/domain/repositories/user_repository.dart';
+import '../../../../core/error/failure.dart';
+import '../repositories/user_repository.dart';
+
 import 'package:dartz/dartz.dart';
 
 class LogoutUseCase {

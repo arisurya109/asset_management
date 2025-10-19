@@ -1,8 +1,9 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'user_bloc.dart';
 
 enum StatusUser { initial, loading, failed, success }
 
+// ignore: must_be_immutable
 class UserState extends Equatable {
   StatusUser? status;
   User? user;
@@ -10,10 +11,15 @@ class UserState extends Equatable {
 
   UserState({this.status = StatusUser.initial, this.user, this.message});
 
-  UserState copyWith({StatusUser? status, User? user, String? message}) {
+  UserState copyWith({
+    StatusUser? status,
+    User? user,
+    String? message,
+    bool resetUser = false,
+  }) {
     return UserState(
       status: status ?? this.status,
-      user: user ?? this.user,
+      user: resetUser ? null : (user ?? this.user),
       message: message ?? this.message,
     );
   }

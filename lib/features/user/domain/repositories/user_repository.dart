@@ -1,15 +1,10 @@
-import 'package:dartz/dartz.dart';
-
-import '../../../../core/core.dart';
+import '../../../../core/error/failure.dart';
 import '../entities/user.dart';
 
+import 'package:dartz/dartz.dart';
+
 abstract class UserRepository {
-  Future<Either<Failure, User>> login(User params);
-  Future<Either<Failure, String>> changePassword(
-    String username,
-    String oldPassword,
-    String newPassword,
-  );
+  Future<Either<Failure, User>> login(String username, String password);
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, User>> autoLogin();
 }

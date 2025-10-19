@@ -15,93 +15,52 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<UserModel> autoLogin() async {
-    try {
-      final token = await _tokenHelper.getToken();
+    final token = await _tokenHelper.getToken();
 
-      if (token == null) {
-        throw CreateException(message: 'Please Login');
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/auto_login'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final bodyData = jsonDecode(response.body);
+
+        final data = bodyData['data'];
+
+        return UserModel.fromJson(data);
       } else {
-        final response = await _client.get(
-          Uri.parse('${ApiHelper.baseUrl}/auto_login'),
-          headers: ApiHelper.headersToken(token),
+        throw CreateException(
+          message: ApiHelper.getErrorMessage(response.body),
         );
-
-        if (response.statusCode == 200) {
-          final body = jsonDecode(response.body);
-
-          return UserModel.fromResponse(body['data']);
-        } else {
-          final message = ApiHelper.getErrorMessage(response.body);
-          throw CreateException(message: message);
-        }
       }
-    } catch (e) {
-      throw CreateException(message: e.toString());
     }
   }
 
   @override
-  Future<String> changePassword(
-    String username,
-    String oldPassword,
-    String newPassword,
-  ) async {
-    try {
-      final token = await _tokenHelper.getToken();
+  Future<UserModel> login(String username, String password) async {
+    final response = await _client.post(
+      Uri.parse('${ApiHelper.baseUrl}/login'),
+      body: jsonEncode({'username': username, 'password': password}),
+    );
 
-      final response = await _client.put(
-        Uri.parse('${ApiHelper.baseUrl}/change_password'),
-        headers: ApiHelper.headersToken(token!),
-        body: jsonEncode({
-          'username': username,
-          'old_password': oldPassword,
-          'new_password': newPassword,
-        }),
-      );
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
 
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-        return body['status'];
+      final token = body['token'];
+      final data = body['data'];
+
+      final isSaved = await _tokenHelper.saveToken(token);
+
+      if (isSaved) {
+        return UserModel.fromJson(data);
       } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw UpdateException(message: message);
+        throw CreateException(message: 'Failed to login please try again');
       }
-    } catch (e) {
-      throw UpdateException(message: e.toString());
-    }
-  }
-
-  @override
-  Future<UserModel> login(UserModel params) async {
-    try {
-      final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/login'),
-        headers: ApiHelper.headersNoToken,
-        body: jsonEncode({
-          'username': params.username,
-          'password': params.password,
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        final responseBody = jsonDecode(response.body);
-
-        final token = responseBody['token'];
-        final data = responseBody['data'];
-
-        final savedToken = await _tokenHelper.saveToken(token);
-
-        if (!savedToken) {
-          throw CreateException(message: 'Failed to login, please try again');
-        } else {
-          return UserModel.fromResponse(data);
-        }
-      } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw CreateException(message: message);
-      }
-    } catch (e) {
-      throw CreateException(message: e.toString());
+    } else {
+      throw CreateException(message: ApiHelper.getErrorMessage(response.body));
     }
   }
 

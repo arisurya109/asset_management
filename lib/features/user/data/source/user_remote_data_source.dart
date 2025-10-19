@@ -1,12 +1,7 @@
-import '../model/user_model.dart';
+import 'package:asset_management/features/user/data/model/user_model.dart';
 
 abstract class UserRemoteDataSource {
-  Future<UserModel> login(UserModel params);
-  Future<void> logout();
-  Future<String> changePassword(
-    String username,
-    String oldPassword,
-    String newPassword,
-  );
+  Future<UserModel> login(String username, String password);
   Future<UserModel> autoLogin();
+  Future<void> logout();
 }

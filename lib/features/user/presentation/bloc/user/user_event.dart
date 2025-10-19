@@ -8,19 +8,12 @@ class UserEvent extends Equatable {
 }
 
 class OnLoginUser extends UserEvent {
-  final User params;
+  final String username;
+  final String password;
 
-  const OnLoginUser(this.params);
+  const OnLoginUser(this.username, this.password);
 }
+
+class OnAutoLoginUser extends UserEvent {}
 
 class OnLogoutUser extends UserEvent {}
-
-class OnAutoLogin extends UserEvent {}
-
-class OnChangePassword extends UserEvent {
-  final String username;
-  final String oldPassword;
-  final String newPassword;
-
-  const OnChangePassword(this.username, this.oldPassword, this.newPassword);
-}

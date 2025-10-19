@@ -1,13 +1,16 @@
-import 'package:asset_management/features/asset_master_new/asset_master_export.dart';
-import 'package:asset_management/features/asset_master_new/presentation/cubit/asset_master_new_cubit.dart';
-import 'package:asset_management/features/asset_registration/presentation/bloc/asset_registration/asset_registration_bloc.dart';
-import 'package:asset_management/features/locations/presentation/bloc/bloc/location_bloc.dart';
-import 'package:asset_management/features/modules/asset_transfer/presentation/bloc/asset_transfer/asset_transfer_bloc.dart';
-import 'package:asset_management/features/modules/assets/cubit/modul_asset_cubit.dart';
-import 'package:asset_management/features/modules/inventories/presentation/bloc/inventory_bloc.dart';
-import 'package:asset_management/features/user/presentation/bloc/user/user_bloc.dart';
+import 'package:asset_management/features/asset_brand/asset_brand_export.dart';
+import 'package:asset_management/features/asset_category/asset_category_export.dart';
+import 'package:asset_management/features/asset_model/asset_model_export.dart';
+import 'package:asset_management/features/asset_type/asset_type_export.dart';
+import 'package:asset_management/features/assets/assets_export.dart';
+import 'package:asset_management/features/location/location_export.dart';
+import 'package:asset_management/features/migration/migration_export.dart';
+import 'package:asset_management/features/printer/presentation/bloc/printer/printer_bloc.dart';
+import 'package:asset_management/features/registration/registration_export.dart';
+import 'package:asset_management/features/transfer/transfer_export.dart';
 import 'package:asset_management/features/user/presentation/view/splash_view.dart';
 
+import 'features/user/user_export.dart';
 import 'main_export.dart';
 
 void main() async {
@@ -24,27 +27,18 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => locator<HomeCubit>()),
-        BlocProvider(create: (context) => locator<ModulAssetCubit>()),
-        BlocProvider(create: (context) => locator<ReprintBloc>()),
-        BlocProvider(create: (context) => locator<PrinterBloc>()),
-        BlocProvider(create: (context) => locator<AssetCountBloc>()),
-        BlocProvider(create: (context) => locator<AssetCountDetailBloc>()),
-        BlocProvider(create: (context) => locator<AssetMasterBloc>()),
-        BlocProvider(create: (context) => locator<AssetPreparationBloc>()),
-        BlocProvider(
-          create: (context) => locator<AssetPreparationDetailBloc>(),
-        ),
         BlocProvider(create: (context) => locator<UserBloc>()),
         BlocProvider(create: (context) => locator<AssetTypeBloc>()),
-        BlocProvider(create: (context) => locator<AssetCategoryBloc>()),
         BlocProvider(create: (context) => locator<AssetBrandBloc>()),
+        BlocProvider(create: (context) => locator<AssetCategoryBloc>()),
         BlocProvider(create: (context) => locator<AssetModelBloc>()),
-        BlocProvider(create: (context) => locator<AssetMasterNewCubit>()),
-        BlocProvider(create: (context) => locator<AssetRegistrationBloc>()),
         BlocProvider(create: (context) => locator<LocationBloc>()),
-        BlocProvider(create: (context) => locator<AssetTransferBloc>()),
-        BlocProvider(create: (context) => locator<InventoryBloc>()),
+        BlocProvider(create: (context) => locator<AssetsBloc>()),
+        BlocProvider(create: (context) => locator<AssetDetailBloc>()),
+        BlocProvider(create: (context) => locator<PrinterBloc>()),
+        BlocProvider(create: (context) => locator<RegistrationBloc>()),
+        BlocProvider(create: (context) => locator<MigrationBloc>()),
+        BlocProvider(create: (context) => locator<TransferBloc>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),
@@ -67,7 +61,7 @@ class MainApp extends StatelessWidget {
           ),
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.kBackground,
+          scaffoldBackgroundColor: AppColors.kWhite,
         ),
       ),
     );
