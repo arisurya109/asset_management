@@ -1,4 +1,5 @@
 import 'package:asset_management/core/core.dart';
+import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,40 +34,37 @@ class _RegistrationConsumableViewState
       children: [
         BlocBuilder<LocationBloc, LocationState>(
           builder: (context, state) {
-            return AppSearchableDropdown<Location>(
-              items: state.locations!,
-              hintTextField: 'Find by name or code',
+            return AppDropDownSearch<Location>(
+              items: state.locations!
+                ..sort((a, b) => a.name!.compareTo(b.name!)),
+              showSearchBox: true,
+              compareFn: (p0, p1) => p0 == p1,
               onChanged: (value) => setState(() {
                 location = value;
               }),
-              hintText: 'Location',
-              value: location,
-              displayFn: (item) => '${item.name} - ${item.code ?? ''}',
-              filterFn: (item, query) =>
-                  item.name!.toUpperCase().contains(query.toUpperCase()) ||
-                  item.code!.toUpperCase().contains(query.toUpperCase()),
+              selectedItem: location,
+              itemAsString: (p0) => p0.name!,
+              hintText: 'Selected Location',
+              title: 'Location',
             );
           },
         ),
         AppSpace.vertical(16),
         BlocBuilder<AssetModelBloc, AssetModelState>(
           builder: (context, state) {
-            return AppSearchableDropdown<AssetModel>(
+            return AppDropDownSearch<AssetModel>(
               items: state.assets!
                   .where((element) => element.isConsumable == 1)
                   .toList(),
-              hintTextField: 'Find by name or code',
+              showSearchBox: true,
+              compareFn: (p0, p1) => p0 == p1,
               onChanged: (value) => setState(() {
                 model = value;
               }),
-              hintText: 'Model',
-              value: model,
-              displayFn: (item) => '${item.name} - ${item.categoryName ?? ''}',
-              filterFn: (item, query) =>
-                  item.name!.toUpperCase().contains(query.toUpperCase()) ||
-                  item.categoryName!.toUpperCase().contains(
-                    query.toUpperCase(),
-                  ),
+              selectedItem: model,
+              itemAsString: (p0) => '${p0.categoryName} ${p0.name}',
+              hintText: 'Selected Model',
+              title: 'Model',
             );
           },
         ),

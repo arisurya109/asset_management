@@ -47,7 +47,8 @@ class _RegistrationNonConsumableViewState
               title: "Location",
               hintText: "Select location",
               borderRadius: 5,
-              items: state.locations ?? [],
+              items: state.locations!
+                ..sort((a, b) => a.name!.compareTo(b.name!)),
               itemAsString: (item) => item.name ?? '',
               selectedItem: location,
               compareFn: (a, b) => a.name == b.name,

@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_radio_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,12 +19,9 @@ class CreateAssetModelView extends StatefulWidget {
 
 class _CreateAssetModelViewState extends State<CreateAssetModelView> {
   late TextEditingController nameC;
-  String? assetType;
-  int? assetTypeId;
-  String? assetBrand;
-  int? assetBrandId;
-  String? assetCategory;
-  int? assetCategoryId;
+  AssetType? assetType;
+  AssetBrand? assetBrand;
+  AssetCategory? assetCategory;
 
   List<Map<String, dynamic>> option = [
     {'label': 'Yes', 'value': 1},
@@ -65,53 +63,48 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
             children: [
               BlocBuilder<AssetTypeBloc, AssetTypeState>(
                 builder: (context, state) {
-                  return AppDropDown(
+                  return AppDropDownSearch<AssetType>(
+                    selectedItem: assetType,
                     hintText: 'Selected Type',
                     title: 'Type',
-                    value: assetType,
-                    items: state.types?.map((e) => e.name).toList(),
-                    onSelected: (value) => setState(() {
+                    items: state.types ?? [],
+                    onChanged: (value) => setState(() {
                       assetType = value;
-                      assetTypeId = state.types
-                          ?.singleWhere((element) => element.name == assetType)
-                          .id;
                     }),
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value.name!,
                   );
                 },
               ),
               AppSpace.vertical(12),
               BlocBuilder<AssetCategoryBloc, AssetCategoryState>(
                 builder: (context, state) {
-                  return AppDropDown(
+                  return AppDropDownSearch<AssetCategory>(
+                    selectedItem: assetCategory,
                     hintText: 'Selected Category',
                     title: 'Category',
-                    value: assetCategory,
-                    items: state.category?.map((e) => e.name).toList(),
-                    onSelected: (value) => setState(() {
+                    items: state.category ?? [],
+                    onChanged: (value) => setState(() {
                       assetCategory = value;
-                      assetCategoryId = state.category
-                          ?.singleWhere(
-                            (element) => element.name == assetCategory,
-                          )
-                          .id;
                     }),
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value.name!,
                   );
                 },
               ),
               AppSpace.vertical(12),
               BlocBuilder<AssetBrandBloc, AssetBrandState>(
                 builder: (context, state) {
-                  return AppDropDown(
+                  return AppDropDownSearch<AssetBrand>(
+                    selectedItem: assetBrand,
                     hintText: 'Selected Brand',
                     title: 'Brand',
-                    value: assetBrand,
-                    items: state.brands?.map((e) => e.name).toList(),
-                    onSelected: (value) => setState(() {
+                    items: state.brands ?? [],
+                    onChanged: (value) => setState(() {
                       assetBrand = value;
-                      assetBrandId = state.brands
-                          ?.singleWhere((element) => element.name == assetBrand)
-                          .id;
                     }),
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value.name!,
                   );
                 },
               ),
@@ -187,9 +180,9 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                             OnCreateAssetModel(
                               AssetModel(
                                 name: nameC.value.text.trim().toUpperCase(),
-                                brandId: assetBrandId,
-                                categoryId: assetCategoryId,
-                                typeId: assetTypeId,
+                                brandId: assetBrand?.id,
+                                categoryId: assetCategory?.id,
+                                typeId: assetType?.id,
                                 hasSerial: isSerialNumber,
                                 isConsumable: isConsumable,
                                 unit: isQty,

@@ -47,6 +47,12 @@ class AppDropDownSearch<T> extends StatelessWidget {
           compareFn: compareFn,
           itemAsString: itemAsString,
           onChanged: onChanged,
+          suffixProps: DropdownSuffixProps(
+            clearButtonProps: ClearButtonProps(
+              isVisible: true,
+              color: AppColors.kBase,
+            ),
+          ),
           popupProps: PopupProps.menu(
             showSearchBox: showSearchBox,
             itemBuilder: (context, item, isDisabled, isSelected) {

@@ -9,6 +9,7 @@ import 'package:asset_management/features/migration/migration_export.dart';
 import 'package:asset_management/features/printer/printer_export.dart';
 import 'package:asset_management/features/registration/registration_export.dart';
 import 'package:asset_management/features/transfer/transfer_export.dart';
+import 'package:asset_management/features/vendor/vendor_injection.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:http/http.dart' as http;
@@ -33,6 +34,7 @@ Future<void> injection() async {
   registrationInjection(locator);
   migrationInjection(locator);
   transferInjection(locator);
+  vendorInjection(locator);
 
   // Services
   locator.registerLazySingleton(() => pref);

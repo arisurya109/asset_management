@@ -43,15 +43,15 @@ class _TransferViewState extends State<TransferView> {
                   return AppDropDownSearch<Location>(
                     title: 'From Location',
                     items:
-                        state.locations
-                            ?.where(
+                        state.locations!
+                            .where(
                               (element) =>
                                   element.locationType == 'BOX' ||
                                   element.locationType == 'RACK' ||
                                   element.name == 'GUDANG I',
                             )
-                            .toList() ??
-                        [],
+                            .toList()
+                          ..sort((a, b) => a.name!.compareTo(b.name!)),
                     hintText: 'Selected From Location',
                     compareFn: (value1, value) => value1.name == value.name,
                     selectedItem: fromL,
@@ -71,15 +71,15 @@ class _TransferViewState extends State<TransferView> {
                       toL = value;
                     }),
                     items:
-                        state.locations
-                            ?.where(
+                        state.locations!
+                            .where(
                               (element) =>
                                   element.locationType == 'BOX' ||
                                   element.locationType == 'RACK' &&
                                       element != fromL,
                             )
-                            .toList() ??
-                        [],
+                            .toList()
+                          ..sort((a, b) => a.name!.compareTo(b.name!)),
                     hintText: 'Selected To Location',
                     compareFn: (value1, value) => value1.name == value.name,
                     selectedItem: toL,

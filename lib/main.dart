@@ -9,6 +9,7 @@ import 'package:asset_management/features/printer/presentation/bloc/printer/prin
 import 'package:asset_management/features/registration/registration_export.dart';
 import 'package:asset_management/features/transfer/transfer_export.dart';
 import 'package:asset_management/features/user/presentation/view/splash_view.dart';
+import 'package:asset_management/features/vendor/vendor_export.dart';
 
 import 'features/user/user_export.dart';
 import 'main_export.dart';
@@ -39,6 +40,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => locator<RegistrationBloc>()),
         BlocProvider(create: (context) => locator<MigrationBloc>()),
         BlocProvider(create: (context) => locator<TransferBloc>()),
+        BlocProvider(create: (context) => locator<VendorBloc>()),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

@@ -33,7 +33,14 @@ class OperationView extends StatelessWidget {
         'icon': Assets.iPreparation,
         'view': PreparationView(),
       },
-      {'title': 'Counting', 'icon': Assets.iCount},
+      {
+        'title': 'Counting',
+        'icon': Assets.iCount,
+        'view': Scaffold(
+          appBar: AppBar(title: Text('Counting')),
+          body: Center(child: Text('Soon')),
+        ),
+      },
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),

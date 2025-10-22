@@ -1,3 +1,4 @@
+import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_searchable_dropdown.dart';
 import 'package:asset_management/main_export.dart';
 
@@ -59,42 +60,42 @@ class _CreateLocationViewState extends State<CreateLocationView> {
               AppSpace.vertical(12),
               BlocBuilder<LocationBloc, LocationState>(
                 builder: (context, state) {
-                  return AppSearchableDropdown<Location>(
+                  return AppDropDownSearch<Location>(
+                    title: 'Parent',
                     items: state.locations ?? [],
+                    hintText: 'Selected Parent',
+                    selectedItem: parentLocation,
+                    compareFn: (value, value1) => value.name == value1.name,
+                    itemAsString: (value) => value.name!,
                     onChanged: (value) => setState(() {
                       parentLocation = value;
                     }),
-                    hintText: 'Parent',
-                    filterFn: (item, query) =>
-                        item.name!.toUpperCase().contains(
-                          query.toUpperCase(),
-                        ) ||
-                        item.code!.toUpperCase().contains(query.toUpperCase()),
-                    displayFn: (item) => '${item.name} - ${item.locationType}',
-                    hintTextField: 'Find by name and type',
-                    value: parentLocation,
                   );
                 },
               ),
               AppSpace.vertical(16),
-              AppDropDown<String>(
+              AppDropDownSearch<String>(
+                title: 'Location Type',
                 items: locationType,
                 hintText: 'Selected Type',
-                onSelected: (value) => setState(() {
+                selectedItem: locationTypeSelected,
+                compareFn: (value, value1) => value == value1,
+                itemAsString: (value) => value,
+                onChanged: (value) => setState(() {
                   locationTypeSelected = value;
                 }),
-                title: 'Location Type',
-                value: locationTypeSelected,
               ),
               AppSpace.vertical(16),
-              AppDropDown<String>(
+              AppDropDownSearch<String>(
+                title: 'Box Type',
                 items: boxType,
-                hintText: 'Selected Type',
-                onSelected: (value) => setState(() {
+                hintText: 'Selected Box Type',
+                selectedItem: boxTypeSelected,
+                compareFn: (value, value1) => value == value1,
+                itemAsString: (value) => value,
+                onChanged: (value) => setState(() {
                   boxTypeSelected = value;
                 }),
-                title: 'Box Type',
-                value: boxTypeSelected,
               ),
               AppSpace.vertical(16),
               AppTextField(

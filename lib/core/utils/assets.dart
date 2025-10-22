@@ -29,4 +29,5 @@ class Assets {
   static const iSettingSelected = 'assets/icons/settings_selected.png';
   static const iSettingUnselected = 'assets/icons/settings_unselected.png';
   static const iLogout = 'assets/icons/logout.png';
+  static const iVendor = 'assets/icons/vendor.png';
 }

@@ -5,6 +5,7 @@ import 'package:asset_management/features/asset_model/asset_model_export.dart';
 import 'package:asset_management/features/asset_type/asset_type_export.dart';
 import 'package:asset_management/features/assets/assets_export.dart';
 import 'package:asset_management/features/location/location_export.dart';
+import 'package:asset_management/features/vendor/vendor_export.dart';
 import 'package:flutter/material.dart';
 
 class MasterView extends StatelessWidget {
@@ -34,6 +35,7 @@ class MasterView extends StatelessWidget {
         'view': AssetModelView(),
       },
       {'title': 'Location', 'icon': Assets.iLocation, 'view': LocationView()},
+      {'title': 'Vendor', 'icon': Assets.iVendor, 'view': VendorView()},
       {
         'title': 'Assets',
         'icon': Assets.iAssetManagement,
