@@ -56,6 +56,14 @@ extension ContextExt on BuildContext {
     );
   }
 
+  double get deviceHeight {
+    return MediaQuery.of(this).size.height;
+  }
+
+  double get deviceWidth {
+    return MediaQuery.of(this).size.width;
+  }
+
   pushReplacment(Widget params) {
     Navigator.pushReplacement(
       this,

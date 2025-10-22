@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ class AppCardItem extends StatelessWidget {
   String? descriptionLeft;
   IconData? iconLeft;
   IconData? iconRight;
+  bool? noDescription;
   void Function()? onTap;
 
   AppCardItem({
@@ -27,6 +29,7 @@ class AppCardItem extends StatelessWidget {
     this.descriptionLeft,
     this.iconLeft,
     this.iconRight,
+    this.noDescription = false,
     this.onTap,
   });
 
@@ -86,54 +89,63 @@ class AppCardItem extends StatelessWidget {
                   ),
                 ),
                 AppSpace.vertical(8),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.kBackground,
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          iconLeft != null
-                              ? Icon(iconLeft, size: 20, color: AppColors.kGrey)
-                              : SizedBox(),
-                          AppSpace.horizontal(5),
-                          Text(
-                            descriptionLeft ?? 'Desc Left',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.kBlack,
+                noDescription == true
+                    ? Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: AppColors.kBackground,
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                iconLeft != null
+                                    ? Icon(
+                                        iconLeft,
+                                        size: 20,
+                                        color: AppColors.kGrey,
+                                      )
+                                    : SizedBox(),
+                                AppSpace.horizontal(5),
+                                Text(
+                                  descriptionLeft ?? 'Desc Left',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.kBlack,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                      Text('|'),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          iconRight != null
-                              ? Icon(
-                                  iconRight,
-                                  size: 20,
-                                  color: AppColors.kGrey,
-                                )
-                              : SizedBox(),
-                          AppSpace.horizontal(5),
-                          Text(
-                            descriptionRight ?? 'Desc Right',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: AppColors.kBlack,
+                            Text('|'),
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                iconRight != null
+                                    ? Icon(
+                                        iconRight,
+                                        size: 20,
+                                        color: AppColors.kGrey,
+                                      )
+                                    : SizedBox(),
+                                AppSpace.horizontal(5),
+                                Text(
+                                  descriptionRight ?? 'Desc Right',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: AppColors.kBlack,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                          ],
+                        ),
+                      )
+                    : SizedBox(),
               ],
             ),
           ),
