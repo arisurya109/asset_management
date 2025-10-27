@@ -1,5 +1,6 @@
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:asset_management/presentation/bloc/purchase_order/purchase_order_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/bloc/permissions/permissions_bloc.dart';
 import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
@@ -33,6 +34,10 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (context) => locator<AuthenticationBloc>()),
         BlocProvider(create: (context) => locator<PermissionsBloc>()),
         BlocProvider(create: (context) => locator<PrinterBloc>()),
+        BlocProvider(
+          create: (context) =>
+              locator<PurchaseOrderBloc>()..add(OnFindAllPurchaseOrderEvent()),
+        ),
       ],
       child: MaterialApp(
         locale: Locale('id', 'ID'),

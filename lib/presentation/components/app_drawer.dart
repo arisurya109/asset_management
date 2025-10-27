@@ -11,6 +11,7 @@ import 'package:asset_management/presentation/view/category/asset_category_view.
 import 'package:asset_management/presentation/view/change_password/change_password_view.dart';
 import 'package:asset_management/presentation/view/location/location_view.dart';
 import 'package:asset_management/presentation/view/model/asset_model_view.dart';
+import 'package:asset_management/presentation/view/purchase_order/purchase_order_view.dart';
 import 'package:asset_management/presentation/view/type/asset_type_view.dart';
 import 'package:asset_management/presentation/view/user_management/user_management_view.dart';
 import 'package:asset_management/presentation/view/vendor/vendor_view.dart';
@@ -35,7 +36,7 @@ class _AppDrawerState extends State<AppDrawer> {
           final permission = state.user?.modules;
           return Column(
             children: [
-              AppHeaderDrawer(user: user!),
+              AppHeaderDrawer(user: user),
               AppItemDrawer(
                 title: 'Change Password',
                 onTap: () {
@@ -132,6 +133,15 @@ class _AppDrawerState extends State<AppDrawer> {
                     context.pop();
                     context.read<UserBloc>().add(OnFindAllUserEvent());
                     context.push(UserManagementView());
+                  },
+                ),
+
+              if (permission?.contains('purchase_view') == true)
+                AppItemDrawer(
+                  title: 'Purchase Order',
+                  onTap: () {
+                    context.pop();
+                    context.push(PurchaseOrderView());
                   },
                 ),
               BlocListener<AuthenticationBloc, AuthenticationState>(

@@ -1,5 +1,6 @@
 import 'package:asset_management/injection/asset_injection.dart';
 import 'package:asset_management/injection/printer_injection.dart';
+import 'package:asset_management/injection/purchase_order_injection.dart';
 import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,7 @@ Future<void> injection() async {
   masterInjection(locator);
   assetInjection(locator);
   printerInjection(locator);
+  purchaseOrderInjection(locator);
 
   // Services
   locator.registerLazySingleton(() => pref);

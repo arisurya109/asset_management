@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import '../../core/core.dart';
 
 class AppHeaderDrawer extends StatelessWidget {
-  final User user;
+  final User? user;
 
-  const AppHeaderDrawer({super.key, required this.user});
+  const AppHeaderDrawer({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class AppHeaderDrawer extends StatelessWidget {
               ),
               AppSpace.vertical(12),
               Text(
-                user.name ?? '',
+                user?.name ?? '',
                 style: TextStyle(
                   fontSize: 18,
                   color: AppColors.kWhite,
