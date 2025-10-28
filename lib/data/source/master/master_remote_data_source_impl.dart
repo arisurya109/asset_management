@@ -8,6 +8,8 @@ import 'package:asset_management/data/model/master/asset_category_model.dart';
 import 'package:asset_management/data/model/master/asset_model_model.dart';
 import 'package:asset_management/data/model/master/asset_type_model.dart';
 import 'package:asset_management/data/model/master/location_model.dart';
+import 'package:asset_management/data/model/master/preparation_template_item_model.dart';
+import 'package:asset_management/data/model/master/preparation_template_model.dart';
 import 'package:asset_management/data/model/master/vendor_model.dart';
 import 'package:asset_management/data/source/master/master_remote_data_source.dart';
 import 'package:http/http.dart' as http;
@@ -307,6 +309,143 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
         List datas = bodyResponse['data'];
 
         return datas.map((e) => VendorModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<PreparationTemplateModel> createPreparationTemplate(
+    PreparationTemplateModel params,
+  ) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.post(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/template'),
+        headers: ApiHelper.headersToken(token),
+        body: jsonEncode(params.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final body = jsonDecode(response.body);
+
+        final datas = body['data'];
+
+        return PreparationTemplateModel.fromJson(datas);
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw CreateException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<List<PreparationTemplateItemModel>> createPreparationTemplateItem(
+    List<PreparationTemplateItemModel> params,
+    int templateId,
+  ) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.post(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$templateId'),
+        headers: ApiHelper.headersToken(token),
+        body: jsonEncode({'data': params.map((e) => e.toJson()).toList()}),
+      );
+
+      if (response.statusCode == 201) {
+        final body = jsonDecode(response.body);
+
+        List datas = body['data'];
+
+        return datas
+            .map((e) => PreparationTemplateItemModel.fromJson(e))
+            .toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw CreateException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<String> deletePreparationTemplate(int params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.delete(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        String datas = body['message'];
+
+        return datas;
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw DeleteException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<List<PreparationTemplateModel>> findAllPreparationTemplate() async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/template'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        List datas = body['data'];
+
+        return datas.map((e) => PreparationTemplateModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<List<PreparationTemplateItemModel>>
+  findAllPreparationTemplateItemByTemplateId(int params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        List datas = body['data'];
+
+        return datas
+            .map((e) => PreparationTemplateItemModel.fromJson(e))
+            .toList();
       } else {
         final message = ApiHelper.getErrorMessage(response.body);
         throw NotFoundException(message: message);

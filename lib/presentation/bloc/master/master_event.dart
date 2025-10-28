@@ -56,3 +56,24 @@ class OnCreateVendorEvent extends MasterEvent {
 
   const OnCreateVendorEvent(this.params);
 }
+
+class OnCreatePreparationTemplateItemEvent extends MasterEvent {
+  final PreparationTemplate template;
+  final List<PreparationTemplateItem> params;
+
+  const OnCreatePreparationTemplateItemEvent(this.params, this.template);
+}
+
+class OnDeletePreparationTemplateEvent extends MasterEvent {
+  final int params;
+
+  const OnDeletePreparationTemplateEvent(this.params);
+}
+
+class OnFindAllPreparationTemplateEvent extends MasterEvent {}
+
+class OnFindAllPreparationTemplateItemByIdEvent extends MasterEvent {
+  final int params;
+
+  const OnFindAllPreparationTemplateItemByIdEvent(this.params);
+}

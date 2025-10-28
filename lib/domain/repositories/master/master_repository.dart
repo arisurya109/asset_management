@@ -4,6 +4,8 @@ import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
+import 'package:asset_management/domain/entities/master/preparation_template.dart';
+import 'package:asset_management/domain/entities/master/preparation_template_item.dart';
 import 'package:asset_management/domain/entities/master/vendor.dart';
 import 'package:dartz/dartz.dart';
 
@@ -23,4 +25,24 @@ abstract class MasterRepository {
   Future<Either<Failure, AssetModel>> createAssetModel(AssetModel params);
   Future<Either<Failure, Location>> createLocation(Location params);
   Future<Either<Failure, Vendor>> createVendor(Vendor params);
+
+  // Preparation Template
+  Future<Either<Failure, PreparationTemplate>> createPreparationTemplate(
+    PreparationTemplate params,
+  );
+
+  Future<Either<Failure, List<PreparationTemplate>>>
+  findAllPreparationTemplate();
+
+  Future<Either<Failure, String>> deletePreparationTemplate(int params);
+
+  // Preparation Template Item
+  Future<Either<Failure, List<PreparationTemplateItem>>>
+  createPreparationTemplateItem(
+    List<PreparationTemplateItem> params,
+    int templateId,
+  );
+
+  Future<Either<Failure, List<PreparationTemplateItem>>>
+  findAllPreparationTemplateItemByTemplateId(int params);
 }

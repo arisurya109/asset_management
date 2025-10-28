@@ -12,6 +12,8 @@ class MasterState extends Equatable {
   List<AssetType>? types;
   List<Location>? locations;
   List<Vendor>? vendors;
+  List<PreparationTemplate>? preparationTemplates;
+  List<PreparationTemplateItem>? preparationTemplateItems;
   String? message;
 
   MasterState({
@@ -22,6 +24,8 @@ class MasterState extends Equatable {
     this.types,
     this.locations,
     this.vendors,
+    this.preparationTemplates,
+    this.preparationTemplateItems,
     this.message,
   });
 
@@ -34,6 +38,8 @@ class MasterState extends Equatable {
     types,
     locations,
     vendors,
+    preparationTemplates,
+    preparationTemplateItems,
     message,
   ];
 
@@ -45,6 +51,8 @@ class MasterState extends Equatable {
     List<AssetType>? types,
     List<Location>? locations,
     List<Vendor>? vendors,
+    List<PreparationTemplate>? preparationTemplates,
+    List<PreparationTemplateItem>? preparationTemplateItems,
     String? message,
   }) {
     return MasterState(
@@ -55,6 +63,9 @@ class MasterState extends Equatable {
       types: types ?? this.types,
       locations: locations ?? this.locations,
       vendors: vendors ?? this.vendors,
+      preparationTemplates: preparationTemplates ?? this.preparationTemplates,
+      preparationTemplateItems:
+          preparationTemplateItems ?? this.preparationTemplateItems,
       message: message ?? this.message,
     );
   }

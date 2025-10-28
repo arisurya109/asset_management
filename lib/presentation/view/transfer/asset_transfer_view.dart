@@ -147,7 +147,7 @@ class _TransferViewState extends State<TransferView> {
       );
     } else if (to == null) {
       context.showSnackbar(
-        'To location cannot be emoty',
+        'To location cannot be empty',
         backgroundColor: AppColors.kRed,
       );
     } else if (asset == null) {
