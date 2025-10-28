@@ -12,6 +12,7 @@ import 'package:asset_management/presentation/view/change_password/change_passwo
 import 'package:asset_management/presentation/view/location/location_view.dart';
 import 'package:asset_management/presentation/view/model/asset_model_view.dart';
 import 'package:asset_management/presentation/view/preparation_set/preparation_template_view.dart';
+import 'package:asset_management/presentation/view/printer/printer_view.dart';
 import 'package:asset_management/presentation/view/purchase_order/purchase_order_view.dart';
 import 'package:asset_management/presentation/view/type/asset_type_view.dart';
 import 'package:asset_management/presentation/view/user_management/user_management_view.dart';
@@ -159,6 +160,13 @@ class _AppDrawerState extends State<AppDrawer> {
                           context.push(PurchaseOrderView());
                         },
                       ),
+                    AppItemDrawer(
+                      title: 'Printer',
+                      onTap: () {
+                        context.pop();
+                        context.push(PrinterView());
+                      },
+                    ),
                     BlocListener<AuthenticationBloc, AuthenticationState>(
                       listener: (context, state) {
                         if (state.status == StatusAuthentication.success &&
