@@ -326,7 +326,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/template'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation_template'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode(params.toJson()),
       );
@@ -339,6 +339,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
         return PreparationTemplateModel.fromJson(datas);
       } else {
         final message = ApiHelper.getErrorMessage(response.body);
+        print(message);
         throw CreateException(message: message);
       }
     }
@@ -355,7 +356,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$templateId'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation_template/$templateId'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode({'data': params.map((e) => e.toJson()).toList()}),
       );
@@ -383,7 +384,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.delete(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$params'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation_template/$params'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -408,7 +409,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/template'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation_template'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -434,7 +435,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/template/$params'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation_template/$params'),
         headers: ApiHelper.headersToken(token),
       );
 

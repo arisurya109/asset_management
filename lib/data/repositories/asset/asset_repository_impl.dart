@@ -1,5 +1,4 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/core/error/failure.dart';
 import 'package:asset_management/data/model/asset/asset_model.dart';
 import 'package:asset_management/data/source/asset/asset_remote_data_source.dart';
 import 'package:asset_management/domain/entities/asset/asset_detail.dart';

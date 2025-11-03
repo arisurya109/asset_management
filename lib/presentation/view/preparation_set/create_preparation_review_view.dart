@@ -29,7 +29,7 @@ class CreatePreparationReviewViewState
         listener: (context, state) {
           if (state.status == StatusMaster.failed) {
             context.showSnackbar(
-              'Failed to create preparation set',
+              state.message ?? 'Failed to create preparation',
               backgroundColor: AppColors.kRed,
             );
           }
@@ -89,7 +89,7 @@ class CreatePreparationReviewViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Store : ${widget.params.name}'),
+                    Text('Name : ${widget.params.name}'),
                     AppSpace.vertical(5),
                     Text('Description : ${widget.params.description}'),
                   ],

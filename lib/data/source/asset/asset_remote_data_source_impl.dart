@@ -59,7 +59,6 @@ class AssetRemoteDataSourceImpl implements AssetRemoteDataSource {
 
         return datas.map((e) => AssetsModel.fromJson(e)).toList();
       } else {
-        print(jsonDecode(response.body));
         throw NotFoundException(
           message: ApiHelper.getErrorMessage(response.body),
         );

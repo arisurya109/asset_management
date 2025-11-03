@@ -8,6 +8,7 @@ class AppDashboardItem extends StatelessWidget {
   final Color backgroundColor;
   final Color borderColor;
   final Color textColor;
+  final double? item;
 
   const AppDashboardItem({
     super.key,
@@ -17,12 +18,13 @@ class AppDashboardItem extends StatelessWidget {
     required this.backgroundColor,
     required this.borderColor,
     required this.textColor,
+    this.item = 2,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: context.deviceWidth / 2 - 24,
+      width: context.deviceWidth / item! - 24,
       height: 90,
       padding: EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(

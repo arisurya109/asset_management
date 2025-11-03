@@ -1,3 +1,4 @@
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -48,6 +49,112 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileScaffold: _mobileLogin(context),
+      tabletScaffold: _tabletScaffold(isTablet: true),
+      desktopScaffold: _tabletScaffold(isTablet: false),
+    );
+  }
+
+  Widget _tabletScaffold({bool isTablet = true}) {
+    return Scaffold(
+      body: Center(
+        child: isTablet
+            ? SingleChildScrollView(child: _fromLargeView())
+            : _fromLargeView(),
+      ),
+    );
+  }
+
+  Widget _fromLargeView() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(maxWidth: 500),
+          decoration: BoxDecoration(
+            color: AppColors.kWhite,
+            borderRadius: BorderRadius.circular(5),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 8,
+                spreadRadius: 2,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            children: [
+              Text(
+                'Login',
+                style: TextStyle(
+                  fontSize: 36,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kBase,
+                ),
+              ),
+              AppSpace.vertical(5),
+              Text(
+                'Please Sign in to continue',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.kBase,
+                ),
+              ),
+              AppSpace.vertical(48),
+              AppTextField(
+                hintText: 'Username',
+                noTitle: true,
+                controller: usernameC,
+                textInputAction: TextInputAction.next,
+                keyboardType: TextInputType.text,
+              ),
+              AppSpace.vertical(24),
+              AppTextField(
+                hintText: 'Password',
+                noTitle: true,
+                controller: passwordC,
+                obscureText: true,
+                onSubmitted: (_) => loginSubmit(),
+                textInputAction: TextInputAction.go,
+                keyboardType: TextInputType.text,
+              ),
+              AppSpace.vertical(48),
+              BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                listener: (context, state) {
+                  if (state.status == StatusAuthentication.failed) {
+                    context.showSnackbar(
+                      state.message!,
+                      backgroundColor: AppColors.kRed,
+                    );
+                  }
+                  if (state.status == StatusAuthentication.success) {
+                    context.pushReplacment(HomeView());
+                  }
+                },
+                builder: (context, state) {
+                  return AppButton(
+                    title: state.status == StatusAuthentication.loading
+                        ? 'Loading...'
+                        : 'Login',
+                    width: double.maxFinite,
+                    onPressed: state.status == StatusAuthentication.loading
+                        ? null
+                        : loginSubmit,
+                  );
+                },
+              ),
+              AppSpace.vertical(16),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _mobileLogin(BuildContext context) {
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),

@@ -7,7 +7,8 @@ import '../../core/core.dart';
 import '../bloc/master/master_bloc.dart';
 
 class AppDashboardContent extends StatelessWidget {
-  const AppDashboardContent({super.key});
+  final double item;
+  const AppDashboardContent({super.key, this.item = 2});
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +33,7 @@ class AppDashboardContent extends StatelessWidget {
               spacing: 16,
               children: [
                 AppDashboardItem(
+                  item: item,
                   backgroundColor: AppColors.kBase,
                   borderColor: AppColors.kGrey,
                   icon: Assets.iAssetModel,
@@ -40,6 +42,7 @@ class AppDashboardContent extends StatelessWidget {
                   value: state.models?.length.toString() ?? '',
                 ),
                 AppDashboardItem(
+                  item: item,
                   backgroundColor: AppColors.kWhite,
                   borderColor: AppColors.kBase,
                   icon: Assets.iAssetCategory,
@@ -48,6 +51,7 @@ class AppDashboardContent extends StatelessWidget {
                   value: state.categories?.length.toString() ?? '',
                 ),
                 AppDashboardItem(
+                  item: item,
                   backgroundColor: AppColors.kWhite,
                   borderColor: AppColors.kBase,
                   icon: Assets.iLocation,
@@ -56,6 +60,7 @@ class AppDashboardContent extends StatelessWidget {
                   value: state.locations?.length.toString() ?? '',
                 ),
                 AppDashboardItem(
+                  item: item,
                   backgroundColor: AppColors.kBase,
                   borderColor: AppColors.kGrey,
                   icon: Assets.iAssetModel,
@@ -75,6 +80,7 @@ class AppDashboardContent extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         AppDashboardItem(
+                          item: item,
                           icon: Assets.iAssetMaster,
                           title: 'Quantity',
                           value: totalQuantity?.toString() ?? '',
@@ -83,6 +89,7 @@ class AppDashboardContent extends StatelessWidget {
                           textColor: AppColors.kWhite,
                         ),
                         AppDashboardItem(
+                          item: item,
                           icon: Assets.iAssetMaster,
                           title: 'Assets',
                           value: state.assets?.length.toString() ?? '',

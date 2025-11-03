@@ -63,14 +63,11 @@ class AssetBloc extends Bloc<AssetEvent, AssetState> {
 
     final failureOrAsset = await _createAssetUseCase(event.params);
 
-    print(event.params);
-
     return failureOrAsset.fold(
       (failure) => emit(
         state.copyWith(status: StatusAsset.failed, message: failure.message),
       ),
       (asset) {
-        print(asset.toString());
         emit(
           state.copyWith(
             response: asset,
