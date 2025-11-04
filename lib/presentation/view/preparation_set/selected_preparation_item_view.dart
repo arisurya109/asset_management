@@ -1,6 +1,5 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
-import 'package:asset_management/core/widgets/app_space.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/preparation_template.dart';
 import 'package:asset_management/domain/entities/master/preparation_template_item.dart';

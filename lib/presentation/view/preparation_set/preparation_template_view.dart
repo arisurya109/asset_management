@@ -3,6 +3,7 @@ import 'package:asset_management/presentation/bloc/authentication/authentication
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/components/app_card_item.dart';
 import 'package:asset_management/presentation/view/preparation_set/create_preparation_template_view.dart';
+import 'package:asset_management/presentation/view/preparation_set/preparation_template_detail_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,7 +18,7 @@ class PreparationTemplateView extends StatelessWidget {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text('Preparation Template'),
+            title: Text('Preparation Set'),
 
             actions: permission?.contains('master_add') == true
                 ? [
@@ -51,7 +52,21 @@ class PreparationTemplateView extends StatelessWidget {
                                 state.preparationTemplates?[index];
                             return AppCardItem(
                               title: templates?.name ?? '',
-                              subtitle: templates?.templateCode,
+                              leading: templates?.templateCode,
+                              subtitle: templates?.description,
+                              noDescription: true,
+                              onTap: () {
+                                context.read<MasterBloc>().add(
+                                  OnFindAllPreparationTemplateItemByIdEvent(
+                                    templates!.id!,
+                                  ),
+                                );
+                                context.push(
+                                  PreparationTemplateDetailView(
+                                    params: templates,
+                                  ),
+                                );
+                              },
                             );
                           },
                         );

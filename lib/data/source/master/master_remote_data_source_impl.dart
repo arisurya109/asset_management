@@ -339,7 +339,6 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
         return PreparationTemplateModel.fromJson(datas);
       } else {
         final message = ApiHelper.getErrorMessage(response.body);
-        print(message);
         throw CreateException(message: message);
       }
     }

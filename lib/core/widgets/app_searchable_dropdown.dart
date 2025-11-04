@@ -135,7 +135,7 @@ class _AppSearchableDropdownState<T> extends State<AppSearchableDropdown<T>> {
             ),
             child: Text(
               widget.value != null
-                  ? widget.displayFn(widget.value!)
+                  ? widget.displayFn(widget.value as T)
                   : 'Selected ${widget.hintText}',
               style: TextStyle(
                 color: widget.value != null ? AppColors.kBlack : Colors.grey,

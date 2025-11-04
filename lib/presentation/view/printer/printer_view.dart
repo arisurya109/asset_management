@@ -1,9 +1,7 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/core/widgets/app_space.dart';
 import 'package:asset_management/domain/entities/printer/printer.dart';
 import 'package:asset_management/main_export.dart';
 import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
-import 'package:flutter/material.dart';
 
 class PrinterView extends StatefulWidget {
   const PrinterView({super.key});

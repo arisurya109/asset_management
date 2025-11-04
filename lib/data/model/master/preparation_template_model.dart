@@ -68,6 +68,7 @@ class PreparationTemplateModel extends Equatable {
           : null,
       name: map['name'] != null ? map['name'] as String : null,
       isActive: map['is_active'] != null ? map['is_active'] as int : null,
+      createdBy: map['created_by'] != null ? map['created_by'] as String : null,
       description: map['description'] != null
           ? map['description'] as String
           : null,

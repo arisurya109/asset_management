@@ -57,15 +57,17 @@ class PreparationTemplateItemModel extends Equatable {
       modelId: map['model_id'] != null ? map['model_id'] as int : null,
       quantity: map['quantity'] != null ? map['quantity'] as int : null,
       notes: map['notes'] != null ? map['notes'] as String : null,
-      assetType: map['asset_type'] != null ? map['asset_type'] as String : null,
-      assetBrand: map['asset_brand'] != null
-          ? map['asset_brand'] as String
+      assetType: map['asset']['type'] != null
+          ? map['asset']['type'] as String
           : null,
-      assetCategory: map['asset_category'] != null
-          ? map['asset_category'] as String
+      assetBrand: map['asset']['brand'] != null
+          ? map['asset']['brand'] as String
           : null,
-      assetModel: map['asset_model'] != null
-          ? map['asset_model'] as String
+      assetCategory: map['asset']['category'] != null
+          ? map['asset']['category'] as String
+          : null,
+      assetModel: map['asset']['model'] != null
+          ? map['asset']['model'] as String
           : null,
     );
   }

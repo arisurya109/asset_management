@@ -39,7 +39,10 @@ class _HomeViewState extends State<HomeView> {
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
     {
       'title': 'Preparation',
-      'view': PreparationView(),
+      'view': Scaffold(
+        appBar: AppBar(title: Text('Preparation')),
+        body: Center(child: Text('On Going')),
+      ),
       'icon': Assets.iPreparation,
     },
   ];
