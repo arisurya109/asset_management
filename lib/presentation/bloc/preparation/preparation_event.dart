@@ -9,8 +9,9 @@ class PreparationEvent extends Equatable {
 
 class OnCreatePreparationEvent extends PreparationEvent {
   final Preparation params;
+  final List<PreparationDetail> preparationDetail;
 
-  const OnCreatePreparationEvent(this.params);
+  const OnCreatePreparationEvent(this.params, this.preparationDetail);
 }
 
 class OnFindAllPreparationEvent extends PreparationEvent {}

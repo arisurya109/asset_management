@@ -55,4 +55,38 @@ class PreparationDetail extends Equatable {
       assetBrand,
     ];
   }
+
+  PreparationDetail copyWith({
+    int? id,
+    int? preparationId,
+    int? assetModelId,
+    int? quantityTarget,
+    int? quantityPicked,
+    int? quantityMissing,
+    String? exceptionStatus,
+    String? exceptionReason,
+    String? status,
+    String? notes,
+    String? assetModel,
+    String? assetType,
+    String? assetCategory,
+    String? assetBrand,
+  }) {
+    return PreparationDetail(
+      id: id ?? this.id,
+      preparationId: preparationId ?? this.preparationId,
+      assetModelId: assetModelId ?? this.assetModelId,
+      quantityTarget: quantityTarget ?? this.quantityTarget,
+      quantityPicked: quantityPicked ?? this.quantityPicked,
+      quantityMissing: quantityMissing ?? this.quantityMissing,
+      exceptionStatus: exceptionStatus ?? this.exceptionStatus,
+      exceptionReason: exceptionReason ?? this.exceptionReason,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      assetModel: assetModel ?? this.assetModel,
+      assetType: assetType ?? this.assetType,
+      assetCategory: assetCategory ?? this.assetCategory,
+      assetBrand: assetBrand ?? this.assetBrand,
+    );
+  }
 }

@@ -2,9 +2,12 @@ import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/master/preparation_template.dart';
+import 'package:asset_management/domain/entities/preparation/preparation.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/bloc/user/user_bloc.dart';
+import 'package:asset_management/presentation/view/preparation/selected_assets_preparation_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -80,6 +83,9 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                     compareFn: (value, value1) => value.name == value1.name,
                     selectedItem: selectedTemplate,
                     onChanged: (value) => setState(() {
+                      context.read<MasterBloc>().add(
+                        OnFindAllPreparationTemplateItemByIdEvent(value!.id!),
+                      );
                       selectedTemplate = value;
                     }),
                   ),
@@ -95,7 +101,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                   AppButton(
                     title: 'Next',
                     width: context.deviceWidth,
-                    onPressed: () {},
+                    onPressed: _nextButton,
                   ),
                 ],
               ),
@@ -104,5 +110,60 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
         },
       ),
     );
+  }
+
+  _nextButton() {
+    final destination = selectedLocation;
+    final assigned = selectedAssigned;
+    final preparationSet = selectedTemplate;
+    final notes = notesC.value.text.trim();
+    List<PreparationDetail> preparationDetail = [];
+
+    if (destination == null) {
+      context.showSnackbar(
+        'Destination cannot be empty',
+        backgroundColor: AppColors.kRed,
+      );
+    } else if (assigned == null) {
+      context.showSnackbar(
+        'Assigned Worker cannot be empty',
+        backgroundColor: AppColors.kRed,
+      );
+    } else {
+      if (preparationSet != null) {
+        final templates = context
+            .read<MasterBloc>()
+            .state
+            .preparationTemplateItems;
+
+        for (var i = 0; i < templates!.length; i++) {
+          preparationDetail.add(
+            PreparationDetail(
+              assetModelId: templates[i].modelId,
+              quantityTarget: templates[i].quantity,
+              assetBrand: templates[i].assetBrand,
+              assetCategory: templates[i].assetCategory,
+              assetType: templates[i].assetType,
+              assetModel: templates[i].assetModel,
+              quantityMissing: 0,
+              quantityPicked: 0,
+              status: 'PENDING',
+            ),
+          );
+        }
+      }
+      context.push(
+        SelectedAssetsPreparationView(
+          preparation: Preparation(
+            assigned: assigned.name,
+            assignedId: assigned.id,
+            destination: destination.name,
+            destinationId: destination.id,
+            notes: notes,
+          ),
+          preparationDetail: preparationDetail,
+        ),
+      );
+    }
   }
 }

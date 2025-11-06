@@ -1,16 +1,17 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asset_management/presentation/view/home/desktop/desktop_home_view.dart';
+import 'package:asset_management/presentation/view/preparation/preparation_view.dart';
+import 'package:flutter/material.dart';
+
+import 'package:asset_management/core/core.dart';
 import 'package:asset_management/presentation/components/app_dashboard_content.dart';
 import 'package:asset_management/presentation/components/app_dashboard_item.dart';
 import 'package:asset_management/presentation/components/app_drawer.dart';
 import 'package:asset_management/presentation/view/inventory/inventory_view.dart';
 import 'package:asset_management/presentation/view/migration/migration_view.dart';
-import 'package:asset_management/presentation/view/preparation/preparation_view.dart';
 import 'package:asset_management/presentation/view/registration/registration_view.dart';
 import 'package:asset_management/presentation/view/transfer/asset_transfer_view.dart';
 import 'package:asset_management/responsive_layout.dart';
-import 'package:flutter/material.dart';
-
-import 'package:asset_management/core/core.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -39,10 +40,7 @@ class _HomeViewState extends State<HomeView> {
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
     {
       'title': 'Preparation',
-      'view': Scaffold(
-        appBar: AppBar(title: Text('Preparation')),
-        body: Center(child: Text('On Going')),
-      ),
+      'view': PreparationView(),
       'icon': Assets.iPreparation,
     },
   ];
@@ -51,7 +49,7 @@ class _HomeViewState extends State<HomeView> {
     return ResponsiveLayout(
       mobileScaffold: _mobileHome(),
       tabletScaffold: _tabletHome(),
-      desktopScaffold: Scaffold(),
+      desktopScaffold: DesktopHomeView(),
     );
   }
 
@@ -61,45 +59,51 @@ class _HomeViewState extends State<HomeView> {
       drawer: AppDrawer(),
       body: Column(
         children: [
-          Row(
-            children: [
-              Expanded(
-                flex: 3,
-                child: AppDashboardItem(
-                  item: 3,
-                  backgroundColor: AppColors.kBase,
-                  borderColor: AppColors.kGrey,
-                  icon: Assets.iAssetModel,
-                  textColor: AppColors.kWhite,
-                  title: 'Model',
-                  value: '',
+          AppSpace.vertical(16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: AppDashboardItem(
+                    item: 3,
+                    backgroundColor: AppColors.kBase,
+                    borderColor: AppColors.kGrey,
+                    icon: Assets.iAssetModel,
+                    textColor: AppColors.kWhite,
+                    title: 'Model',
+                    value: '',
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 3,
-                child: AppDashboardItem(
-                  item: 3,
-                  backgroundColor: AppColors.kBase,
-                  borderColor: AppColors.kGrey,
-                  icon: Assets.iAssetModel,
-                  textColor: AppColors.kWhite,
-                  title: 'Model',
-                  value: '',
+                AppSpace.horizontal(16),
+                Expanded(
+                  flex: 3,
+                  child: AppDashboardItem(
+                    item: 3,
+                    backgroundColor: AppColors.kBase,
+                    borderColor: AppColors.kGrey,
+                    icon: Assets.iAssetModel,
+                    textColor: AppColors.kWhite,
+                    title: 'Model',
+                    value: '',
+                  ),
                 ),
-              ),
-              Expanded(
-                flex: 3,
-                child: AppDashboardItem(
-                  item: 3,
-                  backgroundColor: AppColors.kBase,
-                  borderColor: AppColors.kGrey,
-                  icon: Assets.iAssetModel,
-                  textColor: AppColors.kWhite,
-                  title: 'Model',
-                  value: '',
+                AppSpace.horizontal(16),
+                Expanded(
+                  flex: 3,
+                  child: AppDashboardItem(
+                    item: 3,
+                    backgroundColor: AppColors.kBase,
+                    borderColor: AppColors.kGrey,
+                    icon: Assets.iAssetModel,
+                    textColor: AppColors.kWhite,
+                    title: 'Model',
+                    value: '',
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ],
       ),

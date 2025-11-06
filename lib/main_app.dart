@@ -1,3 +1,4 @@
+import 'package:asset_management/my_custom_scroll.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
@@ -40,6 +41,7 @@ class MainApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
+        scrollBehavior: MyCustomScrollBehavior(),
         locale: Locale('id', 'ID'),
         title: 'Asset Management',
         debugShowCheckedModeBanner: false,

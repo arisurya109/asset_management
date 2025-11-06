@@ -79,23 +79,86 @@ class PreparationBloc extends Bloc<PreparationEvent, PreparationState> {
     Emitter<PreparationState> emit,
   ) async {
     emit(state.copyWith(status: StatusPreparation.loading));
+    final preparation = event.params;
+    final preparationDetails = event.preparationDetail;
 
-    final failureOrPreparation = await _createPreparationUseCase(event.params);
+    try {
+      final failureOrPreparation = await _createPreparationUseCase(preparation);
 
-    return failureOrPreparation.fold(
-      (failure) => emit(
+      await failureOrPreparation.fold(
+        (failure) async {
+          emit(
+            state.copyWith(
+              status: StatusPreparation.failed,
+              message: failure.message,
+            ),
+          );
+        },
+        (responsePreparation) async {
+          final preparationId = responsePreparation.id;
+
+          bool allDetailsSuccess = true;
+          String? errorMessage;
+          final List<PreparationDetail> createdDetails = [];
+
+          for (var i = 0; i < preparationDetails.length; i++) {
+            try {
+              final detail = preparationDetails[i].copyWith(
+                preparationId: preparationId,
+              );
+              final detailResult = await _createPreparationDetailUseCase(
+                detail,
+              );
+
+              detailResult.fold(
+                (failure) {
+                  allDetailsSuccess = false;
+                  errorMessage = failure.message;
+                },
+                (success) {
+                  createdDetails.add(success);
+                },
+              );
+
+              // If one fails, break the loop
+              if (!allDetailsSuccess) break;
+            } catch (e) {
+              allDetailsSuccess = false;
+              errorMessage = e.toString();
+              break;
+            }
+          }
+
+          if (allDetailsSuccess) {
+            emit(
+              state.copyWith(
+                status: StatusPreparation.success,
+                preparations: [...?state.preparations, preparation],
+                preparationDetails: [
+                  ...?state.preparationDetails,
+                  ...createdDetails,
+                ],
+              ),
+            );
+          } else {
+            emit(
+              state.copyWith(
+                status: StatusPreparation.failed,
+                message:
+                    errorMessage ?? 'Failed to create some preparation details',
+              ),
+            );
+          }
+        },
+      );
+    } catch (e) {
+      emit(
         state.copyWith(
           status: StatusPreparation.failed,
-          message: failure.message,
+          message: 'Unexpected error: ${e.toString()}',
         ),
-      ),
-      (preparation) => emit(
-        state.copyWith(
-          status: StatusPreparation.success,
-          preparations: [...?state.preparations, preparation],
-        ),
-      ),
-    );
+      );
+    }
   }
 
   void _findAllPreparation(
