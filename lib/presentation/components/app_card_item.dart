@@ -17,6 +17,7 @@ class AppCardItem extends StatelessWidget {
   IconData? iconRight;
   bool? noDescription;
   void Function()? onTap;
+  double? fontSize;
 
   AppCardItem({
     super.key,
@@ -31,6 +32,7 @@ class AppCardItem extends StatelessWidget {
     this.iconRight,
     this.noDescription = false,
     this.onTap,
+    this.fontSize = 12,
   });
 
   @override
@@ -57,7 +59,7 @@ class AppCardItem extends StatelessWidget {
                     Text(
                       title ?? 'Title',
                       style: TextStyle(
-                        fontSize: 18,
+                        fontSize: fontSize,
                         fontWeight: FontWeight.bold,
                         color: AppColors.kBlack,
                       ),
@@ -71,7 +73,7 @@ class AppCardItem extends StatelessWidget {
                       child: Text(
                         leading ?? 'Leading',
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: fontSize,
                           color: colorTextLeading,
                           fontWeight: FontWeight.w600,
                         ),
@@ -83,7 +85,7 @@ class AppCardItem extends StatelessWidget {
                 Text(
                   subtitle ?? 'Subtitle',
                   style: TextStyle(
-                    fontSize: 16,
+                    fontSize: fontSize,
                     color: AppColors.kBlack,
                     fontWeight: FontWeight.w500,
                   ),
@@ -107,7 +109,7 @@ class AppCardItem extends StatelessWidget {
                                 iconLeft != null
                                     ? Icon(
                                         iconLeft,
-                                        size: 20,
+                                        size: fontSize,
                                         color: AppColors.kGrey,
                                       )
                                     : SizedBox(),
@@ -115,7 +117,7 @@ class AppCardItem extends StatelessWidget {
                                 Text(
                                   descriptionLeft ?? 'Desc Left',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: fontSize,
                                     color: AppColors.kBlack,
                                   ),
                                 ),
@@ -128,7 +130,7 @@ class AppCardItem extends StatelessWidget {
                                 iconRight != null
                                     ? Icon(
                                         iconRight,
-                                        size: 20,
+                                        size: fontSize,
                                         color: AppColors.kGrey,
                                       )
                                     : SizedBox(),
@@ -136,7 +138,7 @@ class AppCardItem extends StatelessWidget {
                                 Text(
                                   descriptionRight ?? 'Desc Right',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: fontSize,
                                     color: AppColors.kBlack,
                                   ),
                                 ),

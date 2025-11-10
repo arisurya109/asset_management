@@ -2,6 +2,7 @@ import 'package:asset_management/my_custom_scroll.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
+import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
 import 'package:asset_management/presentation/bloc/purchase_order/purchase_order_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/bloc/permissions/permissions_bloc.dart';
@@ -39,6 +40,8 @@ class MainApp extends StatelessWidget {
           create: (context) =>
               locator<PreparationBloc>()..add(OnFindAllPreparationEvent()),
         ),
+
+        BlocProvider(create: (context) => locator<PreparationDetailBloc>()),
       ],
       child: MaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
@@ -55,7 +58,7 @@ class MainApp extends StatelessWidget {
             backgroundColor: AppColors.kBackground,
             titleTextStyle: TextStyle(
               color: Colors.teal,
-              fontSize: 20,
+              fontSize: 16,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.5,
             ),

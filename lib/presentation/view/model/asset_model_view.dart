@@ -2,6 +2,7 @@
 import 'package:asset_management/presentation/components/app_card_item.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/presentation/view/model/create_asset_model_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -21,6 +22,13 @@ class _AssetModelViewState extends State<AssetModelView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileModel(),
+      mobileMScaffold: _mobileModel(isLarge: false),
+    );
+  }
+
+  Widget _mobileModel({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         final permission = state.user!.modules;
@@ -43,7 +51,12 @@ class _AssetModelViewState extends State<AssetModelView> {
                   child: CircularProgressIndicator(color: AppColors.kBase),
                 );
               } else if (state.status == StatusMaster.failed) {
-                return Center(child: Text(state.message ?? ''));
+                return Center(
+                  child: Text(
+                    state.message ?? '',
+                    style: TextStyle(fontSize: isLarge ? 14 : 12),
+                  ),
+                );
               } else if (state.models != null || state.models != []) {
                 final models = state.models
                   ?..sort((a, b) => a.name!.compareTo(b.name!));
@@ -71,6 +84,7 @@ class _AssetModelViewState extends State<AssetModelView> {
                       AppTextField(
                         noTitle: true,
                         hintText: 'Search...',
+                        fontSize: isLarge ? 14 : 12,
                         onChanged: (value) => setState(() {
                           query = value;
                         }),
@@ -87,6 +101,7 @@ class _AssetModelViewState extends State<AssetModelView> {
                                 : models?[index];
                             return AppCardItem(
                               title: type?.name,
+                              fontSize: isLarge ? 14 : 12,
                               leading: type?.typeName,
                               subtitle: type?.categoryName,
                               descriptionLeft: type?.unit == 1 ? 'Unit' : 'Pcs',

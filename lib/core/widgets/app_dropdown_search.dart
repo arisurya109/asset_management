@@ -14,6 +14,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
   final bool enabled;
   final EdgeInsetsGeometry? margin;
   final double borderRadius;
+  final double fontSize;
 
   const AppDropDownSearch({
     super.key,
@@ -28,6 +29,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
     this.enabled = true,
     this.margin,
     this.borderRadius = 8,
+    this.fontSize = 12,
   });
 
   @override
@@ -35,11 +37,12 @@ class AppDropDownSearch<T> extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        AppSpace.vertical(8),
+        if (title != '')
+          Text(
+            title,
+            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
+          ),
+        if (title != '') AppSpace.vertical(8),
         DropdownSearch<T>(
           enabled: enabled,
           items: (filter, loadProps) => items,
@@ -59,6 +62,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
               return ListTile(
                 title: Text(
                   itemAsString != null ? itemAsString!(item) : item.toString(),
+                  style: TextStyle(fontSize: fontSize),
                 ),
                 selected: isSelected,
               );
@@ -72,6 +76,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
               itemAsString != null
                   ? itemAsString!(selectedItem)
                   : selectedItem.toString(),
+              style: TextStyle(fontSize: fontSize),
             );
           },
           decoratorProps: DropDownDecoratorProps(
@@ -81,6 +86,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
               hintStyle: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w400,
+                fontSize: fontSize,
               ),
               contentPadding: EdgeInsets.symmetric(
                 horizontal: 12,

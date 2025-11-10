@@ -4,6 +4,7 @@ import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -44,6 +45,13 @@ class _MigrationViewState extends State<MigrationView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileMigration(),
+      mobileMScaffold: _mobileMigration(isLarge: false),
+    );
+  }
+
+  Widget _mobileMigration({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Migration')),
       body: BlocBuilder<MasterBloc, MasterState>(
@@ -58,6 +66,7 @@ class _MigrationViewState extends State<MigrationView> {
                     title: "Location",
                     hintText: "Select location",
                     borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
                     items: state.locations!
                       ..sort((a, b) => a.name!.compareTo(b.name!)),
                     itemAsString: (item) => item.name ?? '',
@@ -72,6 +81,7 @@ class _MigrationViewState extends State<MigrationView> {
                     title: "Model",
                     hintText: "Select Model",
                     borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
                     items: state.models ?? [],
                     itemAsString: (item) => item.name ?? '',
                     selectedItem: model,
@@ -81,12 +91,16 @@ class _MigrationViewState extends State<MigrationView> {
                     },
                   ),
                   AppSpace.vertical(16),
-                  AppDropDown(
-                    hintText: 'Selected Color',
-                    items: AssetsHelper.colors,
+                  AppDropDownSearch<String>(
                     title: 'Color',
-                    value: colors,
-                    onSelected: (value) => setState(() {
+                    hintText: 'Selected Color',
+                    borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
+                    items: AssetsHelper.colors,
+                    itemAsString: (item) => item,
+                    selectedItem: colors,
+                    compareFn: (a, b) => a == b,
+                    onChanged: (value) => setState(() {
                       colors = value;
                       switch (colors) {
                         case 'BLACK':
@@ -109,22 +123,30 @@ class _MigrationViewState extends State<MigrationView> {
                     }),
                   ),
                   AppSpace.vertical(16),
-                  AppDropDown(
-                    hintText: 'Selected Condition',
-                    items: AssetsHelper.conditions,
+                  AppDropDownSearch<String>(
                     title: 'Condition',
-                    value: conditions,
-                    onSelected: (value) => setState(() {
+                    hintText: 'Selected Condition',
+                    borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
+                    items: AssetsHelper.conditions,
+                    itemAsString: (item) => item,
+                    selectedItem: conditions,
+                    compareFn: (a, b) => a == b,
+                    onChanged: (value) => setState(() {
                       conditions = value;
                     }),
                   ),
                   AppSpace.vertical(16),
-                  AppDropDown(
-                    hintText: 'Selected Status',
-                    items: AssetsHelper.status,
+                  AppDropDownSearch<String>(
                     title: 'Status',
-                    value: status,
-                    onSelected: (value) => setState(() {
+                    hintText: 'Selected Status',
+                    borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
+                    items: AssetsHelper.status,
+                    itemAsString: (item) => item,
+                    selectedItem: status,
+                    compareFn: (a, b) => a == b,
+                    onChanged: (value) => setState(() {
                       status = value;
                     }),
                   ),
@@ -132,6 +154,7 @@ class _MigrationViewState extends State<MigrationView> {
                   AppTextField(
                     controller: description,
                     hintText: 'Optional',
+                    fontSize: isLarge ? 14 : 12,
                     title: 'Description',
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.next,
@@ -141,9 +164,10 @@ class _MigrationViewState extends State<MigrationView> {
                     controller: assetIdOld,
                     hintText: 'Required',
                     title: 'Asset Id Old',
+                    fontSize: isLarge ? 14 : 12,
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.go,
-                    onSubmitted: (_) => _onSubmit(),
+                    onSubmitted: (_) => _onSubmit(isLarge),
                   ),
                   AppSpace.vertical(32),
                   BlocConsumer<AssetBloc, AssetState>(
@@ -164,6 +188,7 @@ class _MigrationViewState extends State<MigrationView> {
                         );
                         context.showDialogConfirm(
                           title: 'Successfully Migration',
+                          fontSize: isLarge ? 16 : 14,
                           content:
                               'Asset Code : ${asset?.assetCode}\nSerial Number : ${asset?.serialNumber}\nLocation : ${asset?.location}',
                           onCancel: () => context.pop(),
@@ -184,9 +209,10 @@ class _MigrationViewState extends State<MigrationView> {
                             ? 'Loading...'
                             : 'New Registration',
                         width: double.maxFinite,
+                        fontSize: isLarge ? 16 : 14,
                         onPressed: state.status == StatusAsset.loading
                             ? null
-                            : _onSubmit,
+                            : () => _onSubmit(isLarge),
                       );
                     },
                   ),
@@ -200,7 +226,7 @@ class _MigrationViewState extends State<MigrationView> {
     );
   }
 
-  _onSubmit() {
+  _onSubmit(bool isLarge) {
     final desc = description.value.text.trim();
     final ast = assetIdOld.value.text.trim();
 
@@ -214,6 +240,7 @@ class _MigrationViewState extends State<MigrationView> {
         content: 'Model : ${model?.name}\nAsset Id Old : $ast',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<AssetBloc>().add(
@@ -239,6 +266,7 @@ class _MigrationViewState extends State<MigrationView> {
       context.showSnackbar(
         'Failed, please check field is empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     }
   }

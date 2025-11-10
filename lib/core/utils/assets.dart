@@ -31,4 +31,5 @@ class Assets {
   static const iSettingUnselected = 'assets/icons/settings_unselected.png';
   static const iLogout = 'assets/icons/logout.png';
   static const iVendor = 'assets/icons/vendor.png';
+  static const iPicking = 'assets/icons/icons_picking.png';
 }

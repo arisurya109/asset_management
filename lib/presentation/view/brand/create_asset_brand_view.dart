@@ -1,5 +1,6 @@
 import 'package:asset_management/domain/entities/master/asset_brand.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -32,6 +33,13 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreateBrand(),
+      mobileMScaffold: _mobileCreateBrand(isLarge: false),
+    );
+  }
+
+  Widget _mobileCreateBrand({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Asset Brand'), elevation: 0),
       body: Padding(
@@ -46,15 +54,17 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 title: 'Name',
+                fontSize: isLarge ? 14 : 12,
               ),
               AppSpace.vertical(16),
               AppTextField(
                 controller: initC,
+                fontSize: isLarge ? 14 : 12,
                 hintText: 'Example : DLL',
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.go,
                 title: 'Init',
-                onSubmitted: (_) => _onSubmit(),
+                onSubmitted: (_) => _onSubmit(isLarge),
               ),
               AppSpace.vertical(32),
               BlocConsumer<MasterBloc, MasterState>(
@@ -65,11 +75,15 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                     context.showSnackbar(
                       state.message ?? 'Failed to create asset brand',
                       backgroundColor: AppColors.kRed,
+                      fontSize: isLarge ? 14 : 12,
                     );
                   }
 
                   if (state.status == StatusMaster.success) {
-                    context.showSnackbar('Successfully create asset brand');
+                    context.showSnackbar(
+                      'Successfully create asset brand',
+                      fontSize: isLarge ? 14 : 12,
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -78,10 +92,10 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                         ? 'Loading...'
                         : 'Create',
                     width: double.maxFinite,
-
+                    fontSize: isLarge ? 16 : 14,
                     onPressed: state.status == StatusMaster.loading
                         ? null
-                        : _onSubmit,
+                        : () => _onSubmit(isLarge),
                   );
                 },
               ),
@@ -92,7 +106,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
     );
   }
 
-  _onSubmit() {
+  _onSubmit(bool isLarge) {
     final name = nameC.value.text.trim();
     final init = initC.value.text.trim();
     if (name.isFilled() && init.length == 3) {
@@ -101,6 +115,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
         content: 'Name : $name\nInit : $init',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<MasterBloc>().add(
@@ -113,6 +128,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
       context.showSnackbar(
         'Name cannot be empty & Init max length 3',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     }
   }

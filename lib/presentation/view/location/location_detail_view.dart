@@ -1,5 +1,6 @@
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,13 @@ class LocationDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileLocationDetail(context),
+      mobileMScaffold: _mobileLocationDetail(context, isLarge: false),
+    );
+  }
+
+  Widget _mobileLocationDetail(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Asset Detail'),
@@ -23,7 +31,10 @@ class LocationDetailView extends StatelessWidget {
                 BlocListener<PrinterBloc, PrinterState>(
                   listener: (context, state) {
                     if (state.status == PrinterStatus.success) {
-                      context.showSnackbar('Success reprint location');
+                      context.showSnackbar(
+                        'Success reprint location',
+                        fontSize: isLarge ? 14 : 12,
+                      );
                     }
                   },
                   child: Padding(
@@ -53,17 +64,41 @@ class LocationDetailView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppSpace.vertical(12),
-              _descriptionItem('Name', params.name ?? ''),
+              _descriptionItem(
+                'Name',
+                params.name ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
-              _descriptionItem('Type', params.locationType ?? ''),
+              _descriptionItem(
+                'Type',
+                params.locationType ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
-              _descriptionItem('Init', params.init ?? ''),
+              _descriptionItem(
+                'Init',
+                params.init ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
-              _descriptionItem('Code', params.code ?? ''),
+              _descriptionItem(
+                'Code',
+                params.code ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
-              _descriptionItem('Box Type', params.boxType ?? ''),
+              _descriptionItem(
+                'Box Type',
+                params.boxType ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
-              _descriptionItem('Parent', params.parentName ?? ''),
+              _descriptionItem(
+                'Parent',
+                params.parentName ?? '',
+                fontSize: isLarge ? 14 : 12,
+              ),
               AppSpace.vertical(18),
             ],
           ),
@@ -72,18 +107,18 @@ class LocationDetailView extends StatelessWidget {
     );
   }
 
-  Widget _descriptionItem(String title, String value) {
+  Widget _descriptionItem(String title, String value, {double fontSize = 12}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
         ),
         AppSpace.vertical(3),
         Text(
           value,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w400),
         ),
       ],
     );

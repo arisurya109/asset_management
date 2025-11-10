@@ -1,4 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,6 +23,13 @@ class _AssetBrandViewState extends State<AssetBrandView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileBrand(),
+      mobileMScaffold: _mobileBrand(isLarge: false),
+    );
+  }
+
+  Widget _mobileBrand({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         final permission = state.user!.modules;
@@ -44,7 +52,12 @@ class _AssetBrandViewState extends State<AssetBrandView> {
                   child: CircularProgressIndicator(color: AppColors.kBase),
                 );
               } else if (state.status == StatusMaster.failed) {
-                return Center(child: Text(state.message ?? ''));
+                return Center(
+                  child: Text(
+                    state.message ?? '',
+                    style: TextStyle(fontSize: isLarge ? 14 : 12),
+                  ),
+                );
               } else if (state.brands != null || state.brands != []) {
                 final brands = state.brands
                   ?..sort((a, b) => a.name!.compareTo(b.name!));
@@ -67,6 +80,7 @@ class _AssetBrandViewState extends State<AssetBrandView> {
                       AppTextField(
                         noTitle: true,
                         hintText: 'Search...',
+                        fontSize: isLarge ? 14 : 12,
                         onChanged: (value) => setState(() {
                           query = value;
                         }),
@@ -83,6 +97,7 @@ class _AssetBrandViewState extends State<AssetBrandView> {
                                 : brands?[index];
                             return AppListTileCustom(
                               title: brand?.name,
+                              fontSize: isLarge ? 14 : 12,
                               trailing: brand?.init,
                             );
                           },

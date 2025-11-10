@@ -11,7 +11,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../../core/widgets/app_dropdown_search.dart';
 
 class RegistrationNonConsumableView extends StatefulWidget {
-  const RegistrationNonConsumableView({super.key});
+  final bool isLarge;
+
+  const RegistrationNonConsumableView({super.key, required this.isLarge});
 
   @override
   State<RegistrationNonConsumableView> createState() =>
@@ -55,6 +57,7 @@ class _RegistrationNonConsumableViewState
           children: [
             AppDropDownSearch<Location>(
               title: "Location",
+              fontSize: widget.isLarge ? 12 : 10,
               hintText: "Select location",
               borderRadius: 5,
               items: state.locations!
@@ -70,6 +73,7 @@ class _RegistrationNonConsumableViewState
             AppDropDownSearch<AssetModel>(
               title: "Model",
               hintText: "Select Model",
+              fontSize: widget.isLarge ? 12 : 10,
               borderRadius: 5,
               items: state.models ?? [],
               itemAsString: (item) => item.name ?? '',
@@ -80,12 +84,16 @@ class _RegistrationNonConsumableViewState
               },
             ),
             AppSpace.vertical(16),
-            AppDropDown(
-              hintText: 'Selected Color',
-              items: AssetsHelper.colors,
+            AppDropDownSearch<String>(
               title: 'Color',
-              value: colors,
-              onSelected: (value) => setState(() {
+              hintText: "Selected Color",
+              fontSize: widget.isLarge ? 12 : 10,
+              borderRadius: 5,
+              items: AssetsHelper.colors,
+              itemAsString: (item) => item,
+              selectedItem: colors,
+              compareFn: (a, b) => a == b,
+              onChanged: (value) => setState(() {
                 colors = value;
                 switch (colors) {
                   case 'BLACK':
@@ -108,22 +116,30 @@ class _RegistrationNonConsumableViewState
               }),
             ),
             AppSpace.vertical(16),
-            AppDropDown(
-              hintText: 'Selected Condition',
-              items: AssetsHelper.conditions,
+            AppDropDownSearch<String>(
               title: 'Condition',
-              value: conditions,
-              onSelected: (value) => setState(() {
+              hintText: 'Selected Condition',
+              fontSize: widget.isLarge ? 12 : 10,
+              borderRadius: 5,
+              items: AssetsHelper.conditions,
+              itemAsString: (item) => item,
+              selectedItem: conditions,
+              compareFn: (a, b) => a == b,
+              onChanged: (value) => setState(() {
                 conditions = value;
               }),
             ),
             AppSpace.vertical(16),
-            AppDropDown(
-              hintText: 'Selected Status',
-              items: AssetsHelper.status,
+            AppDropDownSearch<String>(
               title: 'Status',
-              value: status,
-              onSelected: (value) => setState(() {
+              hintText: 'Selected Status',
+              fontSize: widget.isLarge ? 12 : 10,
+              borderRadius: 5,
+              items: AssetsHelper.status,
+              itemAsString: (item) => item,
+              selectedItem: status,
+              compareFn: (a, b) => a == b,
+              onChanged: (value) => setState(() {
                 status = value;
               }),
             ),
@@ -132,6 +148,7 @@ class _RegistrationNonConsumableViewState
               controller: description,
               hintText: 'Optional',
               title: 'Description',
+              fontSize: widget.isLarge ? 12 : 10,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
             ),
@@ -140,6 +157,7 @@ class _RegistrationNonConsumableViewState
               controller: purchaseOrderNumber,
               hintText: 'Optional',
               title: 'Purchase Order Number',
+              fontSize: widget.isLarge ? 12 : 10,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
             ),
@@ -148,6 +166,7 @@ class _RegistrationNonConsumableViewState
               controller: serialNumber,
               hintText: 'Optional',
               title: 'Serial Number',
+              fontSize: widget.isLarge ? 12 : 10,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _onSubmit(),
@@ -160,6 +179,7 @@ class _RegistrationNonConsumableViewState
                   context.showSnackbar(
                     state.message!,
                     backgroundColor: AppColors.kRed,
+                    fontSize: widget.isLarge ? 12 : 10,
                   );
                 }
 
@@ -175,6 +195,7 @@ class _RegistrationNonConsumableViewState
                         'Asset Code : ${asset?.assetCode}\nSerial Number : ${asset?.serialNumber}\nLocation : ${asset?.location}',
                     onCancel: () => context.pop(),
                     onCancelText: 'Done',
+                    fontSize: widget.isLarge ? 12 : 10,
                     onConfirm: () {
                       context.pop();
                       context.read<PrinterBloc>().add(
@@ -187,6 +208,7 @@ class _RegistrationNonConsumableViewState
               },
               builder: (context, state) {
                 return AppButton(
+                  fontSize: widget.isLarge ? 14 : 12,
                   title: state.status == StatusAsset.loading
                       ? 'Loading...'
                       : 'Registration',
@@ -197,7 +219,7 @@ class _RegistrationNonConsumableViewState
                 );
               },
             ),
-            AppSpace.vertical(12),
+            AppSpace.vertical(24),
           ],
         );
       },
@@ -218,6 +240,7 @@ class _RegistrationNonConsumableViewState
         content: 'Model : ${model?.name}\nSerial Number : $sn\n',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: widget.isLarge ? 12 : 10,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<AssetBloc>().add(
@@ -244,6 +267,7 @@ class _RegistrationNonConsumableViewState
       context.showSnackbar(
         'Failed, please check field is empty',
         backgroundColor: AppColors.kRed,
+        fontSize: widget.isLarge ? 12 : 10,
       );
     }
   }

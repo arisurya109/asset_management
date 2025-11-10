@@ -1,27 +1,23 @@
 import 'package:flutter/material.dart';
 
 class ResponsiveLayout extends StatelessWidget {
-  final Widget mobileScaffold;
-  final Widget tabletScaffold;
-  final Widget desktopScaffold;
+  final Widget mobileLScaffold;
+  final Widget mobileMScaffold;
 
   const ResponsiveLayout({
     super.key,
-    required this.mobileScaffold,
-    required this.tabletScaffold,
-    required this.desktopScaffold,
+    required this.mobileLScaffold,
+    required this.mobileMScaffold,
   });
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        if (constraints.maxWidth < 500) {
-          return mobileScaffold;
-        } else if (constraints.maxWidth < 1100) {
-          return tabletScaffold;
+        if (constraints.maxWidth < 365) {
+          return mobileMScaffold;
         } else {
-          return desktopScaffold;
+          return mobileLScaffold;
         }
       },
     );

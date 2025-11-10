@@ -8,6 +8,7 @@ class AppRadioListOption<T> extends StatelessWidget {
   List<Map<String, dynamic>> options;
   T? groupValue;
   void Function(T?)? onChanged;
+  double? fontSize;
 
   AppRadioListOption({
     super.key,
@@ -15,6 +16,7 @@ class AppRadioListOption<T> extends StatelessWidget {
     required this.options,
     this.groupValue,
     this.onChanged,
+    this.fontSize = 12,
   });
 
   @override
@@ -24,7 +26,7 @@ class AppRadioListOption<T> extends StatelessWidget {
       children: [
         Text(
           title ?? 'Title',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
         ),
         Row(
           children: options.map((e) {
@@ -32,6 +34,7 @@ class AppRadioListOption<T> extends StatelessWidget {
               child: AppRadioListItem<T>(
                 groupValue: groupValue,
                 onChanged: onChanged,
+                fontSize: fontSize,
                 title: e['label'],
                 value: e['value'],
               ),

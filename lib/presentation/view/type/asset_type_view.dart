@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/presentation/view/type/create_asset_type_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,6 +23,13 @@ class _AssetTypeViewState extends State<AssetTypeView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileType(),
+      mobileMScaffold: _mobileType(isLarge: false),
+    );
+  }
+
+  Widget _mobileType({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         final permission = state.user!.modules;
@@ -44,7 +52,12 @@ class _AssetTypeViewState extends State<AssetTypeView> {
                   child: CircularProgressIndicator(color: AppColors.kBase),
                 );
               } else if (state.status == StatusMaster.failed) {
-                return Center(child: Text(state.message ?? ''));
+                return Center(
+                  child: Text(
+                    state.message ?? '',
+                    style: TextStyle(fontSize: isLarge ? 14 : 12),
+                  ),
+                );
               } else if (state.types != null || state.types != []) {
                 final types = state.types
                   ?..sort((a, b) => a.name!.compareTo(b.name!));
@@ -66,6 +79,7 @@ class _AssetTypeViewState extends State<AssetTypeView> {
                       AppSpace.vertical(16),
                       AppTextField(
                         noTitle: true,
+                        fontSize: isLarge ? 14 : 12,
                         hintText: 'Search...',
                         onChanged: (value) => setState(() {
                           query = value;
@@ -84,6 +98,7 @@ class _AssetTypeViewState extends State<AssetTypeView> {
                             return AppListTileCustom(
                               title: type?.name,
                               trailing: type?.init,
+                              fontSize: isLarge ? 14 : 12,
                             );
                           },
                         ),

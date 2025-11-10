@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 class AppSegmentedButton<T> extends StatelessWidget {
   List<T>? options;
   T selected;
+  double? fontSize;
   void Function(Set<T>)? onSelectionChanged;
 
   AppSegmentedButton({
@@ -12,6 +13,7 @@ class AppSegmentedButton<T> extends StatelessWidget {
     required this.options,
     required this.selected,
     this.onSelectionChanged,
+    this.fontSize = 12,
   });
 
   @override
@@ -25,6 +27,7 @@ class AppSegmentedButton<T> extends StatelessWidget {
             label: Text(
               e.toString(),
               style: TextStyle(
+                fontSize: fontSize,
                 color: selected == e ? Colors.white : Colors.grey,
                 fontWeight: selected == e ? FontWeight.w600 : FontWeight.w500,
               ),

@@ -1,5 +1,6 @@
 import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -33,6 +34,13 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreateCategory(),
+      mobileMScaffold: _mobileCreateCategory(isLarge: false),
+    );
+  }
+
+  Widget _mobileCreateCategory({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Asset Category'), elevation: 0),
       body: Padding(
@@ -47,15 +55,17 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 title: 'Name',
+                fontSize: isLarge ? 14 : 12,
               ),
               AppSpace.vertical(16),
               AppTextField(
                 controller: initC,
+                fontSize: isLarge ? 14 : 12,
                 hintText: 'Example : CPU',
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.go,
                 title: 'Init',
-                onSubmitted: (_) => _onSubmit(),
+                onSubmitted: (_) => _onSubmit(isLarge),
               ),
               AppSpace.vertical(32),
               BlocConsumer<MasterBloc, MasterState>(
@@ -66,11 +76,14 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
                     context.showSnackbar(
                       state.message ?? 'Failed to create asset category',
                       backgroundColor: AppColors.kRed,
+                      fontSize: isLarge ? 14 : 12,
                     );
                   }
-
                   if (state.status == StatusMaster.success) {
-                    context.showSnackbar('Successfully create asset category');
+                    context.showSnackbar(
+                      'Successfully create asset category',
+                      fontSize: isLarge ? 14 : 12,
+                    );
                   }
                 },
                 builder: (context, state) {
@@ -79,10 +92,10 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
                         ? 'Loading...'
                         : 'Create',
                     width: double.maxFinite,
-
+                    fontSize: isLarge ? 16 : 14,
                     onPressed: state.status == StatusMaster.loading
                         ? null
-                        : _onSubmit,
+                        : () => _onSubmit(isLarge),
                   );
                 },
               ),
@@ -93,7 +106,7 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
     );
   }
 
-  _onSubmit() {
+  _onSubmit(bool isLarge) {
     final name = nameC.value.text.trim();
     final init = initC.value.text.trim();
     if (name.isFilled() && init.length == 3) {
@@ -102,6 +115,7 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
         content: 'Name : $name\nInit : $init',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<MasterBloc>().add(
@@ -114,6 +128,7 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
       context.showSnackbar(
         'Name cannot be empty & Init max length 3',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     }
   }

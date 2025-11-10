@@ -5,6 +5,7 @@ class AppRadioListItem<T> extends StatelessWidget {
   String? title;
   T? value;
   T? groupValue;
+  double? fontSize;
   void Function(T?)? onChanged;
 
   AppRadioListItem({
@@ -13,6 +14,7 @@ class AppRadioListItem<T> extends StatelessWidget {
     this.value,
     this.groupValue,
     this.onChanged,
+    this.fontSize = 12,
   });
 
   @override
@@ -23,7 +25,7 @@ class AppRadioListItem<T> extends StatelessWidget {
         highlightColor: Colors.transparent,
       ),
       child: RadioListTile<T>(
-        title: Text(title ?? 'Title'),
+        title: Text(title ?? 'Title', style: TextStyle(fontSize: fontSize)),
         value: value as T,
         groupValue: groupValue,
         onChanged: onChanged,

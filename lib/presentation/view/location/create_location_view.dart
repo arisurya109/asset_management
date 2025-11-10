@@ -2,6 +2,7 @@ import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/main_export.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 
 import '../../../../core/core.dart';
 
@@ -40,6 +41,13 @@ class _CreateLocationViewState extends State<CreateLocationView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreateLocation(),
+      mobileMScaffold: _mobileCreateLocation(isLarge: false),
+    );
+  }
+
+  Widget _mobileCreateLocation({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Location'), elevation: 0),
       body: BlocBuilder<MasterBloc, MasterState>(
@@ -55,6 +63,7 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                     items: state.locations ?? [],
                     hintText: 'Selected Parent',
                     selectedItem: parentLocation,
+                    fontSize: isLarge ? 14 : 12,
                     compareFn: (value, value1) => value.name == value1.name,
                     itemAsString: (value) => value.name!,
                     onChanged: (value) => setState(() {
@@ -65,6 +74,7 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                   AppDropDownSearch<String>(
                     title: 'Location Type',
                     items: locationType,
+                    fontSize: isLarge ? 14 : 12,
                     hintText: 'Selected Type',
                     selectedItem: locationTypeSelected,
                     compareFn: (value, value1) => value == value1,
@@ -77,6 +87,7 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                   AppDropDownSearch<String>(
                     title: 'Box Type',
                     items: boxType,
+                    fontSize: isLarge ? 14 : 12,
                     hintText: 'Selected Box Type',
                     selectedItem: boxTypeSelected,
                     compareFn: (value, value1) => value == value1,
@@ -90,12 +101,14 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                     controller: nameC,
                     hintText: 'Example : Information Technology',
                     keyboardType: TextInputType.text,
+                    fontSize: isLarge ? 14 : 12,
                     textInputAction: TextInputAction.next,
                     title: 'Name Location',
                   ),
                   AppSpace.vertical(16),
                   AppTextField(
                     controller: codeC,
+                    fontSize: isLarge ? 14 : 12,
                     hintText: 'Example : 909',
                     keyboardType: TextInputType.number,
                     textInputAction: TextInputAction.next,
@@ -104,11 +117,12 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                   AppSpace.vertical(16),
                   AppTextField(
                     controller: initC,
+                    fontSize: isLarge ? 14 : 12,
                     hintText: 'Example : IT',
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.go,
                     title: 'Init Location',
-                    onSubmitted: (_) => _onSubmit(),
+                    onSubmitted: (_) => _onSubmit(isLarge),
                   ),
                   AppSpace.vertical(32),
                   BlocConsumer<MasterBloc, MasterState>(
@@ -125,11 +139,15 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                         context.showSnackbar(
                           state.message ?? 'Failed to create location',
                           backgroundColor: AppColors.kRed,
+                          fontSize: isLarge ? 14 : 12,
                         );
                       }
 
                       if (state.status == StatusMaster.success) {
-                        context.showSnackbar('Successfully create location');
+                        context.showSnackbar(
+                          'Successfully create location',
+                          fontSize: isLarge ? 14 : 12,
+                        );
                       }
                     },
                     builder: (context, state) {
@@ -138,10 +156,10 @@ class _CreateLocationViewState extends State<CreateLocationView> {
                             ? 'Loading...'
                             : 'Create',
                         width: double.maxFinite,
-
+                        fontSize: isLarge ? 16 : 14,
                         onPressed: state.status == StatusMaster.loading
                             ? null
-                            : _onSubmit,
+                            : () => _onSubmit(isLarge),
                       );
                     },
                   ),
@@ -154,17 +172,24 @@ class _CreateLocationViewState extends State<CreateLocationView> {
     );
   }
 
-  _onSubmit() {
+  _onSubmit(bool isLarge) {
     final name = nameC.value.text.trim();
     final init = initC.value.text.trim();
     final code = codeC.value.text.trim().toString();
     if (locationTypeSelected == null) {
-      context.showSnackbar('Location type is not empty');
+      context.showSnackbar(
+        'Location type is not empty',
+        fontSize: isLarge ? 14 : 12,
+      );
     } else if (!nameC.value.text.trim().isFilled()) {
-      context.showSnackbar('Location name is not empty');
+      context.showSnackbar(
+        'Location name is not empty',
+        fontSize: isLarge ? 14 : 12,
+      );
     } else {
       context.showDialogConfirm(
         title: 'Are your sure create new location ?',
+        fontSize: isLarge ? 14 : 12,
         content:
             'Parent : ${parentLocation?.name}\nLocation Type : $locationTypeSelected\nLocation Name : $name',
         onCancelText: 'No',

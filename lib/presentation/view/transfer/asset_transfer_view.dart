@@ -3,6 +3,7 @@ import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,6 +23,13 @@ class _TransferViewState extends State<TransferView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileTransfer(),
+      mobileMScaffold: _mobileTransfer(isLarge: false),
+    );
+  }
+
+  Widget _mobileTransfer({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Transfer')),
       body: BlocBuilder<MasterBloc, MasterState>(
@@ -44,6 +52,7 @@ class _TransferViewState extends State<TransferView> {
                             .toList()
                           ..sort((a, b) => a.name!.compareTo(b.name!)),
                     hintText: 'Selected From Location',
+                    fontSize: isLarge ? 14 : 12,
                     compareFn: (value1, value) => value1.name == value.name,
                     selectedItem: fromL,
                     onChanged: (value) => setState(() {
@@ -57,6 +66,7 @@ class _TransferViewState extends State<TransferView> {
                     onChanged: (value) => setState(() {
                       toL = value;
                     }),
+                    fontSize: isLarge ? 14 : 12,
                     items:
                         state.locations!
                             .where(
@@ -89,6 +99,7 @@ class _TransferViewState extends State<TransferView> {
                         onChanged: (value) => setState(() {
                           asset = value;
                         }),
+                        fontSize: isLarge ? 14 : 12,
                         hintText: 'Selected Asset',
                         compareFn: (value1, value) =>
                             value1.assetCode == value.assetCode,
@@ -97,7 +108,6 @@ class _TransferViewState extends State<TransferView> {
                       );
                     },
                   ),
-
                   AppSpace.vertical(32),
                   BlocConsumer<AssetBloc, AssetState>(
                     listener: (context, state) {
@@ -107,11 +117,15 @@ class _TransferViewState extends State<TransferView> {
                       if (state.status == StatusAsset.initial) {
                         context.showSnackbar(
                           state.message ?? '',
+                          fontSize: isLarge ? 14 : 12,
                           backgroundColor: AppColors.kRed,
                         );
                       }
                       if (state.status == StatusAsset.success) {
-                        context.showSnackbar('Successfully transfer asset');
+                        context.showSnackbar(
+                          'Successfully transfer asset',
+                          fontSize: isLarge ? 14 : 12,
+                        );
                       }
                     },
                     builder: (context, state) {
@@ -120,9 +134,10 @@ class _TransferViewState extends State<TransferView> {
                             ? 'Loading...'
                             : 'Submit',
                         width: double.maxFinite,
+                        fontSize: isLarge ? 16 : 14,
                         onPressed: state.status == StatusAsset.loading
                             ? null
-                            : _onSubmit,
+                            : () => _onSubmit(isLarge),
                       );
                     },
                   ),
@@ -135,7 +150,7 @@ class _TransferViewState extends State<TransferView> {
     );
   }
 
-  _onSubmit() {
+  _onSubmit(bool isLarge) {
     final from = fromL?.id;
     final to = toL?.id;
     final assetId = asset?.id;
@@ -144,21 +159,25 @@ class _TransferViewState extends State<TransferView> {
       context.showSnackbar(
         'From location cannot be empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (to == null) {
       context.showSnackbar(
         'To location cannot be empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (asset == null) {
       context.showSnackbar(
         'Asset Code cannot be emoty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (from == to) {
       context.showSnackbar(
         'Failed, From the same location and destination',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else {
       context.showDialogConfirm(
@@ -167,6 +186,7 @@ class _TransferViewState extends State<TransferView> {
             'From : ${fromL?.name}\nTo : ${toL?.name}\nAsset Code : ${asset?.assetCode}',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<AssetBloc>().add(

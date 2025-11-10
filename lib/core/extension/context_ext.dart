@@ -2,14 +2,18 @@ import 'package:asset_management/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
-  void showSnackbar(String message, {Color backgroundColor = AppColors.kBase}) {
+  void showSnackbar(
+    String message, {
+    Color backgroundColor = AppColors.kBase,
+    double fontSize = 12,
+  }) {
     ScaffoldMessenger.of(this)
       ..hideCurrentSnackBar()
       ..showSnackBar(
         SnackBar(
           content: Text(
             message,
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            style: TextStyle(fontWeight: FontWeight.w500, fontSize: fontSize),
           ),
           backgroundColor: backgroundColor,
         ),
@@ -21,6 +25,7 @@ extension ContextExt on BuildContext {
     String content = 'Content',
     String onConfirmText = 'Confirm',
     String onCancelText = 'Cancel',
+    double fontSize = 12,
     void Function()? onConfirm,
     void Function()? onCancel,
   }) async {
@@ -32,22 +37,28 @@ extension ContextExt on BuildContext {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          title: Text(title),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
+          ),
           actionsPadding: const EdgeInsets.only(bottom: 8, right: 12),
-          content: Text(content, style: const TextStyle(height: 2)),
+          content: Text(
+            content,
+            style: TextStyle(height: 2, fontSize: fontSize),
+          ),
           actions: [
             TextButton(
               onPressed: onConfirm,
               child: Text(
                 onConfirmText,
-                style: const TextStyle(color: Colors.teal),
+                style: TextStyle(color: Colors.teal, fontSize: fontSize),
               ),
             ),
             TextButton(
               onPressed: onCancel,
               child: Text(
                 onCancelText,
-                style: const TextStyle(color: Colors.red),
+                style: TextStyle(color: Colors.red, fontSize: fontSize),
               ),
             ),
           ],
@@ -79,6 +90,32 @@ extension ContextExt on BuildContext {
     Navigator.pop(this);
   }
 
+  void dialogLoading() {
+    showDialog(
+      context: this,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.kWhite,
+          alignment: Alignment.center,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: CircularProgressIndicator(color: AppColors.kBase),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void showDialogOption({
     String title = 'Title',
     required List<Widget> children,
@@ -95,7 +132,6 @@ extension ContextExt on BuildContext {
             ),
           ),
           contentPadding: EdgeInsets.fromLTRB(16, 8, 16, 24),
-          // insetPadding: EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadiusGeometry.circular(12),
           ),

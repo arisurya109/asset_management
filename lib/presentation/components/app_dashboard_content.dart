@@ -7,7 +7,7 @@ import '../../core/core.dart';
 import '../bloc/master/master_bloc.dart';
 
 class AppDashboardContent extends StatelessWidget {
-  final double item;
+  final int item;
   const AppDashboardContent({super.key, this.item = 2});
 
   @override

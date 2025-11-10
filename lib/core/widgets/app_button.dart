@@ -7,6 +7,7 @@ class AppButton extends StatelessWidget {
   void Function()? onPressed;
   double width;
   double height;
+  double fontSize;
   Color? backgroundColor;
   Color? titleColor;
 
@@ -16,6 +17,7 @@ class AppButton extends StatelessWidget {
     this.onPressed,
     this.width = 150,
     this.height = 45,
+    this.fontSize = 12,
     this.backgroundColor = Colors.teal,
     this.titleColor = Colors.white,
   });
@@ -32,7 +34,7 @@ class AppButton extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: fontSize,
           color: titleColor,
           fontWeight: FontWeight.w600,
         ),

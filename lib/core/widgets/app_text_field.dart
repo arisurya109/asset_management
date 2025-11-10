@@ -14,6 +14,7 @@ class AppTextField extends StatefulWidget {
   TextInputAction? textInputAction;
   bool? obscureText;
   void Function(String)? onChanged;
+  double? fontSize;
 
   AppTextField({
     super.key,
@@ -26,6 +27,7 @@ class AppTextField extends StatefulWidget {
     this.textInputAction = TextInputAction.next,
     this.obscureText,
     this.onChanged,
+    this.fontSize = 12,
   });
 
   @override
@@ -43,7 +45,10 @@ class _AppTextFieldState extends State<AppTextField> {
             onSubmitted: widget.onSubmitted,
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,
-            style: const TextStyle(fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: widget.fontSize,
+            ),
             decoration: InputDecoration(
               suffixIcon: widget.obscureText != null
                   ? GestureDetector(
@@ -62,8 +67,9 @@ class _AppTextFieldState extends State<AppTextField> {
                 horizontal: 12,
                 vertical: 18,
               ),
-              hintStyle: const TextStyle(
+              hintStyle: TextStyle(
                 color: Colors.grey,
+                fontSize: widget.fontSize,
                 fontWeight: FontWeight.w400,
               ),
               focusedBorder: OutlineInputBorder(
@@ -82,8 +88,8 @@ class _AppTextFieldState extends State<AppTextField> {
             children: [
               Text(
                 widget.title,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: widget.fontSize,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -95,7 +101,10 @@ class _AppTextFieldState extends State<AppTextField> {
                 onSubmitted: widget.onSubmitted,
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
-                style: const TextStyle(fontWeight: FontWeight.w500),
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: widget.fontSize,
+                ),
                 decoration: InputDecoration(
                   suffixIcon: widget.obscureText != null
                       ? GestureDetector(
@@ -114,8 +123,9 @@ class _AppTextFieldState extends State<AppTextField> {
                     horizontal: 12,
                     vertical: 18,
                   ),
-                  hintStyle: const TextStyle(
+                  hintStyle: TextStyle(
                     color: Colors.grey,
+                    fontSize: widget.fontSize,
                     fontWeight: FontWeight.w400,
                   ),
                   focusedBorder: OutlineInputBorder(

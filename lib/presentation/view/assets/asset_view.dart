@@ -3,6 +3,7 @@ import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/view/assets/asset_detail_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -17,6 +18,13 @@ class _AssetViewState extends State<AssetView> {
   String searchQ = '';
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileAssets(),
+      mobileMScaffold: _mobileAssets(isLarge: false),
+    );
+  }
+
+  Widget _mobileAssets({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Asset')),
       body: BlocBuilder<AssetBloc, AssetState>(
@@ -58,6 +66,7 @@ class _AssetViewState extends State<AssetView> {
                   AppSpace.vertical(16),
                   AppTextField(
                     hintText: 'Search...',
+                    fontSize: isLarge ? 14 : 12,
                     keyboardType: TextInputType.text,
                     noTitle: true,
                     onChanged: (value) => setState(() {
@@ -82,6 +91,7 @@ class _AssetViewState extends State<AssetView> {
                             context.push(AssetDetailView(params: asset));
                           },
                           title: asset.assetCode ?? asset.model,
+                          fontSize: isLarge ? 14 : 12,
                           subtitle: asset.assetCode != null
                               ? asset.serialNumber
                               : '${asset.quantity} Pcs',
@@ -97,7 +107,6 @@ class _AssetViewState extends State<AssetView> {
               ),
             );
           }
-
           return Container();
         },
       ),

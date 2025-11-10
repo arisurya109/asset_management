@@ -4,27 +4,28 @@ import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
-import 'package:asset_management/presentation/view/preparation/create_preparation_review_view.dart';
+import 'package:asset_management/presentation/view/preparation/create_preparation_detail_review_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class SelectedAssetsPreparationView extends StatefulWidget {
+class SelectedPreparationDetailAssetView extends StatefulWidget {
   final Preparation preparation;
-  final List<PreparationDetail> preparationDetail;
+  final List<PreparationDetail> preparationDetails;
 
-  const SelectedAssetsPreparationView({
+  const SelectedPreparationDetailAssetView({
     super.key,
     required this.preparation,
-    required this.preparationDetail,
+    required this.preparationDetails,
   });
 
   @override
-  State<SelectedAssetsPreparationView> createState() =>
-      _SelectedAssetsPreparationViewState();
+  State<SelectedPreparationDetailAssetView> createState() =>
+      _SelectedPreparationDetailAssetViewState();
 }
 
-class _SelectedAssetsPreparationViewState
-    extends State<SelectedAssetsPreparationView> {
+class _SelectedPreparationDetailAssetViewState
+    extends State<SelectedPreparationDetailAssetView> {
   AssetModel? selectedAsset;
   late TextEditingController quantityC;
 
@@ -42,25 +43,32 @@ class _SelectedAssetsPreparationViewState
 
   @override
   Widget build(BuildContext context) {
-    print(widget.preparationDetail);
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileSelectedPreparationDetailAsset(),
+      mobileMScaffold: _mobileSelectedPreparationDetailAsset(isLarge: false),
+    );
+  }
+
+  Widget _mobileSelectedPreparationDetailAsset({bool isLarge = true}) {
     return Scaffold(
-      appBar: AppBar(title: Text('Selected Assets')),
+      appBar: AppBar(title: Text('Selected Asset')),
       bottomNavigationBar: Padding(
         padding: EdgeInsets.all(16),
         child: AppButton(
           title: 'Review',
           width: context.deviceWidth,
           onPressed: () {
-            if (widget.preparationDetail == []) {
+            if (widget.preparationDetails == []) {
               context.showSnackbar(
                 'No assets have been selected yet',
                 backgroundColor: AppColors.kRed,
+                fontSize: isLarge ? 14 : 12,
               );
             } else {
               context.push(
-                CreatePreparationReviewDetailView(
-                  params: widget.preparation,
-                  preparationDetail: widget.preparationDetail,
+                CreatePreparationDetailReviewView(
+                  preparation: widget.preparation,
+                  preparationDetails: widget.preparationDetails,
                 ),
               );
             }
@@ -77,6 +85,7 @@ class _SelectedAssetsPreparationViewState
                 builder: (context, state) {
                   return AppDropDownSearch<AssetModel>(
                     title: 'Assets',
+                    fontSize: isLarge ? 14 : 12,
                     items: state.models ?? [],
                     hintText: 'Selected Assets',
                     compareFn: (value, value1) => value.id == value1.id,
@@ -91,17 +100,19 @@ class _SelectedAssetsPreparationViewState
               AppSpace.vertical(16),
               AppTextField(
                 controller: quantityC,
+                fontSize: isLarge ? 14 : 12,
                 hintText: 'Example : 1',
                 title: 'Quantity',
-                textInputAction: TextInputAction.next,
+                textInputAction: TextInputAction.go,
                 keyboardType: TextInputType.number,
-                onSubmitted: (_) => _add,
+                onSubmitted: (_) => _add(isLarge),
               ),
               AppSpace.vertical(48),
               AppButton(
                 title: 'Add',
+                fontSize: isLarge ? 16 : 14,
                 width: context.deviceWidth,
-                onPressed: _add,
+                onPressed: () => _add(isLarge),
               ),
             ],
           ),
@@ -110,7 +121,7 @@ class _SelectedAssetsPreparationViewState
     );
   }
 
-  _add() {
+  _add(bool isLarge) {
     final assetModel = selectedAsset;
     final quantityText = quantityC.value.text.trim();
 
@@ -118,15 +129,18 @@ class _SelectedAssetsPreparationViewState
       context.showSnackbar(
         'Asset Model not yet selected',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (quantityText.isEmpty) {
       context.showSnackbar(
         'Quantity cannot be empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (!quantityText.isNumber()) {
       context.showSnackbar(
         'Quantity not valid (must be a number)',
+        fontSize: isLarge ? 14 : 12,
         backgroundColor: AppColors.kRed,
       );
     } else {
@@ -135,31 +149,33 @@ class _SelectedAssetsPreparationViewState
       if (newQuantity == null || newQuantity < 1) {
         context.showSnackbar(
           'Quantity not valid (must be >= 1)',
+          fontSize: isLarge ? 14 : 12,
           backgroundColor: AppColors.kRed,
         );
         return;
       }
 
-      final existingItemIndex = widget.preparationDetail.indexWhere(
+      final existingItemIndex = widget.preparationDetails.indexWhere(
         (item) => item.assetModelId == assetModel.id,
       );
 
       setState(() {
         if (existingItemIndex != -1) {
-          final existingItem = widget.preparationDetail[existingItemIndex];
+          final existingItem = widget.preparationDetails[existingItemIndex];
 
           final updatedItem = existingItem.copyWith(
             quantityTarget: existingItem.quantityTarget! + newQuantity,
           );
 
-          widget.preparationDetail[existingItemIndex] = updatedItem;
+          widget.preparationDetails[existingItemIndex] = updatedItem;
 
           context.showSnackbar(
             'Quantity added to existing asset model',
+            fontSize: isLarge ? 14 : 12,
             backgroundColor: AppColors.kBase,
           );
         } else {
-          widget.preparationDetail.add(
+          widget.preparationDetails.add(
             PreparationDetail(
               assetModelId: assetModel.id,
               assetType: assetModel.typeName,
@@ -171,6 +187,7 @@ class _SelectedAssetsPreparationViewState
           );
           context.showSnackbar(
             'New asset model added',
+            fontSize: isLarge ? 14 : 12,
             backgroundColor: AppColors.kBase,
           );
         }

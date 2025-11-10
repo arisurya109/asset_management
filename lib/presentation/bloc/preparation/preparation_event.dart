@@ -9,18 +9,11 @@ class PreparationEvent extends Equatable {
 
 class OnCreatePreparationEvent extends PreparationEvent {
   final Preparation params;
-  final List<PreparationDetail> preparationDetail;
 
-  const OnCreatePreparationEvent(this.params, this.preparationDetail);
+  const OnCreatePreparationEvent(this.params);
 }
 
 class OnFindAllPreparationEvent extends PreparationEvent {}
-
-class OnFindPreparationByIdEvent extends PreparationEvent {
-  final int params;
-
-  const OnFindPreparationByIdEvent(this.params);
-}
 
 class OnUpdatePreparationEvent extends PreparationEvent {
   final Preparation params;
@@ -28,30 +21,8 @@ class OnUpdatePreparationEvent extends PreparationEvent {
   const OnUpdatePreparationEvent(this.params);
 }
 
-class OnCreatePreparationDetailEvent extends PreparationEvent {
-  final PreparationDetail params;
-
-  const OnCreatePreparationDetailEvent(this.params);
-}
-
-class OnFindAllPrepartionDetailByPreparationId extends PreparationEvent {
+class OnFindPreparationByIdEvent extends PreparationEvent {
   final int params;
 
-  const OnFindAllPrepartionDetailByPreparationId(this.params);
-}
-
-class OnUpdatePreparationDetailEvent extends PreparationEvent {
-  final PreparationDetail params;
-
-  const OnUpdatePreparationDetailEvent(this.params);
-}
-
-class OnFindPreparationDetailByIdEvent extends PreparationEvent {
-  final int params;
-  final int preparationId;
-
-  const OnFindPreparationDetailByIdEvent({
-    required this.params,
-    required this.preparationId,
-  });
+  const OnFindPreparationByIdEvent(this.params);
 }

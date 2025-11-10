@@ -6,6 +6,7 @@ import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -45,6 +46,13 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreateModel(),
+      mobileMScaffold: _mobileCreateModel(isLarge: false),
+    );
+  }
+
+  Widget _mobileCreateModel({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Asset Model'), elevation: 0),
       body: BlocBuilder<MasterBloc, MasterState>(
@@ -58,6 +66,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                     selectedItem: assetType,
                     hintText: 'Selected Type',
                     title: 'Type',
+                    fontSize: isLarge ? 14 : 12,
                     items: state.types ?? [],
                     onChanged: (value) => setState(() {
                       assetType = value;
@@ -70,6 +79,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                     selectedItem: assetCategory,
                     hintText: 'Selected Category',
                     title: 'Category',
+                    fontSize: isLarge ? 14 : 12,
                     items: state.categories ?? [],
                     onChanged: (value) => setState(() {
                       assetCategory = value;
@@ -82,6 +92,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                     selectedItem: assetBrand,
                     hintText: 'Selected Brand',
                     title: 'Brand',
+                    fontSize: isLarge ? 14 : 12,
                     items: state.brands ?? [],
                     onChanged: (value) => setState(() {
                       assetBrand = value;
@@ -95,6 +106,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                     title: 'Name',
                     hintText: 'Example : Optiplex 7010',
                     keyboardType: TextInputType.text,
+                    fontSize: isLarge ? 14 : 12,
                     textInputAction: TextInputAction.next,
                   ),
                   AppSpace.vertical(12),
@@ -102,6 +114,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                     options: optionQty,
                     groupValue: isQty,
                     title: 'Quantity',
+                    fontSize: isLarge ? 14 : 12,
                     onChanged: (value) => setState(() {
                       isQty = value;
                     }),
@@ -110,6 +123,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                   AppRadioListOption(
                     options: option,
                     groupValue: isSerialNumber,
+                    fontSize: isLarge ? 14 : 12,
                     title: 'Serial Number',
                     onChanged: (value) => setState(() {
                       isSerialNumber = value;
@@ -119,6 +133,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                   AppRadioListOption(
                     options: option,
                     groupValue: isConsumable,
+                    fontSize: isLarge ? 14 : 12,
                     title: 'Consumable',
                     onChanged: (value) => setState(() {
                       isConsumable = value;
@@ -131,6 +146,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                         context.showSnackbar(
                           state.message!,
                           backgroundColor: AppColors.kRed,
+                          fontSize: isLarge ? 14 : 12,
                         );
                       }
 
@@ -138,6 +154,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                         context.showSnackbar(
                           state.message ??
                               'Successfully create ${nameC.value.text.trim().toUpperCase()}',
+                          fontSize: isLarge ? 14 : 12,
                         );
 
                         setState(() {
@@ -156,6 +173,7 @@ class _CreateAssetModelViewState extends State<CreateAssetModelView> {
                         title: state.status == StatusMaster.loading
                             ? 'Loading...'
                             : 'CREATE',
+                        fontSize: isLarge ? 16 : 14,
                         onPressed: state.status == StatusMaster.loading
                             ? null
                             : () => context.read<MasterBloc>().add(

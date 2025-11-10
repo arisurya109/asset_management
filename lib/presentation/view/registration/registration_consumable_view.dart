@@ -9,7 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class RegistrationConsumableView extends StatefulWidget {
-  const RegistrationConsumableView({super.key});
+  final bool isLarge;
+  const RegistrationConsumableView({super.key, required this.isLarge});
 
   @override
   State<RegistrationConsumableView> createState() =>
@@ -38,6 +39,7 @@ class _RegistrationConsumableViewState
               items: state.locations!
                 ..sort((a, b) => a.name!.compareTo(b.name!)),
               showSearchBox: true,
+              fontSize: widget.isLarge ? 12 : 10,
               compareFn: (p0, p1) => p0 == p1,
               onChanged: (value) => setState(() {
                 location = value;
@@ -53,6 +55,7 @@ class _RegistrationConsumableViewState
                   .where((element) => element.isConsumable == 1)
                   .toList(),
               showSearchBox: true,
+              fontSize: widget.isLarge ? 12 : 10,
               compareFn: (p0, p1) => p0 == p1,
               onChanged: (value) => setState(() {
                 model = value;
@@ -67,6 +70,7 @@ class _RegistrationConsumableViewState
               controller: quantity,
               hintText: 'Example : 34',
               title: 'Quantity',
+              fontSize: widget.isLarge ? 12 : 10,
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _onSubmit(),
@@ -78,12 +82,16 @@ class _RegistrationConsumableViewState
                 if (state.status == StatusAsset.failed) {
                   context.showSnackbar(
                     state.message!,
+                    fontSize: widget.isLarge ? 12 : 10,
                     backgroundColor: AppColors.kRed,
                   );
                 }
 
                 if (state.status == StatusAsset.success) {
-                  context.showSnackbar('Successfully registration asset');
+                  context.showSnackbar(
+                    'Successfully registration asset',
+                    fontSize: widget.isLarge ? 12 : 10,
+                  );
                 }
               },
               builder: (context, state) {
@@ -92,6 +100,7 @@ class _RegistrationConsumableViewState
                       ? 'Loading...'
                       : 'Add',
                   width: double.maxFinite,
+                  fontSize: widget.isLarge ? 14 : 12,
                   onPressed: state.status == StatusAsset.loading
                       ? null
                       : _onSubmit,
@@ -114,6 +123,7 @@ class _RegistrationConsumableViewState
         content: 'Model : ${model?.name}\nQuantity : $qty',
         onCancelText: 'No',
         onConfirmText: 'Yes',
+        fontSize: widget.isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
           context.read<AssetBloc>().add(
@@ -135,6 +145,7 @@ class _RegistrationConsumableViewState
       context.showSnackbar(
         'Failed, please check field is empty',
         backgroundColor: AppColors.kRed,
+        fontSize: widget.isLarge ? 12 : 10,
       );
     }
   }

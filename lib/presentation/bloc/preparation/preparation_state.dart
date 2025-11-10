@@ -8,43 +8,28 @@ class PreparationState extends Equatable {
   StatusPreparation? status;
   List<Preparation>? preparations;
   Preparation? preparation;
-  List<PreparationDetail>? preparationDetails;
-  PreparationDetail? preparationDetail;
   String? message;
 
   PreparationState({
     this.status = StatusPreparation.initial,
     this.preparations,
     this.preparation,
-    this.preparationDetails,
-    this.preparationDetail,
     this.message,
   });
 
   @override
-  List<Object?> get props => [
-    status,
-    preparations,
-    preparation,
-    preparationDetails,
-    preparationDetail,
-    message,
-  ];
+  List<Object?> get props => [status, preparations, preparation, message];
 
   PreparationState copyWith({
     StatusPreparation? status,
     List<Preparation>? preparations,
     Preparation? preparation,
-    List<PreparationDetail>? preparationDetails,
-    PreparationDetail? preparationDetail,
     String? message,
   }) {
     return PreparationState(
       status: status ?? this.status,
       preparations: preparations ?? this.preparations,
       preparation: preparation ?? this.preparation,
-      preparationDetails: preparationDetails ?? this.preparationDetails,
-      preparationDetail: preparationDetail ?? this.preparationDetail,
       message: message ?? this.message,
     );
   }

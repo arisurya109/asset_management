@@ -8,7 +8,7 @@ class AppDashboardItem extends StatelessWidget {
   final Color backgroundColor;
   final Color borderColor;
   final Color textColor;
-  final double? item;
+  final int? item;
 
   const AppDashboardItem({
     super.key,

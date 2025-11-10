@@ -6,6 +6,7 @@ import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/view/inventory/inventory_asset_box_view.dart';
 import 'package:asset_management/presentation/view/inventory/inventory_detail_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 
 import '../../../core/core.dart';
 
@@ -21,6 +22,13 @@ class _InventoryViewState extends State<InventoryView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileInventory(),
+      mobileMScaffold: _mobileInventory(isLarge: false),
+    );
+  }
+
+  Widget _mobileInventory({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Inventory')),
       body: BlocBuilder<MasterBloc, MasterState>(
@@ -55,6 +63,7 @@ class _InventoryViewState extends State<InventoryView> {
                 AppTextField(
                   noTitle: true,
                   hintText: 'Search...',
+                  fontSize: isLarge ? 14 : 12,
                   keyboardType: TextInputType.text,
                   onChanged: (value) => setState(() {
                     query = value;
@@ -67,7 +76,10 @@ class _InventoryViewState extends State<InventoryView> {
                     child: Center(
                       child: Text(
                         'Please input location rack or box',
-                        style: TextStyle(color: AppColors.kGrey),
+                        style: TextStyle(
+                          color: AppColors.kGrey,
+                          fontSize: isLarge ? 14 : 12,
+                        ),
                       ),
                     ),
                   ),
@@ -82,7 +94,7 @@ class _InventoryViewState extends State<InventoryView> {
                             Text(
                               'Total Box : ${filteredLocation.length.toString()}',
                               style: TextStyle(
-                                fontSize: 16,
+                                fontSize: isLarge ? 14 : 12,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -94,6 +106,7 @@ class _InventoryViewState extends State<InventoryView> {
                           title: e.name,
                           leading: e.locationType,
                           noDescription: true,
+                          fontSize: isLarge ? 14 : 12,
                           onTap: () =>
                               context.push(InventoryAssetBoxView(location: e)),
                           subtitle:
@@ -115,14 +128,14 @@ class _InventoryViewState extends State<InventoryView> {
                                 Text(
                                   'Total Asset : ${filteredAsset.length.toString()}',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: isLarge ? 14 : 12,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
                                 Text(
                                   'Total Quantity : $totalQuantity',
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: isLarge ? 14 : 12,
                                     fontWeight: FontWeight.w600,
                                   ),
                                 ),
@@ -136,6 +149,7 @@ class _InventoryViewState extends State<InventoryView> {
                           title: e.assetCode ?? e.model,
                           leading: e.location,
                           noDescription: false,
+                          fontSize: isLarge ? 14 : 12,
                           onTap: () =>
                               context.push(InventoryDetailView(params: e)),
                           subtitle: e.serialNumber ?? e.quantity.toString(),

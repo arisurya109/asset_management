@@ -1,5 +1,6 @@
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,6 +13,13 @@ class InventoryDetailView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _inventoryDetail(context),
+      mobileMScaffold: _inventoryDetail(context, isLarge: false),
+    );
+  }
+
+  Scaffold _inventoryDetail(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Asset Detail'),
@@ -20,7 +28,10 @@ class InventoryDetailView extends StatelessWidget {
                 BlocListener<PrinterBloc, PrinterState>(
                   listener: (context, state) {
                     if (state.status == PrinterStatus.success) {
-                      context.showSnackbar('Success reprint asset code');
+                      context.showSnackbar(
+                        'Success reprint asset code',
+                        fontSize: isLarge ? 14 : 12,
+                      );
                     }
                   },
                   child: Padding(
@@ -48,36 +59,61 @@ class InventoryDetailView extends StatelessWidget {
         child: ListView(
           children: [
             AppSpace.vertical(12),
-            _descriptionItem('Asset Code', params.assetCode ?? ''),
+            _descriptionItem(
+              'Asset Code',
+              params.assetCode ?? '',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Serial Number', params.serialNumber ?? ''),
+            _descriptionItem(
+              'Serial Number',
+              params.serialNumber ?? '',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Type', params.types ?? ''),
+            _descriptionItem('Type', params.types ?? '', isLarge: isLarge),
             AppSpace.vertical(18),
-            _descriptionItem('Category', params.category ?? ''),
+            _descriptionItem(
+              'Category',
+              params.category ?? '',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Brand', params.brand ?? ''),
+            _descriptionItem('Brand', params.brand ?? '', isLarge: isLarge),
             AppSpace.vertical(18),
-            _descriptionItem('Model', params.model ?? ''),
+            _descriptionItem('Model', params.model ?? '', isLarge: isLarge),
             AppSpace.vertical(18),
             _descriptionItem(
               'Quantity',
               params.uom == 1
                   ? '${params.quantity} Unit'
                   : '${params.quantity} Pcs',
+              isLarge: isLarge,
             ),
             AppSpace.vertical(18),
-            _descriptionItem('Color', params.color ?? ''),
+            _descriptionItem('Color', params.color ?? '', isLarge: isLarge),
             AppSpace.vertical(18),
-            _descriptionItem('Condition', params.conditions ?? ''),
+            _descriptionItem(
+              'Condition',
+              params.conditions ?? '',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Status', params.status ?? ''),
+            _descriptionItem('Status', params.status ?? '', isLarge: isLarge),
             AppSpace.vertical(18),
-            _descriptionItem('Location', params.location ?? ''),
+            _descriptionItem(
+              'Location',
+              params.location ?? '',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Purchase Order', params.purchaseOrder ?? '-'),
+            _descriptionItem(
+              'Purchase Order',
+              params.purchaseOrder ?? '-',
+              isLarge: isLarge,
+            ),
             AppSpace.vertical(18),
-            _descriptionItem('Notes', params.remarks ?? '-'),
+            _descriptionItem('Notes', params.remarks ?? '-', isLarge: isLarge),
             AppSpace.vertical(18),
           ],
         ),
@@ -85,18 +121,24 @@ class InventoryDetailView extends StatelessWidget {
     );
   }
 
-  Widget _descriptionItem(String title, String value) {
+  Widget _descriptionItem(String title, String value, {bool isLarge = true}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(
+            fontSize: isLarge ? 14 : 12,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         AppSpace.vertical(3),
         Text(
           value,
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+          style: TextStyle(
+            fontSize: isLarge ? 14 : 12,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ],
     );

@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/presentation/view/category/create_asset_category_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -22,6 +23,13 @@ class _AssetCategoryViewState extends State<AssetCategoryView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCategory(),
+      mobileMScaffold: _mobileCategory(isLarge: false),
+    );
+  }
+
+  Widget _mobileCategory({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         final permission = state.user!.modules;
@@ -65,6 +73,7 @@ class _AssetCategoryViewState extends State<AssetCategoryView> {
                       AppTextField(
                         noTitle: true,
                         hintText: 'Search...',
+                        fontSize: isLarge ? 14 : 12,
                         onChanged: (value) => setState(() {
                           query = value;
                         }),
@@ -82,6 +91,7 @@ class _AssetCategoryViewState extends State<AssetCategoryView> {
                             return AppListTileCustom(
                               title: category?.name,
                               trailing: category?.init,
+                              fontSize: isLarge ? 14 : 12,
                             );
                           },
                         ),

@@ -7,8 +7,15 @@ class AppListTileCustom extends StatelessWidget {
   void Function()? onTap;
   String? title;
   String? trailing;
+  double? fontSize;
 
-  AppListTileCustom({super.key, this.onTap, this.title, this.trailing});
+  AppListTileCustom({
+    super.key,
+    this.onTap,
+    this.title,
+    this.trailing,
+    this.fontSize = 12,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +38,10 @@ class AppListTileCustom extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title ?? 'Title',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
                 Text(
@@ -39,7 +49,7 @@ class AppListTileCustom extends StatelessWidget {
                   style: TextStyle(
                     color: AppColors.kBase,
                     fontWeight: FontWeight.w600,
-                    fontSize: 14,
+                    fontSize: fontSize,
                   ),
                 ),
               ],

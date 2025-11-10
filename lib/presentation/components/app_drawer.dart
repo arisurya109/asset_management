@@ -11,6 +11,7 @@ import 'package:asset_management/presentation/view/category/asset_category_view.
 import 'package:asset_management/presentation/view/change_password/change_password_view.dart';
 import 'package:asset_management/presentation/view/location/location_view.dart';
 import 'package:asset_management/presentation/view/model/asset_model_view.dart';
+import 'package:asset_management/presentation/view/preparation/preparation_view.dart';
 import 'package:asset_management/presentation/view/preparation_set/preparation_template_view.dart';
 import 'package:asset_management/presentation/view/printer/printer_view.dart';
 import 'package:asset_management/presentation/view/purchase_order/purchase_order_view.dart';
@@ -21,7 +22,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppDrawer extends StatefulWidget {
-  const AppDrawer({super.key});
+  final bool isLarge;
+  const AppDrawer({super.key, required this.isLarge});
 
   @override
   State<AppDrawer> createState() => _AppDrawerState();
@@ -32,19 +34,21 @@ class _AppDrawerState extends State<AppDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: context.deviceWidth / 2 + 50,
       child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           final user = state.user;
           final permission = state.user?.modules;
           return Column(
             children: [
-              AppHeaderDrawer(user: user),
+              AppHeaderDrawer(user: user, isLarge: widget.isLarge),
               Expanded(
                 child: ListView(
                   padding: EdgeInsets.zero,
                   children: [
                     AppItemDrawer(
                       title: 'Change Password',
+                      fontSize: widget.isLarge ? 14 : 12,
                       onTap: () {
                         context.pop();
                         context.push(ChangePasswordView());
@@ -64,18 +68,22 @@ class _AppDrawerState extends State<AppDrawer> {
                             ),
                             title: Text(
                               'Master',
-                              style: TextStyle(fontWeight: FontWeight.w500),
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: widget.isLarge ? 14 : 12,
+                              ),
                             ),
                             trailing: Icon(
                               isExpanded == true
                                   ? Icons.keyboard_arrow_down_rounded
                                   : Icons.keyboard_arrow_right_outlined,
-                              size: 28,
+                              size: widget.isLarge ? 22 : 20,
                             ),
                             childrenPadding: EdgeInsets.only(left: 24),
                             children: [
                               AppItemDrawer(
                                 title: 'Asset Brand',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -84,6 +92,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Asset Category',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -92,6 +101,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Asset Model',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -100,6 +110,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Asset Type',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -108,6 +119,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Location',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -116,6 +128,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Vendor',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -124,6 +137,7 @@ class _AppDrawerState extends State<AppDrawer> {
                               ),
                               AppItemDrawer(
                                 title: 'Preparation Set',
+                                fontSize: widget.isLarge ? 14 : 12,
                                 onTap: () {
                                   isExpanded = false;
                                   context.pop();
@@ -137,14 +151,26 @@ class _AppDrawerState extends State<AppDrawer> {
                     if (permission?.contains('assets_view') == true)
                       AppItemDrawer(
                         title: 'Assets',
+                        fontSize: widget.isLarge ? 14 : 12,
                         onTap: () {
                           context.pop();
                           context.push(AssetView());
                         },
                       ),
+                    if (permission?.contains('preparation_view') == true)
+                      AppItemDrawer(
+                        title: 'Preparation',
+                        fontSize: widget.isLarge ? 14 : 12,
+                        onTap: () {
+                          context.pop();
+                          context.push(PreparationView());
+                        },
+                      ),
+
                     if (permission?.contains('user_view') == true)
                       AppItemDrawer(
                         title: 'User Management',
+                        fontSize: widget.isLarge ? 14 : 12,
                         onTap: () {
                           context.pop();
                           context.read<UserBloc>().add(OnFindAllUserEvent());
@@ -155,6 +181,7 @@ class _AppDrawerState extends State<AppDrawer> {
                     if (permission?.contains('purchase_view') == true)
                       AppItemDrawer(
                         title: 'Purchase Order',
+                        fontSize: widget.isLarge ? 14 : 12,
                         onTap: () {
                           context.pop();
                           context.push(PurchaseOrderView());
@@ -162,6 +189,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       ),
                     AppItemDrawer(
                       title: 'Printer',
+                      fontSize: widget.isLarge ? 14 : 12,
                       onTap: () {
                         context.pop();
                         context.push(PrinterView());
@@ -176,6 +204,7 @@ class _AppDrawerState extends State<AppDrawer> {
                       },
                       child: AppItemDrawer(
                         title: 'Logout',
+                        fontSize: widget.isLarge ? 14 : 12,
                         onTap: () => context.read<AuthenticationBloc>().add(
                           OnLogoutEvent(),
                         ),

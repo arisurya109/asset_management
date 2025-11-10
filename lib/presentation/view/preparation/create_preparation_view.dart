@@ -5,9 +5,11 @@ import 'package:asset_management/domain/entities/master/preparation_template.dar
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
+import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/bloc/user/user_bloc.dart';
-import 'package:asset_management/presentation/view/preparation/selected_assets_preparation_view.dart';
+import 'package:asset_management/presentation/view/preparation/selected_preparation_detail_asset_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -20,7 +22,7 @@ class CreatePreparationView extends StatefulWidget {
 
 class _CreatePreparationViewState extends State<CreatePreparationView> {
   Location? selectedLocation;
-  User? selectedAssigned;
+  User? selectedUser;
   PreparationTemplate? selectedTemplate;
   late TextEditingController notesC;
 
@@ -32,76 +34,106 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreatePreparation(context),
+      mobileMScaffold: _mobileCreatePreparation(context, isLarge: false),
+    );
+  }
+
+  Widget _mobileCreatePreparation(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Preparation')),
       body: BlocBuilder<MasterBloc, MasterState>(
         builder: (context, state) {
+          final locations = state.locations?.where((element) {
+            return element.locationType != 'RACK' &&
+                element.locationType != 'BOX' &&
+                element.name != 'GUDANG I';
+          }).toList();
           return SingleChildScrollView(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  AppSpace.vertical(12),
                   AppDropDownSearch<Location>(
                     title: 'Destination',
-                    items:
-                        state.locations?.where((element) {
-                          final params = element.locationType;
-                          return params != 'RACK' && params != 'BOX';
-                        }).toList() ??
-                        [],
-                    hintText: 'Selected Destination',
-                    itemAsString: (value) => value.name ?? '',
-                    compareFn: (value, value1) => value.name == value1.name,
+                    items: locations ?? [],
+                    borderRadius: 5,
                     selectedItem: selectedLocation,
+                    compareFn: (value, value1) => value.id == value1.id,
+                    itemAsString: (value) => value.name!,
                     onChanged: (value) => setState(() {
                       selectedLocation = value;
                     }),
+                    fontSize: isLarge ? 14 : 12,
+                    hintText: 'Selected destination',
                   ),
                   AppSpace.vertical(16),
-                  BlocBuilder<UserBloc, UserState>(
+                  BlocSelector<UserBloc, UserState, List<User>>(
+                    selector: (state) {
+                      return state.users ?? [];
+                    },
                     builder: (context, state) {
+                      final userId = context
+                          .read<AuthenticationBloc>()
+                          .state
+                          .user!
+                          .id;
+                      final users = state.where((element) {
+                        return element.id != userId;
+                      }).toList();
                       return AppDropDownSearch<User>(
-                        title: 'Assigned',
-                        items: state.users ?? [],
-                        hintText: 'Selected Worker',
-                        itemAsString: (value) => value.name ?? '',
-                        compareFn: (value, value1) => value.name == value1.name,
-                        selectedItem: selectedAssigned,
+                        title: 'Worker',
+                        items: users,
+                        borderRadius: 5,
+                        selectedItem: selectedUser,
+                        compareFn: (value, value1) => value.id == value1.id,
+                        itemAsString: (value) => value.name!,
                         onChanged: (value) => setState(() {
-                          selectedAssigned = value;
+                          selectedUser = value;
                         }),
+                        fontSize: isLarge ? 14 : 12,
+                        hintText: 'Selected worker',
                       );
                     },
                   ),
                   AppSpace.vertical(16),
                   AppDropDownSearch<PreparationTemplate>(
-                    title: 'Preparation Set',
+                    title: 'Template',
+                    borderRadius: 5,
                     items: state.preparationTemplates ?? [],
-                    hintText: 'Selected Set Preparation',
-                    itemAsString: (value) => value.name ?? '',
-                    compareFn: (value, value1) => value.name == value1.name,
                     selectedItem: selectedTemplate,
+                    compareFn: (value, value1) => value.id == value1.id,
+                    itemAsString: (value) => value.name!,
                     onChanged: (value) => setState(() {
-                      context.read<MasterBloc>().add(
-                        OnFindAllPreparationTemplateItemByIdEvent(value!.id!),
-                      );
                       selectedTemplate = value;
+                      if (selectedTemplate != null) {
+                        context.read<MasterBloc>().add(
+                          OnFindAllPreparationTemplateItemByIdEvent(
+                            selectedTemplate!.id!,
+                          ),
+                        );
+                      }
                     }),
+                    fontSize: isLarge ? 14 : 12,
+                    hintText: 'Selected template',
                   ),
                   AppSpace.vertical(16),
                   AppTextField(
+                    title: 'Notes',
                     controller: notesC,
+                    fontSize: isLarge ? 14 : 12,
                     hintText: 'Optional',
-                    title: 'Description',
                     keyboardType: TextInputType.text,
                     textInputAction: TextInputAction.go,
+                    onSubmitted: (_) => _nextButton(isLarge),
                   ),
                   AppSpace.vertical(32),
                   AppButton(
+                    fontSize: isLarge ? 16 : 14,
+                    onPressed: () => _nextButton(isLarge),
                     title: 'Next',
                     width: context.deviceWidth,
-                    onPressed: _nextButton,
                   ),
                 ],
               ),
@@ -112,9 +144,9 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
     );
   }
 
-  _nextButton() {
+  _nextButton(bool isLarge) {
     final destination = selectedLocation;
-    final assigned = selectedAssigned;
+    final assigned = selectedUser;
     final preparationSet = selectedTemplate;
     final notes = notesC.value.text.trim();
     List<PreparationDetail> preparationDetail = [];
@@ -123,11 +155,13 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
       context.showSnackbar(
         'Destination cannot be empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else if (assigned == null) {
       context.showSnackbar(
         'Assigned Worker cannot be empty',
         backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
       );
     } else {
       if (preparationSet != null) {
@@ -153,7 +187,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
         }
       }
       context.push(
-        SelectedAssetsPreparationView(
+        SelectedPreparationDetailAssetView(
           preparation: Preparation(
             assigned: assigned.name,
             assignedId: assigned.id,
@@ -161,7 +195,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
             destinationId: destination.id,
             notes: notes,
           ),
-          preparationDetail: preparationDetail,
+          preparationDetails: preparationDetail,
         ),
       );
     }

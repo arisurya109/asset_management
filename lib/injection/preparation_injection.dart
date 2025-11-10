@@ -11,26 +11,21 @@ import 'package:asset_management/domain/usecases/preparation/find_preparation_de
 import 'package:asset_management/domain/usecases/preparation/update_preparation_detail_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/update_preparation_use_case.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
+import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 preparationInjection(GetIt locator) {
   locator.registerFactory(
-    () => PreparationBloc(
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-    ),
+    () => PreparationBloc(locator(), locator(), locator(), locator()),
+  );
+  locator.registerFactory(
+    () => PreparationDetailBloc(locator(), locator(), locator(), locator()),
   );
 
   locator.registerLazySingleton(() => CreatePreparationUseCase(locator()));
   locator.registerLazySingleton(() => FindAllPreparationUseCase(locator()));
-  locator.registerLazySingleton(() => FindPreparationByIdUseCase(locator()));
   locator.registerLazySingleton(() => UpdatePreparationUseCase(locator()));
+  locator.registerLazySingleton(() => FindPreparationByIdUseCase(locator()));
   locator.registerLazySingleton(
     () => CreatePreparationDetailUseCase(locator()),
   );
@@ -47,7 +42,6 @@ preparationInjection(GetIt locator) {
   locator.registerLazySingleton<PreparationRepository>(
     () => PreparationRepositoryImpl(locator()),
   );
-
   locator.registerLazySingleton<PreparationRemoteDataSource>(
     () => PreparationRemoteDataSourceImpl(locator(), locator()),
   );

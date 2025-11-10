@@ -101,7 +101,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
       throw NotFoundException(message: 'Token expired');
     } else {
       final response = await _client.put(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/$params'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode(params.toJson()),
       );

@@ -2,6 +2,7 @@
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/presentation/view/location/create_location_view.dart';
 import 'package:asset_management/presentation/view/location/location_detail_view.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,6 +24,13 @@ class LocationViewState extends State<LocationView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileLocation(),
+      mobileMScaffold: _mobileLocation(isLarge: false),
+    );
+  }
+
+  Widget _mobileLocation({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
         final permission = state.user!.modules;
@@ -68,6 +76,7 @@ class LocationViewState extends State<LocationView> {
                       AppTextField(
                         noTitle: true,
                         hintText: 'Search...',
+                        fontSize: isLarge ? 14 : 12,
                         onChanged: (value) => setState(() {
                           query = value;
                         }),
@@ -84,6 +93,7 @@ class LocationViewState extends State<LocationView> {
                                 : locations?[index];
                             return AppListTileCustom(
                               title: location?.name,
+                              fontSize: isLarge ? 14 : 12,
                               trailing: location?.locationType,
                               onTap: () => context.push(
                                 LocationDetailView(params: location!),
