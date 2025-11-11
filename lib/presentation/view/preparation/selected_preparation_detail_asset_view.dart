@@ -57,6 +57,7 @@ class _SelectedPreparationDetailAssetViewState
         child: AppButton(
           title: 'Review',
           width: context.deviceWidth,
+          fontSize: isLarge ? 16 : 14,
           onPressed: () {
             if (widget.preparationDetails == []) {
               context.showSnackbar(
@@ -107,9 +108,9 @@ class _SelectedPreparationDetailAssetViewState
                 keyboardType: TextInputType.number,
                 onSubmitted: (_) => _add(isLarge),
               ),
-              AppSpace.vertical(48),
+              AppSpace.vertical(32),
               AppButton(
-                title: 'Add',
+                title: 'Next',
                 fontSize: isLarge ? 16 : 14,
                 width: context.deviceWidth,
                 onPressed: () => _add(isLarge),

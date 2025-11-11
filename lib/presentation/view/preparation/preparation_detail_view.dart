@@ -69,31 +69,43 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
             );
           }
           final preparationDetails = state.preparationDetails;
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _descriptionPreparationDetail(isLarge),
-                AppSpace.vertical(16),
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: preparationDetails!.length,
-                    itemBuilder: (context, index) {
-                      final preparatioDetail = preparationDetails[index];
-                      return AppCardItem(
-                        fontSize: isLarge ? 14 : 12,
-                        title: preparatioDetail.assetModel,
-                        leading: preparatioDetail.status,
-                        subtitle:
-                            '${preparatioDetail.assetCategory} - ${preparatioDetail.assetType}',
-                        noDescription: true,
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
+          return ListView(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            children: [
+              _descriptionPreparationDetail(isLarge),
+              AppSpace.vertical(16),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                itemCount: preparationDetails!.length,
+                itemBuilder: (context, index) {
+                  final preparatioDetail = preparationDetails[index];
+                  return Padding(
+                    padding:
+                        context
+                                .read<PreparationBloc>()
+                                .state
+                                .preparation
+                                ?.status ==
+                            'DRAFT'
+                        ? EdgeInsets.only(
+                            bottom: preparationDetails.length - 1 == index
+                                ? 74
+                                : 0,
+                          )
+                        : EdgeInsets.zero,
+                    child: AppCardItem(
+                      fontSize: isLarge ? 14 : 12,
+                      title: preparatioDetail.assetModel,
+                      leading: preparatioDetail.status,
+                      subtitle:
+                          '${preparatioDetail.assetCategory} - ${preparatioDetail.assetType}',
+                      noDescription: true,
+                    ),
+                  );
+                },
+              ),
+            ],
           );
         },
       ),
@@ -145,11 +157,7 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                       isLarge,
                     ),
                     AppSpace.vertical(12),
-                    _descriptionItem(
-                      'Assigned',
-                      preparation.assigned!,
-                      isLarge,
-                    ),
+                    _descriptionItem('Worker', preparation.assigned!, isLarge),
                   ],
                 ),
               ),

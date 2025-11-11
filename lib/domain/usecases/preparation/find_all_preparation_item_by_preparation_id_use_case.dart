@@ -8,10 +8,7 @@ class FindAllPreparationItemByPreparationIdUseCase {
 
   FindAllPreparationItemByPreparationIdUseCase(this._repository);
 
-  Future<Either<Failure, List<PreparationItem>>> call(
-    int params,
-    int preparationId,
-  ) async {
+  Future<Either<Failure, List<PreparationItem>>> call(int params) async {
     return _repository.findAllPreparationItemByPreparationId(params);
   }
 }

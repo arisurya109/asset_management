@@ -135,6 +135,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                     title: 'Next',
                     width: context.deviceWidth,
                   ),
+                  AppSpace.vertical(16),
                 ],
               ),
             ),

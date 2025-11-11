@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/presentation/view/picking/picking_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asset_management/core/core.dart';
@@ -37,7 +38,7 @@ class _HomeViewState extends State<HomeView> {
       'icon': Assets.iAssetManagement,
     },
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
-    {'title': 'Picking', 'view': Scaffold(), 'icon': Assets.iPicking},
+    {'title': 'Picking', 'view': PickingView(), 'icon': Assets.iPicking},
     {'title': 'Counting', 'view': Scaffold(), 'icon': Assets.iCount},
     {'title': 'Receive', 'view': Scaffold(), 'icon': Assets.iCount},
     {'title': 'Return', 'view': Scaffold(), 'icon': Assets.iCount},
