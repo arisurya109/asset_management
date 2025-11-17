@@ -23,6 +23,8 @@ class PreparationItemBloc
     on<OnCreatePreparationItem>((event, emit) async {
       emit(state.copyWith(status: StatusPreparationItem.loading));
 
+      await Future.delayed(Duration(seconds: 5));
+
       final failureOrItem = await _createPreparationItemUseCase(event.params);
 
       return failureOrItem.fold(
@@ -35,39 +37,25 @@ class PreparationItemBloc
         (item) => emit(
           state.copyWith(
             status: StatusPreparationItem.success,
-            preparationItems: [...?state.preparationItems, item],
+            preparationItem: [...?state.preparationItem, item],
           ),
         ),
       );
     });
 
     on<OnFindAllPreparationItemsByPreparationId>((event, emit) async {
-      emit(state.copyWith(status: StatusPreparationItem.loading));
-
       final failureOrItems =
           await _findAllPreparationItemByPreparationIdUseCase(
             event.preparationId,
           );
 
       return failureOrItems.fold(
-        (failure) => emit(
-          state.copyWith(
-            status: StatusPreparationItem.failed,
-            message: failure.message,
-          ),
-        ),
-        (items) => emit(
-          state.copyWith(
-            status: StatusPreparationItem.success,
-            preparationItems: items,
-          ),
-        ),
+        (failure) => emit(state.copyWith(message: failure.message)),
+        (items) => emit(state.copyWith(preparationItems: items)),
       );
     });
 
     on<OnFindAllPreparationItemsByPreparationDetailId>((event, emit) async {
-      emit(state.copyWith(status: StatusPreparationItem.loading));
-
       final failureOrItems =
           await _findAllPreparationItemByPreparationDetailIdUseCase(
             event.preparationDetailId,
@@ -75,18 +63,8 @@ class PreparationItemBloc
           );
 
       return failureOrItems.fold(
-        (failure) => emit(
-          state.copyWith(
-            status: StatusPreparationItem.failed,
-            message: failure.message,
-          ),
-        ),
-        (items) => emit(
-          state.copyWith(
-            status: StatusPreparationItem.success,
-            preparationItems: items,
-          ),
-        ),
+        (failure) => emit(state.copyWith(message: failure.message)),
+        (items) => emit(state.copyWith(preparationItem: items)),
       );
     });
   }

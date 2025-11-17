@@ -64,6 +64,7 @@ class PreparationModel extends Equatable {
     return <String, dynamic>{
       'destination_id': destinationId,
       'assigned_id': assignedId,
+      'preparation_code': preparationCode,
       'temporary_location_id': temporaryLocationId,
       'total_box': totalBox,
       'status': status,

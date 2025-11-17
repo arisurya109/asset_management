@@ -26,3 +26,16 @@ class OnFindPreparationByIdEvent extends PreparationEvent {
 
   const OnFindPreparationByIdEvent(this.params);
 }
+
+class OnDispatchPreparationEvent extends PreparationEvent {
+  final Preparation params;
+
+  const OnDispatchPreparationEvent(this.params);
+}
+
+class OnCompletedPreparationEvent extends PreparationEvent {
+  final PlatformFile file;
+  final Preparation params;
+
+  const OnCompletedPreparationEvent(this.file, this.params);
+}

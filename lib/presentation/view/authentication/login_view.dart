@@ -55,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  Widget _mobileLogin(BuildContext context) {
+  Widget _mobileLogin(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -72,7 +72,7 @@ class _LoginViewState extends State<LoginView> {
           Text(
             'Login',
             style: TextStyle(
-              fontSize: 38,
+              fontSize: isLarge ? 38 : 24,
               fontWeight: FontWeight.w600,
               color: AppColors.kBase,
             ),
@@ -84,7 +84,7 @@ class _LoginViewState extends State<LoginView> {
               Text(
                 'Please Sign in to continue',
                 style: TextStyle(
-                  fontSize: 18,
+                  fontSize: isLarge ? 18 : 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.kBase,
                 ),
@@ -94,12 +94,14 @@ class _LoginViewState extends State<LoginView> {
                 title: 'Username',
                 controller: usernameC,
                 hintText: 'Username',
+                fontSize: isLarge ? 14 : 12,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
               ),
               AppSpace.vertical(24),
               AppTextField(
                 title: 'Password',
+                fontSize: isLarge ? 14 : 12,
                 controller: passwordC,
                 obscureText: true,
                 hintText: 'Password',
@@ -122,6 +124,7 @@ class _LoginViewState extends State<LoginView> {
                 },
                 builder: (context, state) {
                   return AppButton(
+                    fontSize: isLarge ? 16 : 14,
                     title: state.status == StatusAuthentication.loading
                         ? 'Loading...'
                         : 'Login',

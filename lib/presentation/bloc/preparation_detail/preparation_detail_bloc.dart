@@ -62,26 +62,15 @@ class PreparationDetailBloc
     OnFindPreparationDetailById event,
     Emitter<PreparationDetailState> emit,
   ) async {
-    emit(state.copyWith(status: StatusPreparationDetail.loading));
-
     final failureOrPreparationDetail = await _findPreparationDetailByIdUseCase(
       params: event.params,
       preparationId: event.preparationId,
     );
 
     return failureOrPreparationDetail.fold(
-      (failure) => emit(
-        state.copyWith(
-          status: StatusPreparationDetail.failed,
-          message: failure.message,
-        ),
-      ),
-      (preparationDetail) => emit(
-        state.copyWith(
-          status: StatusPreparationDetail.success,
-          preparationDetail: preparationDetail,
-        ),
-      ),
+      (failure) => emit(state.copyWith(message: failure.message)),
+      (preparationDetail) =>
+          emit(state.copyWith(preparationDetail: preparationDetail)),
     );
   }
 

@@ -3,6 +3,7 @@ import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
 import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
+import 'package:asset_management/presentation/bloc/preparation_item/preparation_item_bloc.dart';
 import 'package:asset_management/presentation/components/app_card_item.dart';
 import 'package:asset_management/presentation/view/preparation/create_preparation_view.dart';
 import 'package:asset_management/presentation/view/preparation/preparation_detail_view.dart';
@@ -163,6 +164,11 @@ class _PreparationViewState extends State<PreparationView> {
                                   preparationFiltered;
                               context.read<PreparationDetailBloc>().add(
                                 OnFindAllPreparationDetailByPreparationId(
+                                  preparationFiltered.id!,
+                                ),
+                              );
+                              context.read<PreparationItemBloc>().add(
+                                OnFindAllPreparationItemsByPreparationId(
                                   preparationFiltered.id!,
                                 ),
                               );

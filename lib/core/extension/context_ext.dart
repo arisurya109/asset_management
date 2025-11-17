@@ -39,7 +39,10 @@ extension ContextExt on BuildContext {
           ),
           title: Text(
             title,
-            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w500),
+            style: TextStyle(
+              fontSize: fontSize + 4,
+              fontWeight: FontWeight.w500,
+            ),
           ),
           actionsPadding: const EdgeInsets.only(bottom: 8, right: 12),
           content: Text(

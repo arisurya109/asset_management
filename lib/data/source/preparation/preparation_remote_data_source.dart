@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:asset_management/data/model/preparation/preparation_detail_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_item_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
+import 'package:file_picker/file_picker.dart';
 
 abstract class PreparationRemoteDataSource {
   // Preparation
@@ -8,6 +11,12 @@ abstract class PreparationRemoteDataSource {
   Future<PreparationModel> findPreparationById(int params);
   Future<PreparationModel> createPreparation(PreparationModel params);
   Future<PreparationModel> updatePreparation(PreparationModel params);
+  Future<PreparationModel> dispatchPreparation(PreparationModel params);
+  Future<PreparationModel> completedPreparation(
+    PlatformFile file,
+    PreparationModel params,
+  );
+  Future<File> getDocumentPreparationById(int params);
 
   // PreparationDetail
   Future<List<PreparationDetailModel>> findAllPreparationDetailByPreparationId(

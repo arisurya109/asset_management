@@ -19,6 +19,7 @@ class PreparationItem extends Equatable {
   String? assetType;
   String? pickedBy;
   String? location;
+  String? purchaseOrder;
 
   PreparationItem({
     this.id,
@@ -36,6 +37,7 @@ class PreparationItem extends Equatable {
     this.assetType,
     this.pickedBy,
     this.location,
+    this.purchaseOrder,
   });
 
   @override
@@ -54,6 +56,7 @@ class PreparationItem extends Equatable {
       assetCategory,
       assetBrand,
       assetType,
+      purchaseOrder,
     ];
   }
 }

@@ -38,8 +38,7 @@ class PickingView extends StatelessWidget {
 
           preparations = state.preparations!.where((element) {
             return element.assignedId == userId &&
-                    element.status == 'ASSIGNED' ||
-                element.status == 'PICKING';
+                (element.status == 'ASSIGNED' || element.status == 'PICKING');
           }).toList();
 
           if (preparations.isEmpty) {
@@ -72,6 +71,9 @@ class PickingView extends StatelessWidget {
                                 preparation.copyWith(status: 'PICKING'),
                               ),
                             );
+                            context.read<PreparationBloc>().add(
+                              OnFindPreparationByIdEvent(preparation.id!),
+                            );
                             context.pop();
                             context.read<PreparationDetailBloc>().add(
                               OnFindAllPreparationDetailByPreparationId(
@@ -83,6 +85,9 @@ class PickingView extends StatelessWidget {
                         );
                       }
                     : () {
+                        context.read<PreparationBloc>().add(
+                          OnFindPreparationByIdEvent(preparation.id!),
+                        );
                         context.read<PreparationDetailBloc>().add(
                           OnFindAllPreparationDetailByPreparationId(
                             preparation.id!,

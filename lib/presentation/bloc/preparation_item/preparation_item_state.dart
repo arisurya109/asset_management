@@ -7,7 +7,7 @@ enum StatusPreparationItem { initial, loading, failed, success }
 class PreparationItemState extends Equatable {
   StatusPreparationItem? status;
   List<PreparationItem>? preparationItems;
-  PreparationItem? preparationItem;
+  List<PreparationItem>? preparationItem;
   String? message;
 
   PreparationItemState({
@@ -28,7 +28,7 @@ class PreparationItemState extends Equatable {
   PreparationItemState copyWith({
     StatusPreparationItem? status,
     List<PreparationItem>? preparationItems,
-    PreparationItem? preparationItem,
+    List<PreparationItem>? preparationItem,
     String? message,
   }) {
     return PreparationItemState(

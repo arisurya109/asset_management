@@ -1,4 +1,10 @@
+// ignore_for_file: implementation_imports
+
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:file_picker/src/platform_file.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
@@ -7,7 +13,6 @@ import 'package:asset_management/data/model/preparation/preparation_detail_model
 import 'package:asset_management/data/model/preparation/preparation_item_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
-import 'package:http/http.dart' as http;
 
 class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
   final http.Client _client;
@@ -328,5 +333,79 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
         );
       }
     }
+  }
+
+  @override
+  Future<PreparationModel> dispatchPreparation(PreparationModel params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.put(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}/dispatch'),
+        headers: ApiHelper.headersToken(token),
+        body: jsonEncode(params.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        Map<String, dynamic> datas = body['data'];
+
+        return PreparationModel.fromJson(datas);
+      } else {
+        throw UpdateException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<PreparationModel> completedPreparation(
+    PlatformFile file,
+    PreparationModel params,
+  ) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final fileBytes = await File(file.path!).readAsBytes();
+      final fileBase64 = base64Encode(fileBytes);
+
+      final body = {
+        "data": params.toJson(),
+        "file_name": file.name,
+        "file_base64": fileBase64,
+      };
+
+      final response = await _client.put(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}/completed'),
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $token",
+        },
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final data = decoded['data'];
+
+        return PreparationModel.fromJson(data);
+      } else {
+        throw UpdateException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<File> getDocumentPreparationById(int params) {
+    // TODO: implement getDocumentPreparationById
+    throw UnimplementedError();
   }
 }
