@@ -2,11 +2,9 @@ import 'dart:io';
 
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_item.dart';
-import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
+import 'package:asset_management/domain/entities/preparation_item/preparation_item.dart';
+import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_item/preparation_item_bloc.dart';
 import 'package:asset_management/presentation/components/app_card_item.dart';
 import 'package:asset_management/presentation/view/preparation/components/preparation_component_fnc.dart';
 import 'package:asset_management/presentation/view/preparation/preparation_detail_item_view.dart';
@@ -39,105 +37,134 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
       appBar: AppBar(
         title: Text('Preparation Detail'),
         actions: [
-          BlocBuilder<PreparationBloc, PreparationState>(
-            builder: (context, state) {
-              if (state.preparation?.status == 'READY' ||
-                  state.preparation?.status == 'PARTIALLY READY') {
-                final items = context
-                    .watch<PreparationItemBloc>()
-                    .state
-                    .preparationItems;
-                return IconButton(
-                  onPressed: () async =>
-                      await exportExcel(state.preparation!, items!),
-                  icon: Icon(Icons.download),
-                );
-              }
-              return Container();
-            },
-          ),
+          // BlocBuilder<PreparationBloc, PreparationState>(
+          //   builder: (context, state) {
+          //     if (state.preparation?.status == 'READY' ||
+          //         state.preparation?.status == 'PARTIALLY READY') {
+          //       // final items = context
+          //       //     .watch<PreparationItemBloc>()
+          //       //     .state
+          //       //     .allItemPreparation;
+          //       return IconButton(
+          //         onPressed: () async =>
+          //             await exportExcel(state.preparation!, items!),
+          //         icon: Icon(Icons.download),
+          //       );
+          //     }
+          //     return Container();
+          //   },
+          // ),
         ],
       ),
-      floatingActionButton:
-          BlocBuilder<PreparationDetailBloc, PreparationDetailState>(
-            builder: (context, state) {
-              if (state.status == StatusPreparationDetail.loading) {
-                return SizedBox();
-              }
-              return BlocConsumer<PreparationBloc, PreparationState>(
-                listenWhen: (previous, current) =>
-                    previous.status != current.status,
-                listener: (context, state) {
-                  if (state.status == StatusPreparation.success) {
-                    context.pop();
-                    context.showSnackbar(
-                      'Successfully',
-                      fontSize: isLarge ? 14 : 12,
-                    );
-                    context.read<AssetBloc>().add(OnFindAllAssetEvent());
-                  }
-                  if (state.status == StatusPreparation.failed) {
-                    context.showSnackbar(
-                      'Please try again',
-                      backgroundColor: AppColors.kRed,
-                      fontSize: isLarge ? 14 : 12,
-                    );
-                  }
-                },
-                builder: (context, state) {
-                  if (state.preparation?.status == 'DRAFT') {
-                    return AppButton(
-                      width: context.deviceWidth - 32,
-                      title: 'Assigned',
-                      fontSize: isLarge ? 16 : 14,
-                      onPressed: () {},
-                    );
-                  }
-                  if (state.preparation?.status == 'READY') {
-                    return AppButton(
-                      width: context.deviceWidth - 32,
-                      fontSize: isLarge ? 16 : 14,
-                      title: 'Dispatch',
-                      onPressed: () {
-                        context.read<PreparationBloc>().add(
-                          OnDispatchPreparationEvent(
-                            state.preparation!.copyWith(status: 'DISPATCHED'),
-                          ),
-                        );
-                      },
-                    );
-                  }
-
-                  if (state.preparation?.status == 'DISPATCHED') {
-                    return AppButton(
-                      width: context.deviceWidth - 32,
-                      fontSize: isLarge ? 16 : 14,
-                      title: 'Upload',
-                      onPressed: () {
-                        if (filePdf == null) {
-                          context.showSnackbar(
-                            'Please select document',
-                            backgroundColor: AppColors.kRed,
-                          );
-                        } else {
-                          context.read<PreparationBloc>().add(
-                            OnCompletedPreparationEvent(
-                              filePdf!,
-                              state.preparation!.copyWith(status: 'COMPLETED'),
-                            ),
-                          );
-                        }
-                      },
-                    );
-                  }
-                  return SizedBox();
-                },
-              );
-            },
-          ),
-      body: BlocBuilder<PreparationDetailBloc, PreparationDetailState>(
+      floatingActionButton: BlocConsumer<PreparationBloc, PreparationState>(
+        listener: (context, state) {
+          if (state.status == StatusPreparation.updatePreparation) {
+            context.showSnackbar(
+              state.message ?? 'Successfully update preparation',
+              fontSize: isLarge ? 14 : 12,
+            );
+          }
+          if (state.status == StatusPreparation.failure) {
+            context.showSnackbar(
+              state.message ?? 'Please try again',
+              backgroundColor: AppColors.kRed,
+              fontSize: isLarge ? 14 : 12,
+            );
+          }
+        },
         builder: (context, state) {
-          if (state.status == StatusPreparationDetail.loading) {
+          final preparation = context
+              .watch<PreparationBloc>()
+              .state
+              .preparation
+              ?.status;
+          if (state.status == StatusPreparation.loading ||
+              state.preparation == null) {
+            return SizedBox();
+          }
+          if (preparation == 'DRAFT') {
+            return Padding(
+              padding: const EdgeInsets.only(left: 32),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  AppButton(
+                    width: (context.deviceWidth / 2) - 36,
+                    title: 'Cancel',
+                    fontSize: isLarge ? 16 : 14,
+                    backgroundColor: AppColors.kRed,
+                    onPressed: () {
+                      context.read<PreparationBloc>().add(
+                        OnUpdateStatusPreparation(
+                          state.preparation!.id!,
+                          'CANCELLED',
+                        ),
+                      );
+                    },
+                  ),
+                  AppButton(
+                    width: (context.deviceWidth / 2) - 36,
+                    title: 'Assigned',
+                    fontSize: isLarge ? 16 : 14,
+                    onPressed: () {
+                      context.pop();
+                      context.read<PreparationBloc>().add(
+                        OnUpdateStatusPreparation(
+                          state.preparation!.id!,
+                          'ASSIGNED',
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            );
+          }
+          if (preparation == 'READY' &&
+              state.preparation!.approvedById ==
+                  context.read<AuthenticationBloc>().state.user!.id!) {
+            return AppButton(
+              width: context.deviceWidth - 32,
+              fontSize: isLarge ? 16 : 14,
+              title: 'Approved',
+              onPressed: () {
+                // context.read<PreparationBloc>().add(
+                //   OnDispatchPreparationEvent(
+                //     state.preparation!.copyWith(status: 'DISPATCHED'),
+                //   ),
+                // );
+              },
+            );
+          }
+
+          if (preparation == 'DISPATCHED') {
+            return AppButton(
+              width: context.deviceWidth - 32,
+              fontSize: isLarge ? 16 : 14,
+              title: 'Upload',
+              onPressed: () {
+                if (filePdf == null) {
+                  context.showSnackbar(
+                    'Please select document',
+                    backgroundColor: AppColors.kRed,
+                  );
+                } else {
+                  // context.read<PreparationBloc>().add(
+                  //   OnCompletedPreparationEvent(
+                  //     filePdf!,
+                  //     state.preparation!.copyWith(status: 'COMPLETED'),
+                  //   ),
+                  // );
+                }
+              },
+            );
+          }
+          return SizedBox();
+        },
+      ),
+      body: BlocBuilder<PreparationBloc, PreparationState>(
+        builder: (context, state) {
+          if (state.status == StatusPreparation.loading) {
             return Center(
               child: CircularProgressIndicator(color: AppColors.kBase),
             );
@@ -185,7 +212,7 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                       physics: NeverScrollableScrollPhysics(),
                       itemCount: preparationDetails!.length,
                       itemBuilder: (context, index) {
-                        final preparatioDetail = preparationDetails[index];
+                        final preparationDetail = preparationDetails[index];
                         return Padding(
                           padding:
                               context
@@ -202,27 +229,20 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                               : EdgeInsets.zero,
                           child: AppCardItem(
                             fontSize: isLarge ? 14 : 12,
-                            title: preparatioDetail.assetModel,
-                            leading: preparatioDetail.status,
-                            onTap: preparatioDetail.status == 'COMPLETED'
+                            title: preparationDetail.assetModel,
+                            leading: preparationDetail.status,
+                            onTap: preparationDetail.status != 'PENDING'
                                 ? () {
-                                    context.read<PreparationItemBloc>().add(
-                                      OnFindAllPreparationItemsByPreparationDetailId(
-                                        preparatioDetail.id!,
-                                        preparatioDetail.preparationId!,
-                                      ),
-                                    );
-                                    context.read<PreparationDetailBloc>().add(
-                                      OnFindPreparationDetailById(
-                                        preparatioDetail.id!,
-                                        preparatioDetail.preparationId!,
+                                    context.read<PreparationBloc>().add(
+                                      OnFindItemByPreparationDetail(
+                                        preparationDetail.id!,
                                       ),
                                     );
                                     context.push(PreparationDetailItemView());
                                   }
                                 : null,
                             subtitle:
-                                '${preparatioDetail.assetCategory} - ${preparatioDetail.assetType}',
+                                '${preparationDetail.assetCategory} - ${preparationDetail.assetType}',
                             noDescription: true,
                           ),
                         );
@@ -346,7 +366,7 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: context.deviceWidth / 1.25 - 32,
+                width: context.deviceWidth / 1.3 - 36,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -357,8 +377,14 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                     ),
                     AppSpace.vertical(12),
                     _descriptionItem(
-                      'Destination',
-                      preparation.destination!,
+                      'Condition Asset',
+                      preparation.assetConditionAfter,
+                      isLarge,
+                    ),
+                    AppSpace.vertical(12),
+                    _descriptionItem(
+                      'Status Asset',
+                      preparation.assetStatusAfter,
                       isLarge,
                     ),
                     AppSpace.vertical(12),
@@ -370,15 +396,29 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionItem('Status', preparation.status!, isLarge),
-                    AppSpace.vertical(12),
                     _descriptionItem(
-                      'Created',
-                      preparation.createdBy!,
+                      'Destination',
+                      preparation.destination ?? '',
                       isLarge,
                     ),
                     AppSpace.vertical(12),
-                    _descriptionItem('Worker', preparation.assigned!, isLarge),
+                    _descriptionItem(
+                      'Status',
+                      preparation.status ?? '',
+                      isLarge,
+                    ),
+                    AppSpace.vertical(12),
+                    _descriptionItem(
+                      'Approved',
+                      preparation.approvedBy ?? '',
+                      isLarge,
+                    ),
+                    AppSpace.vertical(12),
+                    _descriptionItem(
+                      'Worker',
+                      preparation.assigned ?? '',
+                      isLarge,
+                    ),
                   ],
                 ),
               ),

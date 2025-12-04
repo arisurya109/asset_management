@@ -8,7 +8,9 @@ class CreatePreparationUseCase {
 
   CreatePreparationUseCase(this._repository);
 
-  Future<Either<Failure, Preparation>> call(Preparation params) async {
-    return _repository.createPreparation(params);
+  Future<Either<Failure, Preparation>> call({
+    required Preparation params,
+  }) async {
+    return _repository.createPreparation(params: params);
   }
 }

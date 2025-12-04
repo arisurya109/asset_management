@@ -130,4 +130,35 @@ class AssetRemoteDataSourceImpl implements AssetRemoteDataSource {
       }
     }
   }
+
+  @override
+  Future<AssetsModel> findAssetByAssetCodeAndLocation({
+    required String assetCode,
+    required String location,
+  }) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse(
+          '${ApiHelper.baseUrl}/assets?assetCode=$assetCode&location=$location',
+        ),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        final datas = body['data'];
+
+        return AssetsModel.fromJson(datas);
+      } else {
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
 }

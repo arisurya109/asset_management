@@ -13,4 +13,8 @@ abstract class AssetRemoteDataSource {
     int quantity = 1,
     String? notes,
   });
+  Future<AssetsModel> findAssetByAssetCodeAndLocation({
+    required String assetCode,
+    required String location,
+  });
 }

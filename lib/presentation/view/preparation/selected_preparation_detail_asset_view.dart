@@ -2,7 +2,7 @@ import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
+import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/presentation/view/preparation/create_preparation_detail_review_view.dart';
 import 'package:asset_management/responsive_layout.dart';
@@ -110,7 +110,7 @@ class _SelectedPreparationDetailAssetViewState
               ),
               AppSpace.vertical(32),
               AppButton(
-                title: 'Next',
+                title: 'Add',
                 fontSize: isLarge ? 16 : 14,
                 width: context.deviceWidth,
                 onPressed: () => _add(isLarge),
@@ -193,6 +193,7 @@ class _SelectedPreparationDetailAssetViewState
           );
         }
         quantityC.clear();
+        selectedAsset = null;
       });
     }
   }

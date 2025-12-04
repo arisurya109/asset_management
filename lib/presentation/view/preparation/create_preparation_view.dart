@@ -3,7 +3,7 @@ import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/master/preparation_template.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
+import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
@@ -23,8 +23,14 @@ class CreatePreparationView extends StatefulWidget {
 class _CreatePreparationViewState extends State<CreatePreparationView> {
   Location? selectedLocation;
   User? selectedUser;
+  User? approvedUser;
+  String? assetStatusAfter;
+  String? assetConditionAfter;
   PreparationTemplate? selectedTemplate;
   late TextEditingController notesC;
+
+  List<String> assetsStatus = ['USE', 'REPAIR'];
+  List<String> assetsCondition = ['OLD', 'BAD'];
 
   @override
   void initState() {
@@ -55,6 +61,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
+                  // Destination
                   AppDropDownSearch<Location>(
                     title: 'Destination',
                     items: locations ?? [],
@@ -69,6 +76,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                     hintText: 'Selected destination',
                   ),
                   AppSpace.vertical(16),
+                  // Worker
                   BlocSelector<UserBloc, UserState, List<User>>(
                     selector: (state) {
                       return state.users ?? [];
@@ -98,6 +106,38 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                     },
                   ),
                   AppSpace.vertical(16),
+                  // Approved
+                  BlocSelector<UserBloc, UserState, List<User>>(
+                    selector: (state) {
+                      return state.users ?? [];
+                    },
+                    builder: (context, state) {
+                      final userId = context
+                          .read<AuthenticationBloc>()
+                          .state
+                          .user!
+                          .id;
+                      final users = state.where((element) {
+                        return element.id != userId &&
+                            element.id != selectedUser?.id;
+                      }).toList();
+                      return AppDropDownSearch<User>(
+                        title: 'Approved',
+                        items: users,
+                        borderRadius: 5,
+                        selectedItem: approvedUser,
+                        compareFn: (value, value1) => value.id == value1.id,
+                        itemAsString: (value) => value.name!,
+                        onChanged: (value) => setState(() {
+                          approvedUser = value;
+                        }),
+                        fontSize: isLarge ? 14 : 12,
+                        hintText: 'Approved By',
+                      );
+                    },
+                  ),
+                  AppSpace.vertical(16),
+                  // Template
                   AppDropDownSearch<PreparationTemplate>(
                     title: 'Template',
                     borderRadius: 5,
@@ -119,6 +159,37 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                     hintText: 'Selected template',
                   ),
                   AppSpace.vertical(16),
+                  // Asset Status After
+                  AppDropDownSearch<String>(
+                    title: 'Asset Status After',
+                    borderRadius: 5,
+                    items: assetsStatus,
+                    selectedItem: assetStatusAfter,
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value,
+                    onChanged: (value) => setState(() {
+                      assetStatusAfter = value;
+                    }),
+                    fontSize: isLarge ? 14 : 12,
+                    hintText: 'Selected status',
+                  ),
+                  AppSpace.vertical(16),
+                  // Asset Condition After
+                  AppDropDownSearch<String>(
+                    title: 'Asset Condition After',
+                    borderRadius: 5,
+                    items: assetsCondition,
+                    selectedItem: assetConditionAfter,
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value,
+                    onChanged: (value) => setState(() {
+                      assetConditionAfter = value;
+                    }),
+                    fontSize: isLarge ? 14 : 12,
+                    hintText: 'Selected condition',
+                  ),
+                  AppSpace.vertical(16),
+                  // Notes
                   AppTextField(
                     title: 'Notes',
                     controller: notesC,
@@ -148,6 +219,9 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
   _nextButton(bool isLarge) {
     final destination = selectedLocation;
     final assigned = selectedUser;
+    final approved = approvedUser;
+    final status = assetStatusAfter;
+    final condition = assetConditionAfter;
     final preparationSet = selectedTemplate;
     final notes = notesC.value.text.trim();
     List<PreparationDetail> preparationDetail = [];
@@ -161,6 +235,24 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
     } else if (assigned == null) {
       context.showSnackbar(
         'Assigned Worker cannot be empty',
+        backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
+      );
+    } else if (approved == null) {
+      context.showSnackbar(
+        'Approved cannot be empty',
+        backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
+      );
+    } else if (status == null) {
+      context.showSnackbar(
+        'Status cannot be empty',
+        backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
+      );
+    } else if (condition == null) {
+      context.showSnackbar(
+        'Condition cannot be empty',
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
@@ -192,6 +284,10 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
           preparation: Preparation(
             assigned: assigned.name,
             assignedId: assigned.id,
+            approvedBy: approved.name,
+            approvedById: approved.id,
+            assetStatusAfter: status,
+            assetConditionAfter: condition,
             destination: destination.name,
             destinationId: destination.id,
             notes: notes,

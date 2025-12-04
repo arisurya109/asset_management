@@ -20,6 +20,11 @@ class PreparationModel extends Equatable {
   String? createdBy;
   int? updatedById;
   String? updatedBy;
+  int? approvedById;
+  String? approvedBy;
+  DateTime? approvedAt;
+  String? assetStatusAfter;
+  String? assetConditionAfter;
 
   PreparationModel({
     this.id,
@@ -37,6 +42,11 @@ class PreparationModel extends Equatable {
     this.createdBy,
     this.updatedById,
     this.updatedBy,
+    this.approvedById,
+    this.approvedBy,
+    this.approvedAt,
+    this.assetStatusAfter,
+    this.assetConditionAfter,
   });
 
   @override
@@ -57,6 +67,11 @@ class PreparationModel extends Equatable {
       createdBy,
       updatedById,
       updatedBy,
+      approvedBy,
+      approvedById,
+      assetConditionAfter,
+      assetStatusAfter,
+      approvedAt,
     ];
   }
 
@@ -69,6 +84,9 @@ class PreparationModel extends Equatable {
       'total_box': totalBox,
       'status': status,
       'notes': notes,
+      'approved_by_id': approvedById,
+      'asset_status_after': assetStatusAfter,
+      'asset_condition_after': assetConditionAfter,
     };
   }
 
@@ -111,6 +129,18 @@ class PreparationModel extends Equatable {
       updatedBy: map['updated_by']['name'] != null
           ? map['updated_by']['name'] as String
           : null,
+      approvedById: map['approved_by']['id'] != null
+          ? map['approved_by']['id'] as int
+          : null,
+      approvedBy: map['approved_by']['name'] != null
+          ? map['approved_by']['name'] as String
+          : null,
+      assetStatusAfter: map['asset_after']['status'] != null
+          ? map['asset_after']['status'] as String
+          : null,
+      assetConditionAfter: map['asset_after']['condition'] != null
+          ? map['asset_after']['condition'] as String
+          : null,
     );
   }
 
@@ -131,6 +161,11 @@ class PreparationModel extends Equatable {
       totalBox: params.totalBox,
       updatedBy: params.updatedBy,
       updatedById: params.updatedById,
+      approvedAt: params.approvedAt,
+      approvedBy: params.approvedBy,
+      approvedById: params.approvedById,
+      assetConditionAfter: params.assetConditionAfter,
+      assetStatusAfter: params.assetStatusAfter,
     );
   }
 
@@ -151,6 +186,11 @@ class PreparationModel extends Equatable {
       totalBox: totalBox,
       updatedBy: updatedBy,
       updatedById: updatedById,
+      approvedAt: approvedAt,
+      approvedBy: approvedBy,
+      approvedById: approvedById,
+      assetConditionAfter: assetConditionAfter,
+      assetStatusAfter: assetStatusAfter,
     );
   }
 }

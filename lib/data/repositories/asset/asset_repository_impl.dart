@@ -68,4 +68,20 @@ class AssetRepositoryImpl implements AssetRepository {
       return Left(CreateFailure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, AssetEntity>> findAssetByAssetCodeAndLocation({
+    required String assetCode,
+    required String location,
+  }) async {
+    try {
+      final response = await _source.findAssetByAssetCodeAndLocation(
+        assetCode: assetCode,
+        location: location,
+      );
+      return Right(response.toEntity());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
 }

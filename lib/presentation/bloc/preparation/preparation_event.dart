@@ -7,35 +7,37 @@ class PreparationEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class OnCreatePreparationEvent extends PreparationEvent {
-  final Preparation params;
+class OnCreatePreparation extends PreparationEvent {
+  final Preparation preparation;
+  final List<PreparationDetail> preparationDetail;
 
-  const OnCreatePreparationEvent(this.params);
+  const OnCreatePreparation(this.preparation, this.preparationDetail);
 }
 
-class OnFindAllPreparationEvent extends PreparationEvent {}
+class OnFindAllPreparation extends PreparationEvent {}
 
-class OnUpdatePreparationEvent extends PreparationEvent {
-  final Preparation params;
+class OnFindPreparationById extends PreparationEvent {
+  final int id;
 
-  const OnUpdatePreparationEvent(this.params);
+  const OnFindPreparationById(this.id);
 }
 
-class OnFindPreparationByIdEvent extends PreparationEvent {
-  final int params;
+class OnUpdateStatusPreparation extends PreparationEvent {
+  final int id;
+  final String params;
 
-  const OnFindPreparationByIdEvent(this.params);
+  const OnUpdateStatusPreparation(this.id, this.params);
 }
 
-class OnDispatchPreparationEvent extends PreparationEvent {
-  final Preparation params;
-
-  const OnDispatchPreparationEvent(this.params);
-}
-
-class OnCompletedPreparationEvent extends PreparationEvent {
+class OnCompletedPreparation extends PreparationEvent {
+  final int id;
   final PlatformFile file;
-  final Preparation params;
 
-  const OnCompletedPreparationEvent(this.file, this.params);
+  const OnCompletedPreparation(this.id, this.file);
+}
+
+class OnFindItemByPreparationDetail extends PreparationEvent {
+  final int preparationDetailId;
+
+  const OnFindItemByPreparationDetail(this.preparationDetailId);
 }

@@ -1,8 +1,5 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
+import 'package:asset_management/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/presentation/components/app_card_item.dart';
 import 'package:asset_management/presentation/view/picking/picking_list_detail_view.dart';
 import 'package:asset_management/responsive_layout.dart';
@@ -23,10 +20,9 @@ class PickingView extends StatelessWidget {
   Widget _mobilePicking(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Picking')),
-      body: BlocBuilder<PreparationBloc, PreparationState>(
+      body: BlocBuilder<PickingBloc, PickingState>(
         builder: (context, state) {
-          final userId = context.read<AuthenticationBloc>().state.user!.id;
-          if (state.status == StatusPreparation.loading) {
+          if (state.status == StatusPicking.loading) {
             return Center(
               child: CircularProgressIndicator(color: AppColors.kBase),
             );
@@ -34,22 +30,16 @@ class PickingView extends StatelessWidget {
           if (state.preparations == null || state.preparations!.isEmpty) {
             return Center(child: Text('No task picking'));
           }
-          List<Preparation> preparations;
 
-          preparations = state.preparations!.where((element) {
-            return element.assignedId == userId &&
-                (element.status == 'ASSIGNED' || element.status == 'PICKING');
-          }).toList();
-
-          if (preparations.isEmpty) {
+          if (state.preparations!.isEmpty) {
             return Center(child: Text('No task picking'));
           }
 
           return ListView.builder(
             padding: EdgeInsets.symmetric(horizontal: 16),
-            itemCount: preparations.length,
+            itemCount: state.preparations?.length,
             itemBuilder: (context, index) {
-              final preparation = preparations[index];
+              final preparation = state.preparations![index];
               return AppCardItem(
                 title: preparation.preparationCode,
                 leading: preparation.status,
@@ -66,32 +56,28 @@ class PickingView extends StatelessWidget {
                           fontSize: isLarge ? 14 : 12,
                           onCancel: () => context.pop(),
                           onConfirm: () {
-                            context.read<PreparationBloc>().add(
-                              OnUpdatePreparationEvent(
-                                preparation.copyWith(status: 'PICKING'),
-                              ),
-                            );
-                            context.read<PreparationBloc>().add(
-                              OnFindPreparationByIdEvent(preparation.id!),
-                            );
-                            context.pop();
-                            context.read<PreparationDetailBloc>().add(
-                              OnFindAllPreparationDetailByPreparationId(
-                                preparation.id!,
-                              ),
-                            );
-                            context.push(PickingListDetailView());
+                            // context.read<PreparationBloc>().add(
+                            //   OnUpdateStatusPreparation(
+                            //     preparation.id!,
+                            //     'PICKING',
+                            //   ),
+                            // );
+                            // context.read<PreparationBloc>().add(
+                            //   OnFindPreparationById(preparation.id!),
+                            // );
+                            // context.pop();
+                            // context.read<PreparationDetailBloc>().add(
+                            //   OnFindAllPreparationDetailByPreparationId(
+                            //     preparation.id!,
+                            //   ),
+                            // );
+                            // context.push(PickingListDetailView());
                           },
                         );
                       }
                     : () {
-                        context.read<PreparationBloc>().add(
-                          OnFindPreparationByIdEvent(preparation.id!),
-                        );
-                        context.read<PreparationDetailBloc>().add(
-                          OnFindAllPreparationDetailByPreparationId(
-                            preparation.id!,
-                          ),
+                        context.read<PickingBloc>().add(
+                          OnFindPickingTaskDetail(preparation.id!),
                         );
                         context.push(PickingListDetailView());
                       },

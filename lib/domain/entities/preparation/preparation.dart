@@ -19,6 +19,11 @@ class Preparation extends Equatable {
   String? createdBy;
   int? updatedById;
   String? updatedBy;
+  int? approvedById;
+  String? approvedBy;
+  DateTime? approvedAt;
+  String? assetStatusAfter;
+  String? assetConditionAfter;
 
   Preparation({
     this.id,
@@ -36,6 +41,11 @@ class Preparation extends Equatable {
     this.createdBy,
     this.updatedById,
     this.updatedBy,
+    this.approvedById,
+    this.approvedBy,
+    this.approvedAt,
+    this.assetStatusAfter,
+    this.assetConditionAfter,
   });
 
   @override
@@ -56,6 +66,11 @@ class Preparation extends Equatable {
       createdBy,
       updatedById,
       updatedBy,
+      approvedBy,
+      approvedById,
+      assetConditionAfter,
+      assetStatusAfter,
+      approvedAt,
     ];
   }
 
@@ -75,6 +90,11 @@ class Preparation extends Equatable {
     String? createdBy,
     int? updatedById,
     String? updatedBy,
+    int? approvedById,
+    String? approvedBy,
+    DateTime? approvedAt,
+    String? assetStatusAfter,
+    String? assetConditionAfter,
   }) {
     return Preparation(
       id: id ?? this.id,
@@ -92,6 +112,11 @@ class Preparation extends Equatable {
       createdBy: createdBy ?? this.createdBy,
       updatedById: updatedById ?? this.updatedById,
       updatedBy: updatedBy ?? this.updatedBy,
+      approvedById: approvedById ?? this.approvedById,
+      approvedBy: approvedBy ?? this.approvedBy,
+      approvedAt: approvedAt ?? this.approvedAt,
+      assetConditionAfter: assetConditionAfter ?? this.assetConditionAfter,
+      assetStatusAfter: assetStatusAfter ?? this.assetStatusAfter,
     );
   }
 }

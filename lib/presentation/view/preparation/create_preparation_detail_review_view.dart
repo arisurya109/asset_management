@@ -1,9 +1,8 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
+import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
 import 'package:asset_management/main_export.dart';
 import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
 import 'package:asset_management/presentation/view/home/home_view.dart';
 import 'package:asset_management/responsive_layout.dart';
 
@@ -41,50 +40,33 @@ class _CreatePreparationDetailReviewViewState
   }) {
     return Scaffold(
       appBar: AppBar(title: Text('Preparation Review')),
-      bottomNavigationBar: MultiBlocListener(
-        listeners: [
-          BlocListener<PreparationBloc, PreparationState>(
-            listener: (context, state) {
-              if (state.status == StatusPreparation.success &&
-                  state.preparation != null) {
-                final preparationId = state.preparation?.id;
-                context.read<PreparationDetailBloc>().add(
-                  OnCreatePreparationDetail(
-                    preparationId!,
-                    widget.preparationDetails,
-                  ),
-                );
-              }
-            },
-          ),
-          BlocListener<PreparationDetailBloc, PreparationDetailState>(
-            listener: (context, state) {
-              if (state.status == StatusPreparationDetail.success) {
-                context.pop();
-                context.pushReplacment(HomeView());
-                context.showSnackbar(
-                  'Successfully create preparation',
-                  fontSize: isLarge ? 14 : 12,
-                );
-              }
+      bottomNavigationBar: BlocListener<PreparationBloc, PreparationState>(
+        listener: (context, state) {
+          if (state.status == StatusPreparation.createPreparation) {
+            context.pop();
+            context.pushReplacment(HomeView());
+            context.showSnackbar(
+              state.message ?? 'Successfully create preparation',
+              fontSize: isLarge ? 14 : 12,
+            );
+          }
 
-              if (state.status == StatusPreparationDetail.failed) {
-                context.pop();
-                context.pushReplacment(HomeView());
-                context.showSnackbar(
-                  state.message ?? '',
-                  backgroundColor: AppColors.kRed,
-                  fontSize: isLarge ? 14 : 12,
-                );
-              }
-            },
-          ),
-        ],
+          if (state.status == StatusPreparation.failure) {
+            context.pop();
+            context.pushReplacment(HomeView());
+            context.showSnackbar(
+              state.message ?? '',
+              backgroundColor: AppColors.kRed,
+              fontSize: isLarge ? 14 : 12,
+            );
+          }
+        },
         child: Padding(
           padding: EdgeInsets.all(16),
           child: AppButton(
             title: 'Create Preparation',
             width: context.deviceWidth,
+            fontSize: isLarge ? 16 : 14,
             onPressed: () => _createPreparation(isLarge),
           ),
         ),
@@ -94,7 +76,7 @@ class _CreatePreparationDetailReviewViewState
         child: Column(
           children: [
             SizedBox(
-              width: context.deviceWidth - 32,
+              width: context.deviceWidth - 36,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,9 +90,16 @@ class _CreatePreparationDetailReviewViewState
                         isLarge,
                       ),
                       AppSpace.vertical(12),
+
                       _descriptionItem(
-                        'Notes',
-                        widget.preparation.notes,
+                        'Worker',
+                        widget.preparation.assigned,
+                        isLarge,
+                      ),
+                      AppSpace.vertical(12),
+                      _descriptionItem(
+                        'Approved',
+                        widget.preparation.approvedBy,
                         isLarge,
                       ),
                     ],
@@ -119,8 +108,20 @@ class _CreatePreparationDetailReviewViewState
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       _descriptionItem(
-                        'Worker',
-                        widget.preparation.assigned,
+                        'Note',
+                        widget.preparation.notes,
+                        isLarge,
+                      ),
+                      AppSpace.vertical(12),
+                      _descriptionItem(
+                        'Status',
+                        widget.preparation.assetStatusAfter,
+                        isLarge,
+                      ),
+                      AppSpace.vertical(12),
+                      _descriptionItem(
+                        'Condition',
+                        widget.preparation.assetConditionAfter,
                         isLarge,
                       ),
                     ],
@@ -280,7 +281,7 @@ class _CreatePreparationDetailReviewViewState
       onConfirm: () {
         context.pop();
         context.read<PreparationBloc>().add(
-          OnCreatePreparationEvent(widget.preparation),
+          OnCreatePreparation(widget.preparation, widget.preparationDetails),
         );
         context.dialogLoading();
       },

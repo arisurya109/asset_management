@@ -2,13 +2,11 @@ import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_item.dart';
+import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
+import 'package:asset_management/domain/entities/preparation_item/preparation_item.dart';
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_detail/preparation_detail_bloc.dart';
-import 'package:asset_management/presentation/bloc/preparation_item/preparation_item_bloc.dart';
-import 'package:asset_management/presentation/components/app_card_item.dart';
+import 'package:asset_management/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -45,65 +43,90 @@ class _PickingItemViewState extends State<PickingItemView> {
   }
 
   Widget _mobilePickingItem({bool isLarge = true}) {
-    return BlocBuilder<PreparationDetailBloc, PreparationDetailState>(
+    return BlocBuilder<PickingBloc, PickingState>(
       builder: (context, state) {
-        final item = state.preparationDetail;
+        final preparationDetail = state.preparationDetail;
+
+        final items = state.itemsDetail;
 
         final isUom = context
             .read<MasterBloc>()
             .state
             .models
-            ?.where((element) => element.id == item?.assetModelId)
+            ?.where((element) => element.id == preparationDetail?.assetModelId)
             .firstOrNull
             ?.unit;
         return Scaffold(
           appBar: AppBar(title: Text('Pick Item')),
-          bottomNavigationBar:
-              ((item?.quantityPicked == item?.quantityTarget) &&
-                  item!.status == 'PROGRESS')
+          bottomNavigationBar: state.status == StatusPicking.loading
+              ? SizedBox()
+              : ((preparationDetail?.quantityPicked ==
+                        preparationDetail?.quantityTarget) &&
+                    preparationDetail?.status == 'PROGRESS')
               ? Padding(
                   padding: EdgeInsets.all(12),
-                  child:
-                      BlocListener<
-                        PreparationDetailBloc,
-                        PreparationDetailState
-                      >(
-                        listenWhen: (previous, current) =>
-                            previous.status != current.status,
-                        listener: (context, state) {
-                          if (state.status == StatusPreparationDetail.failed) {
-                            context.showSnackbar(
-                              state.message ?? '',
-                              backgroundColor: AppColors.kRed,
-                            );
-                          }
-                          if (state.status == StatusPreparationDetail.success) {
-                            context.showSnackbar(
-                              'Successfully locked asset',
-                              backgroundColor: AppColors.kBase,
-                            );
-                          }
-                        },
-                        child: AppButton(
-                          title: 'Completed',
-                          onPressed: () {
-                            context.read<PreparationDetailBloc>().add(
-                              OnUpdatePreparationDetail(
-                                item.copyWith(status: 'COMPLETED'),
+                  child: BlocListener<PickingBloc, PickingState>(
+                    listenWhen: (previous, current) =>
+                        previous.status != current.status,
+                    listener: (context, state) {
+                      if (state.status ==
+                          StatusPicking.failedUpdateStatusPreparationDetail) {
+                        context.showSnackbar(
+                          state.message ?? '',
+                          backgroundColor: AppColors.kRed,
+                        );
+                      }
+                      if (state.status ==
+                          StatusPicking.updateStatusPreparationDetail) {
+                        context.showSnackbar(
+                          'Successfully locked asset',
+                          backgroundColor: AppColors.kBase,
+                        );
+                      }
+                    },
+                    child: AppButton(
+                      title: 'Completed',
+                      onPressed: () {
+                        context.showDialogConfirm(
+                          fontSize: isLarge ? 15 : 14,
+                          title: 'Are your sure completed item ?',
+                          content:
+                              'Model : ${preparationDetail?.assetModel}\nQuantity Pick : ${preparationDetail?.quantityPicked}\nQuantity Target : ${preparationDetail?.quantityTarget}',
+                          onCancel: () => context.pop(),
+                          onConfirm: () {
+                            context.read<PickingBloc>().add(
+                              OnUpdateStatusCompletedPreparationDetail(
+                                preparationDetail!.id!,
                               ),
                             );
                             context.pop();
                           },
-                          fontSize: isLarge ? 16 : 14,
-                        ),
-                      ),
+                        );
+                      },
+                      fontSize: isLarge ? 16 : 14,
+                    ),
+                  ),
                 )
               : null,
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: isUom == 0
-                ? _pickItemConsumable(context, item, isLarge)
-                : _pickItemNonConsumable(context, item, isLarge),
+            child: state.status == StatusPicking.loading
+                ? Center(
+                    child: CircularProgressIndicator(color: AppColors.kBase),
+                  )
+                : isUom == 0
+                ? _pickItemConsumable(
+                    context,
+                    preparationDetail,
+                    items,
+                    isLarge,
+                  )
+                : _pickItemNonConsumable(
+                    context,
+                    preparationDetail,
+                    items,
+                    isLarge,
+                  ),
           ),
         );
       },
@@ -112,7 +135,8 @@ class _PickingItemViewState extends State<PickingItemView> {
 
   Widget _pickItemConsumable(
     BuildContext context,
-    PreparationDetail? item,
+    PreparationDetail? preparationDetail,
+    List<PreparationItem>? items,
     bool isLarge,
   ) {
     return Column(
@@ -128,9 +152,17 @@ class _PickingItemViewState extends State<PickingItemView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionItem('Model', item?.assetModel, isLarge),
+                    _descriptionItem(
+                      'Model',
+                      preparationDetail?.assetModel,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
-                    _descriptionItem('Category', item?.assetCategory, isLarge),
+                    _descriptionItem(
+                      'Category',
+                      preparationDetail?.assetCategory,
+                      isLarge,
+                    ),
                   ],
                 ),
               ),
@@ -139,11 +171,15 @@ class _PickingItemViewState extends State<PickingItemView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionItem('Type', item?.assetType, isLarge),
+                    _descriptionItem(
+                      'Type',
+                      preparationDetail?.assetType,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
                     _descriptionItem(
                       'Quantity',
-                      '${item?.quantityPicked ?? 0} / ${item!.quantityTarget}',
+                      '${preparationDetail?.quantityPicked ?? 0} / ${preparationDetail!.quantityTarget}',
                       isLarge,
                     ),
                   ],
@@ -153,7 +189,7 @@ class _PickingItemViewState extends State<PickingItemView> {
           ),
         ),
         AppSpace.vertical(24),
-        if (item.status != 'READY')
+        if (preparationDetail.status != 'READY')
           Column(
             children: [
               BlocBuilder<MasterBloc, MasterState>(
@@ -244,8 +280,8 @@ class _PickingItemViewState extends State<PickingItemView> {
                   } else {
                     final qty = int.parse(quantity);
 
-                    if (qty + (item.quantityPicked ?? 0) >
-                        item.quantityTarget!) {
+                    if (qty + (preparationDetail.quantityPicked ?? 0) >
+                        preparationDetail.quantityTarget!) {
                       context.showSnackbar(
                         'Invalid quantity',
                         backgroundColor: AppColors.kRed,
@@ -260,30 +296,32 @@ class _PickingItemViewState extends State<PickingItemView> {
             ],
           ),
 
-        if (item.status == 'READY')
-          BlocBuilder<PreparationItemBloc, PreparationItemState>(
-            builder: (context, state) {
-              final items = state.preparationItems;
-              return Column(
-                children: List.generate(items!.length, (index) {
-                  final item = items[index];
-                  return AppCardItem(
-                    title: item.assetModel,
-                    leading: item.assetType,
-                    subtitle: 'Quantity : ${item.quantity}',
-                    noDescription: true,
-                  );
-                }),
-              );
-            },
-          ),
+        if (preparationDetail.status == 'READY')
+          // BlocBuilder<PreparationItemBloc, PreparationItemState>(
+          //   builder: (context, state) {
+          //     final items = state.allItemDetail;
+          //     return Column(
+          //       children: List.generate(items!.length, (index) {
+          //         final item = items[index];
+          //         return AppCardItem(
+          //           title: item.assetModel,
+          //           leading: item.assetType,
+          //           subtitle: 'Quantity : ${item.quantity}',
+          //           noDescription: true,
+          //         );
+          //       }),
+          //     );
+          //   },
+          // ),
+          SizedBox(),
       ],
     );
   }
 
   Widget _pickItemNonConsumable(
     BuildContext context,
-    PreparationDetail? item,
+    PreparationDetail? preparationDetail,
+    List<PreparationItem>? items,
     bool isLarge,
   ) {
     return Column(
@@ -300,15 +338,23 @@ class _PickingItemViewState extends State<PickingItemView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionItem('Model', item?.assetModel, isLarge),
+                    _descriptionItem(
+                      'Model',
+                      preparationDetail?.assetModel,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
-                    _descriptionItem('Category', item?.assetCategory, isLarge),
+                    _descriptionItem(
+                      'Category',
+                      preparationDetail?.assetCategory,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
-                    if (item?.status != 'READY')
+                    if (preparationDetail?.status != 'READY')
                       BlocBuilder<AssetBloc, AssetState>(
                         builder: (context, state) {
                           final filteredAssets = state.assets?.where((e) {
-                            return e.model == item?.assetModel &&
+                            return e.model == preparationDetail?.assetModel &&
                                 e.status == 'READY' &&
                                 e.conditions == 'NEW';
                           }).toList();
@@ -356,13 +402,21 @@ class _PickingItemViewState extends State<PickingItemView> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _descriptionItem('Brand', item?.assetBrand, isLarge),
+                    _descriptionItem(
+                      'Brand',
+                      preparationDetail?.assetBrand,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
-                    _descriptionItem('Type', item?.assetType, isLarge),
+                    _descriptionItem(
+                      'Type',
+                      preparationDetail?.assetType,
+                      isLarge,
+                    ),
                     AppSpace.vertical(12),
                     _descriptionItem(
                       'Quantity',
-                      '${item?.quantityPicked ?? 0} / ${item?.quantityTarget}',
+                      '${preparationDetail?.quantityPicked ?? 0} / ${preparationDetail?.quantityTarget}',
                       isLarge,
                     ),
                   ],
@@ -373,100 +427,205 @@ class _PickingItemViewState extends State<PickingItemView> {
         ),
         AppSpace.vertical(24),
 
-        Expanded(
-          child: BlocBuilder<PreparationItemBloc, PreparationItemState>(
-            builder: (context, state) {
-              if (item?.quantityPicked == item?.quantityTarget) {
-                return ListView.builder(
-                  itemCount: state.preparationItem?.length,
-                  itemBuilder: (context, index) {
-                    final preparationItem = state.preparationItem?[index];
-                    return AppCardItem(
-                      noDescription: true,
-                      title: preparationItem?.assetCode,
-                      leading: '',
+        preparationDetail?.quantityPicked != preparationDetail?.quantityTarget
+            ? Expanded(
+                child: Column(
+                  children: [
+                    AppTextField(
+                      hintText: 'Location',
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.text,
+                      title: 'Location',
                       fontSize: isLarge ? 14 : 12,
-                      subtitle: preparationItem?.location,
+                      controller: locationC,
+                      noTitle: true,
+                    ),
+                    AppSpace.vertical(16),
+                    AppTextField(
+                      hintText: 'Asset Code',
+                      textInputAction: TextInputAction.go,
+                      keyboardType: TextInputType.text,
+                      title: 'Asset Code',
+                      fontSize: isLarge ? 14 : 12,
+                      controller: assetCodeC,
+                      onSubmitted: (_) =>
+                          _pickAssetNonConsumable(isLarge, preparationDetail!),
+                      noTitle: true,
+                    ),
+                    AppSpace.vertical(32),
+                    BlocConsumer<PickingBloc, PickingState>(
+                      listener: (context, state) {
+                        if (state.status == StatusPicking.loadingFindAsset) {
+                          context.dialogLoading();
+                        }
+
+                        if (state.status == StatusPicking.successFindAsset) {
+                          context.pop();
+                          final asset = state.asset;
+                          final locationId = context
+                              .read<MasterBloc>()
+                              .state
+                              .locations
+                              ?.firstWhere(
+                                (element) => element.name == asset?.location,
+                              );
+                          context.showDialogConfirm(
+                            fontSize: isLarge ? 15 : 14,
+                            title: 'Are your sure pick asset ?',
+                            content:
+                                'Asset Code : ${asset?.assetCode}\nLocation : ${asset?.location}\nPO Number : ${asset?.purchaseOrder}\nStatus : ${asset?.status}\nCondition : ${asset?.conditions}',
+                            onCancel: () => context.pop(),
+                            onConfirm: () {
+                              context.read<PickingBloc>().add(
+                                OnInsertItemPicking(
+                                  PreparationItem(
+                                    assetId: asset?.id,
+                                    preparationId: state.preparation?.id,
+                                    preparationDetailId:
+                                        state.preparationDetail?.id,
+                                    quantity: 1,
+                                    locationId: locationId?.id,
+                                    assetModelId: asset?.assetModelId,
+                                  ),
+                                ),
+                              );
+                              setState(() {
+                                assetCodeC.clear();
+                                locationC.clear();
+                              });
+                              context.pop();
+                            },
+                          );
+                        }
+
+                        if (state.status == StatusPicking.insertItem) {
+                          context.showSnackbar('Successfully pick assets');
+                        }
+
+                        if (state.status == StatusPicking.failureInsertItem) {
+                          context.showSnackbar(
+                            state.message ?? 'Failed pick assets',
+                          );
+                        }
+
+                        if (state.status == StatusPicking.failureDeleteItem) {
+                          context.showSnackbar(
+                            state.message ?? 'Failed delete assets',
+                          );
+                        }
+
+                        if (state.status == StatusPicking.deleteItem) {
+                          context.showSnackbar(
+                            state.message ?? 'Successfully delete assets',
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return AppButton(
+                          title: 'Pick',
+                          width: context.deviceWidth,
+                          onPressed:
+                              state.status == StatusPicking.loadingFindAsset
+                              ? null
+                              : () => _pickAssetNonConsumable(
+                                  isLarge,
+                                  preparationDetail!,
+                                ),
+                          height: 40,
+                          fontSize: isLarge ? 15 : 14,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )
+            : Expanded(
+                child: ListView.builder(
+                  itemCount: items?.length,
+                  itemBuilder: (context, index) {
+                    final item = items?[index];
+                    return Container(
+                      margin: EdgeInsets.only(bottom: 16),
+                      padding: EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.kWhite,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: AppColors.kBase),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                item?.assetCode ?? '',
+                                style: TextStyle(
+                                  fontSize: isLarge ? 16 : 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              AppSpace.vertical(8),
+                              Text(
+                                'Conditions : ${item?.conditions ?? '-'}',
+                                style: TextStyle(fontSize: isLarge ? 14 : 12),
+                              ),
+                              AppSpace.vertical(8),
+                              Text(
+                                'Status : ${item?.status ?? '-'}',
+                                style: TextStyle(fontSize: isLarge ? 14 : 12),
+                              ),
+                              AppSpace.vertical(8),
+                              Text(
+                                'PO : ${item?.purchaseOrder ?? '-'}',
+                                style: TextStyle(fontSize: isLarge ? 14 : 12),
+                              ),
+                            ],
+                          ),
+                          if (preparationDetail?.status != 'COMPLETED')
+                            Material(
+                              color: AppColors.kRed,
+                              borderRadius: BorderRadius.circular(3),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(3),
+                                onTap: () {
+                                  context.showDialogConfirm(
+                                    fontSize: isLarge ? 15 : 14,
+                                    title: 'Are your sure delete asset ?',
+                                    content:
+                                        'Asset Code : ${item?.assetCode ?? '-'}\nModel : ${item?.assetModel}\nQuantity : ${item?.quantity}\nStatus : ${item?.status}\nCondition : ${item?.conditions}',
+                                    onCancel: () => context.pop(),
+                                    onConfirm: () {
+                                      context.read<PickingBloc>().add(
+                                        OnDeleteItemPicking(
+                                          item!,
+                                          preparationDetail!,
+                                        ),
+                                      );
+                                      context.pop();
+                                    },
+                                  );
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(5.0),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                  child: Icon(
+                                    Icons.delete,
+                                    size: 14,
+                                    color: AppColors.kWhite,
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
                     );
                   },
-                );
-              }
-              return Column(
-                children: [
-                  AppTextField(
-                    hintText: 'Location',
-                    textInputAction: TextInputAction.next,
-                    keyboardType: TextInputType.text,
-                    title: 'Location',
-                    fontSize: isLarge ? 14 : 12,
-                    controller: locationC,
-                    noTitle: true,
-                  ),
-                  AppSpace.vertical(16),
-                  AppTextField(
-                    hintText: 'Asset Code',
-                    textInputAction: TextInputAction.go,
-                    keyboardType: TextInputType.text,
-                    title: 'Asset Code',
-                    fontSize: isLarge ? 14 : 12,
-                    controller: assetCodeC,
-                    onSubmitted: (_) => _pickAssetNonConsumable(isLarge, item!),
-                    noTitle: true,
-                  ),
-                  AppSpace.vertical(32),
-                  BlocConsumer<PreparationItemBloc, PreparationItemState>(
-                    listenWhen: (previous, current) =>
-                        previous.status != current.status,
-                    listener: (context, state) {
-                      assetCodeC.clear();
-                      if (state.status == StatusPreparationItem.loading) {
-                        context.dialogLoading();
-                        context.pop();
-                      }
-
-                      if (state.status == StatusPreparationItem.failed) {
-                        context.showSnackbar(
-                          state.message ?? 'Failed pick asset',
-                          backgroundColor: AppColors.kRed,
-                          fontSize: isLarge ? 14 : 12,
-                        );
-                      }
-
-                      if (state.status == StatusPreparationItem.success) {
-                        context.showSnackbar(
-                          'Successfully pick asset',
-                          fontSize: isLarge ? 14 : 12,
-                        );
-                        context.read<PreparationDetailBloc>().add(
-                          OnFindAllPreparationDetailByPreparationId(
-                            item!.preparationId!,
-                          ),
-                        );
-                        context.read<PreparationDetailBloc>().add(
-                          OnFindPreparationDetailById(
-                            item.id!,
-                            item.preparationId!,
-                          ),
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      return AppButton(
-                        title: 'Pick',
-                        width: context.deviceWidth,
-                        onPressed: state.status == StatusPreparationItem.loading
-                            ? null
-                            : () => _pickAssetNonConsumable(isLarge, item!),
-                        height: 40,
-                        fontSize: isLarge ? 15 : 14,
-                      );
-                    },
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
+                ),
+              ),
       ],
     );
   }
@@ -475,23 +634,9 @@ class _PickingItemViewState extends State<PickingItemView> {
     final location = locationC.value.text.trim();
     final assetCode = assetCodeC.value.text.trim();
 
-    final locationId = context.read<MasterBloc>().state.locations?.singleWhere(
-      (element) => element.name == location,
-    );
-
-    final assetId = context.read<AssetBloc>().state.assets?.singleWhere(
-      (element) => element.assetCode == assetCode,
-    );
-
     if (!location.isFilled()) {
       context.showSnackbar(
         'Location cannot empty',
-        backgroundColor: AppColors.kRed,
-        fontSize: isLarge ? 14 : 12,
-      );
-    } else if (locationId == null) {
-      context.showSnackbar(
-        'Location is not found',
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
@@ -501,36 +646,9 @@ class _PickingItemViewState extends State<PickingItemView> {
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
-    } else if (assetId == null) {
-      context.showSnackbar(
-        'Asset code is not found',
-        backgroundColor: AppColors.kRed,
-        fontSize: isLarge ? 14 : 12,
-      );
     } else {
-      context.showDialogConfirm(
-        title: 'Pick Asset',
-        content:
-            'Are you sure pick asset ?\nAsset Code : $assetCode\nLocation : $location',
-        fontSize: isLarge ? 14 : 12,
-        onCancel: () => context.pop(),
-        onCancelText: 'No',
-        onConfirmText: 'Yes',
-        onConfirm: () {
-          context.read<PreparationItemBloc>().add(
-            OnCreatePreparationItem(
-              PreparationItem(
-                preparationId: preparationDetail.preparationId,
-                preparationDetailId: preparationDetail.id,
-                assetModelId: preparationDetail.assetModelId,
-                assetId: assetId.id,
-                locationId: locationId.id,
-                quantity: 1,
-              ),
-            ),
-          );
-          context.pop();
-        },
+      context.read<PickingBloc>().add(
+        OnFindAssetByAssetCodeAndLocation(assetCode, location),
       );
     }
   }

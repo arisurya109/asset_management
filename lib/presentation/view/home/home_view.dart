@@ -1,6 +1,8 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_management/presentation/bloc/asset/asset_bloc.dart';
+import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/presentation/view/picking/picking_view.dart';
 import 'package:flutter/material.dart';
 
@@ -133,7 +135,20 @@ class _HomeViewState extends State<HomeView> {
                             color: AppColors.kWhite,
                             borderRadius: BorderRadius.circular(5),
                             child: InkWell(
-                              onTap: () => context.push(operation['view']),
+                              onTap: () {
+                                if (operation['title'] == 'Picking') {
+                                  context.read<PickingBloc>().add(
+                                    OnFindAllPickingTask(
+                                      context
+                                          .read<AuthenticationBloc>()
+                                          .state
+                                          .user!
+                                          .id!,
+                                    ),
+                                  );
+                                }
+                                context.push(operation['view']);
+                              },
                               borderRadius: BorderRadius.circular(5),
                               child: Container(
                                 padding: EdgeInsets.all(8),

@@ -1,6 +1,7 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/presentation/bloc/preparation/preparation_bloc.dart';
 import 'package:asset_management/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/presentation/components/app_header_drawer.dart';
 import 'package:asset_management/presentation/components/app_item_drawer.dart';
@@ -167,6 +168,9 @@ class _AppDrawerState extends State<AppDrawer> {
                           fontSize: widget.isLarge ? 14 : 12,
                           onTap: () {
                             context.pop();
+                            context.read<PreparationBloc>().add(
+                              OnFindAllPreparation(),
+                            );
                             context.push(PreparationView());
                           },
                         ),

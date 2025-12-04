@@ -1,6 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:asset_management/domain/entities/preparation/preparation_item.dart';
+import 'package:asset_management/domain/entities/preparation_item/preparation_item.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
@@ -21,6 +21,8 @@ class PreparationItemModel extends Equatable {
   String? pickedBy;
   String? location;
   String? purchaseOrder;
+  String? status;
+  String? conditions;
 
   PreparationItemModel({
     this.id,
@@ -39,6 +41,8 @@ class PreparationItemModel extends Equatable {
     this.pickedBy,
     this.location,
     this.purchaseOrder,
+    this.status,
+    this.conditions,
   });
 
   Map<String, dynamic> toJson() {
@@ -85,6 +89,12 @@ class PreparationItemModel extends Equatable {
       purchaseOrder: map['asset']['purchase_order'] != null
           ? map['asset']['purchase_order'] as String
           : null,
+      status: map['asset']['status'] != null
+          ? map['asset']['status'] as String
+          : null,
+      conditions: map['asset']['conditions'] != null
+          ? map['asset']['conditions'] as String
+          : null,
       pickedById: map['picked']['id'] != null
           ? map['picked']['id'] as int
           : null,
@@ -119,6 +129,8 @@ class PreparationItemModel extends Equatable {
       preparationId: params.preparationId,
       quantity: params.quantity,
       purchaseOrder: params.purchaseOrder,
+      status: params.status,
+      conditions: params.conditions,
     );
   }
 
@@ -140,6 +152,8 @@ class PreparationItemModel extends Equatable {
       preparationId: preparationId,
       quantity: quantity,
       purchaseOrder: purchaseOrder,
+      status: status,
+      conditions: conditions,
     );
   }
 
@@ -160,6 +174,8 @@ class PreparationItemModel extends Equatable {
       assetBrand,
       assetType,
       purchaseOrder,
+      status,
+      conditions,
     ];
   }
 }
