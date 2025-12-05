@@ -64,3 +64,9 @@ class OnSubmitReadyPreparation extends PickingEvent {
     this.userId,
   );
 }
+
+class OnStartPicking extends PickingEvent {
+  final int preparationId;
+
+  const OnStartPicking(this.preparationId);
+}

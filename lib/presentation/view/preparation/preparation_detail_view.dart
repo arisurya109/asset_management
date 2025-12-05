@@ -34,28 +34,7 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
 
   Widget _mobilePreparationDetail(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Preparation Detail'),
-        actions: [
-          // BlocBuilder<PreparationBloc, PreparationState>(
-          //   builder: (context, state) {
-          //     if (state.preparation?.status == 'READY' ||
-          //         state.preparation?.status == 'PARTIALLY READY') {
-          //       // final items = context
-          //       //     .watch<PreparationItemBloc>()
-          //       //     .state
-          //       //     .allItemPreparation;
-          //       return IconButton(
-          //         onPressed: () async =>
-          //             await exportExcel(state.preparation!, items!),
-          //         icon: Icon(Icons.download),
-          //       );
-          //     }
-          //     return Container();
-          //   },
-          // ),
-        ],
-      ),
+      appBar: AppBar(title: Text('Preparation Detail')),
       floatingActionButton: BlocConsumer<PreparationBloc, PreparationState>(
         listener: (context, state) {
           if (state.status == StatusPreparation.updatePreparation) {
@@ -82,42 +61,21 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
               state.preparation == null) {
             return SizedBox();
           }
-          if (preparation == 'DRAFT') {
-            return Padding(
-              padding: const EdgeInsets.only(left: 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  AppButton(
-                    width: (context.deviceWidth / 2) - 36,
-                    title: 'Cancel',
-                    fontSize: isLarge ? 16 : 14,
-                    backgroundColor: AppColors.kRed,
-                    onPressed: () {
-                      context.read<PreparationBloc>().add(
-                        OnUpdateStatusPreparation(
-                          state.preparation!.id!,
-                          'CANCELLED',
-                        ),
-                      );
-                    },
+          if (preparation == 'ASSIGNED') {
+            return AppButton(
+              width: context.deviceWidth - 32,
+              title: 'Cancel',
+              fontSize: isLarge ? 16 : 14,
+              backgroundColor: AppColors.kRed,
+              onPressed: () {
+                context.pop();
+                context.read<PreparationBloc>().add(
+                  OnUpdateStatusPreparation(
+                    state.preparation!.id!,
+                    'CANCELLED',
                   ),
-                  AppButton(
-                    width: (context.deviceWidth / 2) - 36,
-                    title: 'Assigned',
-                    fontSize: isLarge ? 16 : 14,
-                    onPressed: () {
-                      context.pop();
-                      context.read<PreparationBloc>().add(
-                        OnUpdateStatusPreparation(
-                          state.preparation!.id!,
-                          'ASSIGNED',
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                );
+              },
             );
           }
           if (preparation == 'READY' &&
@@ -377,14 +335,8 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
                     ),
                     AppSpace.vertical(12),
                     _descriptionItem(
-                      'Condition Asset',
-                      preparation.assetConditionAfter,
-                      isLarge,
-                    ),
-                    AppSpace.vertical(12),
-                    _descriptionItem(
-                      'Status Asset',
-                      preparation.assetStatusAfter,
+                      'After Shipped',
+                      preparation.afterShipped,
                       isLarge,
                     ),
                     AppSpace.vertical(12),

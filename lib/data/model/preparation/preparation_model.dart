@@ -23,8 +23,7 @@ class PreparationModel extends Equatable {
   int? approvedById;
   String? approvedBy;
   DateTime? approvedAt;
-  String? assetStatusAfter;
-  String? assetConditionAfter;
+  String? afterShipped;
 
   PreparationModel({
     this.id,
@@ -45,8 +44,7 @@ class PreparationModel extends Equatable {
     this.approvedById,
     this.approvedBy,
     this.approvedAt,
-    this.assetStatusAfter,
-    this.assetConditionAfter,
+    this.afterShipped,
   });
 
   @override
@@ -69,8 +67,7 @@ class PreparationModel extends Equatable {
       updatedBy,
       approvedBy,
       approvedById,
-      assetConditionAfter,
-      assetStatusAfter,
+      afterShipped,
       approvedAt,
     ];
   }
@@ -85,8 +82,7 @@ class PreparationModel extends Equatable {
       'status': status,
       'notes': notes,
       'approved_by_id': approvedById,
-      'asset_status_after': assetStatusAfter,
-      'asset_condition_after': assetConditionAfter,
+      'after_shipped': afterShipped,
     };
   }
 
@@ -135,11 +131,8 @@ class PreparationModel extends Equatable {
       approvedBy: map['approved_by']['name'] != null
           ? map['approved_by']['name'] as String
           : null,
-      assetStatusAfter: map['asset_after']['status'] != null
-          ? map['asset_after']['status'] as String
-          : null,
-      assetConditionAfter: map['asset_after']['condition'] != null
-          ? map['asset_after']['condition'] as String
+      afterShipped: map['after_shipped'] != null
+          ? map['after_shipped'] as String
           : null,
     );
   }
@@ -164,8 +157,7 @@ class PreparationModel extends Equatable {
       approvedAt: params.approvedAt,
       approvedBy: params.approvedBy,
       approvedById: params.approvedById,
-      assetConditionAfter: params.assetConditionAfter,
-      assetStatusAfter: params.assetStatusAfter,
+      afterShipped: params.afterShipped,
     );
   }
 
@@ -189,8 +181,7 @@ class PreparationModel extends Equatable {
       approvedAt: approvedAt,
       approvedBy: approvedBy,
       approvedById: approvedById,
-      assetConditionAfter: assetConditionAfter,
-      assetStatusAfter: assetStatusAfter,
+      afterShipped: afterShipped,
     );
   }
 }

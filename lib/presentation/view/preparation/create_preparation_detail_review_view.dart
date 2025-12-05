@@ -90,7 +90,6 @@ class _CreatePreparationDetailReviewViewState
                         isLarge,
                       ),
                       AppSpace.vertical(12),
-
                       _descriptionItem(
                         'Worker',
                         widget.preparation.assigned,
@@ -114,14 +113,8 @@ class _CreatePreparationDetailReviewViewState
                       ),
                       AppSpace.vertical(12),
                       _descriptionItem(
-                        'Status',
-                        widget.preparation.assetStatusAfter,
-                        isLarge,
-                      ),
-                      AppSpace.vertical(12),
-                      _descriptionItem(
-                        'Condition',
-                        widget.preparation.assetConditionAfter,
+                        'After Shipped',
+                        widget.preparation.afterShipped,
                         isLarge,
                       ),
                     ],

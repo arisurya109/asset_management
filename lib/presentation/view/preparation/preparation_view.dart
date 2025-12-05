@@ -18,7 +18,6 @@ class PreparationView extends StatefulWidget {
 
 class _PreparationViewState extends State<PreparationView> {
   List<String> statusList = [
-    'DRAFT',
     'ASSIGNED',
     'PICKING',
     'READY',
@@ -26,7 +25,7 @@ class _PreparationViewState extends State<PreparationView> {
     'COMPLETED',
     'CANCELLED',
   ];
-  String selectedStatus = 'DRAFT';
+  String selectedStatus = 'ASSIGNED';
 
   @override
   Widget build(BuildContext context) {

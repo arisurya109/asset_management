@@ -127,6 +127,9 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
                   state.copyWith(
                     status: StatusPicking.failure,
                     message: failure.message,
+                    preparation: preparation,
+                    preparationDetails: preparationDetails,
+                    itemsPreparation: [],
                   ),
                 ),
                 (items) => emit(
@@ -475,6 +478,58 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
                     preparation: newPreparation,
                     preparations: newPreparations,
                     message: 'Successfully submit pick list',
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    });
+
+    on<OnStartPicking>((event, emit) async {
+      emit(state.copyWith(status: StatusPicking.loading));
+
+      final failureOrPreparation = await _updateStatusPreparationUseCase(
+        id: event.preparationId,
+        params: 'PICKING',
+      );
+
+      return failureOrPreparation.fold(
+        (failure) => emit(
+          state.copyWith(
+            status: StatusPicking.failedStartPicking,
+            message: failure.message,
+          ),
+        ),
+        (preparation) async {
+          final failureOrPreparations = await _findAllPreparationUseCase();
+
+          return failureOrPreparations.fold(
+            (failure) => emit(
+              state.copyWith(
+                status: StatusPicking.failedStartPicking,
+                message: failure.message,
+              ),
+            ),
+            (preparations) async {
+              final failureOrNewPreparation = await _findPreparationByIdUseCase(
+                id: event.preparationId,
+              );
+
+              return failureOrNewPreparation.fold(
+                (failure) => emit(
+                  state.copyWith(
+                    status: StatusPicking.failedStartPicking,
+                    message: failure.message,
+                  ),
+                ),
+                (newPreparation) => emit(
+                  state.copyWith(
+                    status: StatusPicking.successStartPicking,
+                    message: 'Successfully start picking',
+                    preparation: newPreparation,
+                    preparations: preparations,
                   ),
                 ),
               );

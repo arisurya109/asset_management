@@ -1,5 +1,6 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
+import 'package:asset_management/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -35,6 +36,13 @@ class _CreateUserViewState extends State<CreateUserView> {
 
   @override
   Widget build(BuildContext context) {
+    return ResponsiveLayout(
+      mobileLScaffold: _mobileCreateUser(context, isLarge: true),
+      mobileMScaffold: _mobileCreateUser(context, isLarge: false),
+    );
+  }
+
+  Widget _mobileCreateUser(BuildContext context, {bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create User')),
       body: ListView(
@@ -47,6 +55,7 @@ class _CreateUserViewState extends State<CreateUserView> {
             title: 'Username',
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.text,
+            fontSize: isLarge ? 16 : 14,
           ),
           AppSpace.vertical(12),
           AppTextField(
@@ -55,11 +64,15 @@ class _CreateUserViewState extends State<CreateUserView> {
             title: 'Name',
             textInputAction: TextInputAction.next,
             keyboardType: TextInputType.text,
+            fontSize: isLarge ? 16 : 14,
           ),
           AppSpace.vertical(24),
           Text(
             'Permissions',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: isLarge ? 16 : 14,
+              fontWeight: FontWeight.w600,
+            ),
           ),
           BlocBuilder<PermissionsBloc, PermissionsState>(
             builder: (context, state) {
@@ -89,8 +102,8 @@ class _CreateUserViewState extends State<CreateUserView> {
                         padding: const EdgeInsets.only(top: 12.0, bottom: 8.0),
                         child: Text(
                           moduleName.toUpperCase(),
-                          style: const TextStyle(
-                            fontSize: 14,
+                          style: TextStyle(
+                            fontSize: isLarge ? 16 : 14,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -112,9 +125,8 @@ class _CreateUserViewState extends State<CreateUserView> {
 
                               label: Text(
                                 (name as String).toUpperCase(),
-                                style: const TextStyle(fontSize: 14),
+                                style: TextStyle(fontSize: isLarge ? 16 : 14),
                               ),
-
                               backgroundColor: AppColors.kBackground,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(5),
@@ -167,7 +179,10 @@ class _CreateUserViewState extends State<CreateUserView> {
                 title: state.status == StatusUser.loading
                     ? 'Loading...'
                     : 'Create',
-                onPressed: state.status == StatusUser.loading ? null : _create,
+                onPressed: state.status == StatusUser.loading
+                    ? null
+                    : () => _create(isLarge),
+                fontSize: isLarge ? 16 : 14,
               );
             },
           ),
@@ -176,7 +191,7 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-  _create() {
+  _create(bool isLarge) {
     final name = nameC.value.text.trim();
     final username = usernameC.value.text.trim();
     final permission = selectedPermissionIds;
@@ -200,6 +215,7 @@ class _CreateUserViewState extends State<CreateUserView> {
             'Are you sure create new user ? \nName : $name\nUsername : $username',
         onCancel: () => context.pop(),
         onCancelText: 'No',
+        fontSize: isLarge ? 16 : 14,
         onConfirm: () {
           context.read<UserBloc>().add(
             OnCreateUserEvent(

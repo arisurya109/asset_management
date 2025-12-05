@@ -24,13 +24,11 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
   Location? selectedLocation;
   User? selectedUser;
   User? approvedUser;
-  String? assetStatusAfter;
-  String? assetConditionAfter;
+  String? selectedAfterShipped;
   PreparationTemplate? selectedTemplate;
   late TextEditingController notesC;
 
-  List<String> assetsStatus = ['USE', 'REPAIR'];
-  List<String> assetsCondition = ['OLD', 'BAD'];
+  List<String> listAfterShipped = ['USE', 'REPAIR'];
 
   @override
   void initState() {
@@ -161,32 +159,17 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
                   AppSpace.vertical(16),
                   // Asset Status After
                   AppDropDownSearch<String>(
-                    title: 'Asset Status After',
+                    title: 'After Shipped',
                     borderRadius: 5,
-                    items: assetsStatus,
-                    selectedItem: assetStatusAfter,
+                    items: listAfterShipped,
+                    selectedItem: selectedAfterShipped,
                     compareFn: (value, value1) => value == value1,
                     itemAsString: (value) => value,
                     onChanged: (value) => setState(() {
-                      assetStatusAfter = value;
+                      selectedAfterShipped = value;
                     }),
                     fontSize: isLarge ? 14 : 12,
-                    hintText: 'Selected status',
-                  ),
-                  AppSpace.vertical(16),
-                  // Asset Condition After
-                  AppDropDownSearch<String>(
-                    title: 'Asset Condition After',
-                    borderRadius: 5,
-                    items: assetsCondition,
-                    selectedItem: assetConditionAfter,
-                    compareFn: (value, value1) => value == value1,
-                    itemAsString: (value) => value,
-                    onChanged: (value) => setState(() {
-                      assetConditionAfter = value;
-                    }),
-                    fontSize: isLarge ? 14 : 12,
-                    hintText: 'Selected condition',
+                    hintText: 'Selected shipped',
                   ),
                   AppSpace.vertical(16),
                   // Notes
@@ -220,8 +203,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
     final destination = selectedLocation;
     final assigned = selectedUser;
     final approved = approvedUser;
-    final status = assetStatusAfter;
-    final condition = assetConditionAfter;
+    final afterShipped = selectedAfterShipped;
     final preparationSet = selectedTemplate;
     final notes = notesC.value.text.trim();
     List<PreparationDetail> preparationDetail = [];
@@ -244,15 +226,9 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
-    } else if (status == null) {
+    } else if (afterShipped == null) {
       context.showSnackbar(
-        'Status cannot be empty',
-        backgroundColor: AppColors.kRed,
-        fontSize: isLarge ? 14 : 12,
-      );
-    } else if (condition == null) {
-      context.showSnackbar(
-        'Condition cannot be empty',
+        'After Shipped cannot be empty',
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
@@ -286,8 +262,7 @@ class _CreatePreparationViewState extends State<CreatePreparationView> {
             assignedId: assigned.id,
             approvedBy: approved.name,
             approvedById: approved.id,
-            assetStatusAfter: status,
-            assetConditionAfter: condition,
+            afterShipped: afterShipped,
             destination: destination.name,
             destinationId: destination.id,
             notes: notes,

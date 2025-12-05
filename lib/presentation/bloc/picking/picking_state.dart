@@ -17,6 +17,8 @@ enum StatusPicking {
   failedUpdateStatusPreparationDetail,
   successReadyPreparation,
   failedReadyPreparation,
+  failedStartPicking,
+  successStartPicking,
 }
 
 // ignore: must_be_immutable

@@ -40,47 +40,54 @@ class PickingView extends StatelessWidget {
             itemCount: state.preparations?.length,
             itemBuilder: (context, index) {
               final preparation = state.preparations![index];
-              return AppCardItem(
-                title: preparation.preparationCode,
-                leading: preparation.status,
-                subtitle: preparation.destination,
-                noDescription: true,
-                fontSize: isLarge ? 14 : 12,
-                onTap: preparation.status == 'ASSIGNED'
-                    ? () {
-                        context.showDialogConfirm(
-                          title: 'Start Picking',
-                          content: 'Are you sure start picking ?',
-                          onCancelText: 'No',
-                          onConfirmText: 'Yes',
-                          fontSize: isLarge ? 14 : 12,
-                          onCancel: () => context.pop(),
-                          onConfirm: () {
-                            // context.read<PreparationBloc>().add(
-                            //   OnUpdateStatusPreparation(
-                            //     preparation.id!,
-                            //     'PICKING',
-                            //   ),
-                            // );
-                            // context.read<PreparationBloc>().add(
-                            //   OnFindPreparationById(preparation.id!),
-                            // );
-                            // context.pop();
-                            // context.read<PreparationDetailBloc>().add(
-                            //   OnFindAllPreparationDetailByPreparationId(
-                            //     preparation.id!,
-                            //   ),
-                            // );
-                            // context.push(PickingListDetailView());
-                          },
-                        );
-                      }
-                    : () {
-                        context.read<PickingBloc>().add(
-                          OnFindPickingTaskDetail(preparation.id!),
-                        );
-                        context.push(PickingListDetailView());
-                      },
+              return BlocListener<PickingBloc, PickingState>(
+                listener: (context, state) {
+                  if (state.status == StatusPicking.failedStartPicking) {
+                    context.showSnackbar(
+                      state.message ?? 'Failed to start picking',
+                    );
+                  }
+
+                  if (state.status == StatusPicking.successStartPicking) {
+                    context.showSnackbar(
+                      state.message ?? 'Successfully start picking',
+                    );
+                    context.read<PickingBloc>().add(
+                      OnFindPickingTaskDetail(preparation.id!),
+                    );
+                    context.push(PickingListDetailView());
+                  }
+                },
+                child: AppCardItem(
+                  title: preparation.preparationCode,
+                  leading: preparation.status,
+                  subtitle: preparation.destination,
+                  noDescription: true,
+                  fontSize: isLarge ? 14 : 12,
+                  onTap: preparation.status == 'ASSIGNED'
+                      ? () {
+                          context.showDialogConfirm(
+                            title: 'Start Picking',
+                            content: 'Are you sure start picking ?',
+                            onCancelText: 'No',
+                            onConfirmText: 'Yes',
+                            fontSize: isLarge ? 14 : 12,
+                            onCancel: () => context.pop(),
+                            onConfirm: () {
+                              context.read<PickingBloc>().add(
+                                OnStartPicking(preparation.id!),
+                              );
+                              context.pop();
+                            },
+                          );
+                        }
+                      : () {
+                          context.read<PickingBloc>().add(
+                            OnFindPickingTaskDetail(preparation.id!),
+                          );
+                          context.push(PickingListDetailView());
+                        },
+                ),
               );
             },
           );
