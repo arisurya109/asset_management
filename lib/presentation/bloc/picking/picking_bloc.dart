@@ -311,6 +311,8 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
             quantityPicked:
                 preparationDetail.quantityPicked! - preparationItem.quantity!,
           );
+
+          print(newPreparationDetail);
           final failureOrPreparationDetailUpdate =
               await _updatePreparationDetailUseCase(
                 params: newPreparationDetail,
@@ -359,6 +361,7 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
                           state.copyWith(
                             status: StatusPicking.failureDeleteItem,
                             preparationDetail: preparationDetail,
+                            preparationDetails: preparationDetails,
                             itemsDetail: [],
                             message: failure.message,
                           ),
@@ -529,7 +532,12 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
                     status: StatusPicking.successStartPicking,
                     message: 'Successfully start picking',
                     preparation: newPreparation,
-                    preparations: preparations,
+                    preparations: preparations
+                        .where(
+                          (e) =>
+                              e.status == 'PICKING' || e.status == 'ASSIGNED',
+                        )
+                        .toList(),
                   ),
                 ),
               );

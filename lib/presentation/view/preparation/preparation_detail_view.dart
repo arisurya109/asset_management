@@ -57,11 +57,12 @@ class _PreparationDetailViewState extends State<PreparationDetailView> {
               .state
               .preparation
               ?.status;
+          print(preparation != 'COMPLETED' || preparation != 'CANCELLED');
           if (state.status == StatusPreparation.loading ||
               state.preparation == null) {
             return SizedBox();
           }
-          if (preparation == 'ASSIGNED') {
+          if (preparation != 'COMPLETED' || preparation != 'CANCELLED') {
             return AppButton(
               width: context.deviceWidth - 32,
               title: 'Cancel',

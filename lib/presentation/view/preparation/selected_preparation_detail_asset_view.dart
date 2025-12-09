@@ -1,5 +1,6 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
+import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
@@ -26,7 +27,8 @@ class SelectedPreparationDetailAssetView extends StatefulWidget {
 
 class _SelectedPreparationDetailAssetViewState
     extends State<SelectedPreparationDetailAssetView> {
-  AssetModel? selectedAsset;
+  AssetModel? assetModel;
+  AssetCategory? assetCategory;
   late TextEditingController quantityC;
 
   @override
@@ -84,17 +86,42 @@ class _SelectedPreparationDetailAssetViewState
               AppSpace.vertical(16),
               BlocBuilder<MasterBloc, MasterState>(
                 builder: (context, state) {
-                  return AppDropDownSearch<AssetModel>(
-                    title: 'Assets',
+                  return AppDropDownSearch<AssetCategory>(
+                    title: 'Category',
                     fontSize: isLarge ? 14 : 12,
-                    items: state.models ?? [],
-                    hintText: 'Selected Assets',
+                    items: state.categories ?? [],
+                    hintText: 'Selected Category',
                     compareFn: (value, value1) => value.id == value1.id,
                     itemAsString: (value) => value.name!,
                     onChanged: (value) => setState(() {
-                      selectedAsset = value;
+                      assetCategory = value;
                     }),
-                    selectedItem: selectedAsset,
+                    selectedItem: assetCategory,
+                  );
+                },
+              ),
+              AppSpace.vertical(16),
+              BlocBuilder<MasterBloc, MasterState>(
+                builder: (context, state) {
+                  return AppDropDownSearch<AssetModel>(
+                    title: 'Model',
+                    fontSize: isLarge ? 14 : 12,
+                    items: assetCategory == null
+                        ? []
+                        : state.models
+                                  ?.where(
+                                    (element) =>
+                                        element.categoryId == assetCategory?.id,
+                                  )
+                                  .toList() ??
+                              [],
+                    hintText: 'Selected Model',
+                    compareFn: (value, value1) => value.id == value1.id,
+                    itemAsString: (value) => value.name!,
+                    onChanged: (value) => setState(() {
+                      assetModel = value;
+                    }),
+                    selectedItem: assetModel,
                   );
                 },
               ),
@@ -123,10 +150,10 @@ class _SelectedPreparationDetailAssetViewState
   }
 
   _add(bool isLarge) {
-    final assetModel = selectedAsset;
+    final selectedModel = assetModel;
     final quantityText = quantityC.value.text.trim();
 
-    if (assetModel == null) {
+    if (selectedModel == null) {
       context.showSnackbar(
         'Asset Model not yet selected',
         backgroundColor: AppColors.kRed,
@@ -157,7 +184,7 @@ class _SelectedPreparationDetailAssetViewState
       }
 
       final existingItemIndex = widget.preparationDetails.indexWhere(
-        (item) => item.assetModelId == assetModel.id,
+        (item) => item.assetModelId == selectedModel.id,
       );
 
       setState(() {
@@ -178,11 +205,11 @@ class _SelectedPreparationDetailAssetViewState
         } else {
           widget.preparationDetails.add(
             PreparationDetail(
-              assetModelId: assetModel.id,
-              assetType: assetModel.typeName,
-              assetBrand: assetModel.brandName,
-              assetCategory: assetModel.categoryName,
-              assetModel: assetModel.name,
+              assetModelId: selectedModel.id,
+              assetType: selectedModel.typeName,
+              assetBrand: selectedModel.brandName,
+              assetCategory: selectedModel.categoryName,
+              assetModel: selectedModel.name,
               quantityTarget: newQuantity,
             ),
           );
@@ -193,7 +220,8 @@ class _SelectedPreparationDetailAssetViewState
           );
         }
         quantityC.clear();
-        selectedAsset = null;
+        assetCategory = null;
+        assetModel = null;
       });
     }
   }

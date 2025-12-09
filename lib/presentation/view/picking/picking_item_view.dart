@@ -58,64 +58,64 @@ class _PickingItemViewState extends State<PickingItemView> {
             ?.unit;
         return Scaffold(
           appBar: AppBar(title: Text('Pick Item')),
-          bottomNavigationBar: BlocConsumer<PickingBloc, PickingState>(
-            listener: (context, state) {
-              if (state.status ==
-                  StatusPicking.failedUpdateStatusPreparationDetail) {
-                context.showSnackbar(
-                  state.message ?? '',
-                  backgroundColor: AppColors.kRed,
-                );
-              }
-              if (state.status == StatusPicking.updateStatusPreparationDetail) {
-                context.showSnackbar(
-                  'Successfully locked asset',
-                  backgroundColor: AppColors.kBase,
-                );
-                context.pop();
-              }
-            },
-            builder: (context, state) {
-              if (state.status == StatusPicking.loading) {
-                return SizedBox();
-              }
+          // bottomNavigationBar: BlocConsumer<PickingBloc, PickingState>(
+          //   listener: (context, state) {
+          //     if (state.status ==
+          //         StatusPicking.failedUpdateStatusPreparationDetail) {
+          //       context.showSnackbar(
+          //         state.message ?? '',
+          //         backgroundColor: AppColors.kRed,
+          //       );
+          //     }
+          //     if (state.status == StatusPicking.updateStatusPreparationDetail) {
+          //       context.showSnackbar(
+          //         'Successfully locked asset',
+          //         backgroundColor: AppColors.kBase,
+          //       );
+          //       context.pop();
+          //     }
+          //   },
+          //   builder: (context, state) {
+          //     if (state.status == StatusPicking.loading) {
+          //       return SizedBox();
+          //     }
 
-              if (((preparationDetail?.quantityPicked ==
-                      preparationDetail?.quantityTarget) &&
-                  preparationDetail?.status == 'PROGRESS')) {
-                return Padding(
-                  padding: EdgeInsets.all(12),
-                  child: BlocListener<PickingBloc, PickingState>(
-                    listenWhen: (previous, current) =>
-                        previous.status != current.status,
-                    listener: (context, state) {},
-                    child: AppButton(
-                      title: 'Completed',
-                      onPressed: () {
-                        context.showDialogConfirm(
-                          fontSize: isLarge ? 15 : 14,
-                          title: 'Are your sure completed item ?',
-                          content:
-                              'Model : ${preparationDetail?.assetModel}\nQuantity Pick : ${preparationDetail?.quantityPicked}\nQuantity Target : ${preparationDetail?.quantityTarget}',
-                          onCancel: () => context.pop(),
-                          onConfirm: () {
-                            context.read<PickingBloc>().add(
-                              OnUpdateStatusCompletedPreparationDetail(
-                                preparationDetail!.id!,
-                              ),
-                            );
-                            context.pop();
-                          },
-                        );
-                      },
-                      fontSize: isLarge ? 16 : 14,
-                    ),
-                  ),
-                );
-              }
-              return SizedBox();
-            },
-          ),
+          //     if (((preparationDetail?.quantityPicked ==
+          //             preparationDetail?.quantityTarget) &&
+          //         preparationDetail?.status == 'PROGRESS')) {
+          //       return Padding(
+          //         padding: EdgeInsets.all(12),
+          //         child: BlocListener<PickingBloc, PickingState>(
+          //           listenWhen: (previous, current) =>
+          //               previous.status != current.status,
+          //           listener: (context, state) {},
+          //           child: AppButton(
+          //             title: 'Completed',
+          //             onPressed: () {
+          //               context.showDialogConfirm(
+          //                 fontSize: isLarge ? 15 : 14,
+          //                 title: 'Are your sure completed item ?',
+          //                 content:
+          //                     'Model : ${preparationDetail?.assetModel}\nQuantity Pick : ${preparationDetail?.quantityPicked}\nQuantity Target : ${preparationDetail?.quantityTarget}',
+          //                 onCancel: () => context.pop(),
+          //                 onConfirm: () {
+          //                   context.read<PickingBloc>().add(
+          //                     OnUpdateStatusCompletedPreparationDetail(
+          //                       preparationDetail!.id!,
+          //                     ),
+          //                   );
+          //                   context.pop();
+          //                 },
+          //               );
+          //             },
+          //             fontSize: isLarge ? 16 : 14,
+          //           ),
+          //         ),
+          //       );
+          //     }
+          //     return SizedBox();
+          //   },
+          // ),
           body: BlocConsumer<PickingBloc, PickingState>(
             listener: (context, state) {
               if (state.status == StatusPicking.failureInsertItem) {
