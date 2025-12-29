@@ -1,32 +1,54 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
-
 import 'package:asset_management/domain/entities/permissions/permissions.dart';
 import 'package:equatable/equatable.dart';
 
-// ignore: must_be_immutable
-class PermissionsModel extends Equatable {
-  int? id;
-  String? module;
-  String? permission;
+class PermissionItemModel extends Equatable {
+  final int? id;
+  final String? name;
 
-  PermissionsModel({this.id, this.module, this.permission});
+  const PermissionItemModel({this.id, this.name});
 
-  @override
-  List<Object?> get props => [id, module, permission];
-
-  factory PermissionsModel.fromJson(Map<String, dynamic> map) {
-    return PermissionsModel(
-      id: map['id'] != null ? map['id'] as int : null,
-      module: map['module_permission_name'] != null
-          ? map['module_permission_name'] as String
-          : null,
-      permission: map['module_permission_label'] != null
-          ? map['module_permission_label'] as String
-          : null,
+  factory PermissionItemModel.fromJson(Map<String, dynamic> json) {
+    return PermissionItemModel(
+      id: json['id'] as int?,
+      name: json['name'] as String?,
     );
   }
 
+  PermissionItem toEntity() {
+    return PermissionItem(id: id, name: name);
+  }
+
+  @override
+  List<Object?> get props => [id, name];
+}
+
+class PermissionsModel extends Equatable {
+  final String? module;
+  final List<PermissionItemModel>? permissions;
+
+  const PermissionsModel({this.module, this.permissions});
+
+  @override
+  List<Object?> get props => [module, permissions];
+
   Permissions toEntity() {
-    return Permissions(id: id, module: module, permission: permission);
+    return Permissions(
+      module: module,
+      permissions: permissions?.map((p) => p.toEntity()).toList(),
+    );
+  }
+
+  factory PermissionsModel.fromJson(Map<String, dynamic> map) {
+    return PermissionsModel(
+      module: map['module'] as String?,
+      permissions: map['permissions'] != null
+          ? (map['permissions'] as List)
+                .map(
+                  (p) =>
+                      PermissionItemModel.fromJson(p as Map<String, dynamic>),
+                )
+                .toList()
+          : null,
+    );
   }
 }

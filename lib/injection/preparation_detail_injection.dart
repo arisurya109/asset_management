@@ -9,16 +9,6 @@ import 'package:asset_management/domain/usecases/preparation_detail/update_statu
 import 'package:get_it/get_it.dart';
 
 preparationDetailInjection(GetIt locator) {
-  // locator.registerFactory(
-  //   () => PreparationDetailBloc(
-  //     locator(),
-  //     locator(),
-  //     locator(),
-  //     locator(),
-  //     locator(),
-  //   ),
-  // );
-
   locator.registerLazySingleton(
     () => CreatePreparationDetailUseCase(locator()),
   );

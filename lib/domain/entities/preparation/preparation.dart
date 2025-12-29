@@ -5,113 +5,62 @@ import 'package:equatable/equatable.dart';
 // ignore: must_be_immutable
 class Preparation extends Equatable {
   int? id;
-  String? preparationCode;
+  String? code;
+  String? type;
+  String? status;
   int? destinationId;
   String? destination;
-  int? assignedId;
-  String? assigned;
-  int? temporaryLocationId;
-  String? temporaryLocation;
-  int? totalBox;
-  String? status;
-  String? notes;
-  int? createdById;
+  int? createdId;
   String? createdBy;
-  int? updatedById;
-  String? updatedBy;
-  int? approvedById;
+  int? workerId;
+  String? workerBy;
+  int? approvedId;
   String? approvedBy;
-  DateTime? approvedAt;
-  String? afterShipped;
+  int? locationId;
+  String? location;
+  int? totalBox;
+  String? notes;
+  String? createdAt;
 
   Preparation({
     this.id,
-    this.preparationCode,
+    this.code,
+    this.type,
+    this.status,
     this.destinationId,
     this.destination,
-    this.assignedId,
-    this.assigned,
-    this.temporaryLocationId,
-    this.temporaryLocation,
-    this.totalBox,
-    this.status,
-    this.notes,
-    this.createdById,
+    this.createdId,
     this.createdBy,
-    this.updatedById,
-    this.updatedBy,
-    this.approvedById,
+    this.workerId,
+    this.workerBy,
+    this.approvedId,
     this.approvedBy,
-    this.approvedAt,
-    this.afterShipped,
+    this.locationId,
+    this.location,
+    this.totalBox,
+    this.notes,
+    this.createdAt,
   });
 
   @override
   List<Object?> get props {
     return [
       id,
-      preparationCode,
+      code,
+      status,
+      type,
       destinationId,
       destination,
-      assignedId,
-      assigned,
-      temporaryLocationId,
-      temporaryLocation,
       totalBox,
       status,
       notes,
-      createdById,
       createdBy,
-      updatedById,
-      updatedBy,
+      createdId,
       approvedBy,
-      approvedById,
-      afterShipped,
-      approvedAt,
+      createdId,
+      workerId,
+      workerBy,
+      createdAt,
     ];
-  }
-
-  Preparation copyWith({
-    int? id,
-    String? preparationCode,
-    int? destinationId,
-    String? destination,
-    int? assignedId,
-    String? assigned,
-    int? temporaryLocationId,
-    String? temporaryLocation,
-    int? totalBox,
-    String? status,
-    String? notes,
-    int? createdById,
-    String? createdBy,
-    int? updatedById,
-    String? updatedBy,
-    int? approvedById,
-    String? approvedBy,
-    DateTime? approvedAt,
-    String? afterShipped,
-  }) {
-    return Preparation(
-      id: id ?? this.id,
-      preparationCode: preparationCode ?? this.preparationCode,
-      destinationId: destinationId ?? this.destinationId,
-      destination: destination ?? this.destination,
-      assignedId: assignedId ?? this.assignedId,
-      assigned: assigned ?? this.assigned,
-      temporaryLocationId: temporaryLocationId ?? this.temporaryLocationId,
-      temporaryLocation: temporaryLocation ?? this.temporaryLocation,
-      totalBox: totalBox ?? this.totalBox,
-      status: status ?? this.status,
-      notes: notes ?? this.notes,
-      createdById: createdById ?? this.createdById,
-      createdBy: createdBy ?? this.createdBy,
-      updatedById: updatedById ?? this.updatedById,
-      updatedBy: updatedBy ?? this.updatedBy,
-      approvedById: approvedById ?? this.approvedById,
-      approvedBy: approvedBy ?? this.approvedBy,
-      approvedAt: approvedAt ?? this.approvedAt,
-      afterShipped: afterShipped ?? this.afterShipped,
-    );
   }
 }

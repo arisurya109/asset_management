@@ -7,25 +7,11 @@ import 'package:asset_management/data/source/preparation/preparation_remote_data
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
 import 'package:dartz/dartz.dart';
-import 'package:file_picker/src/platform_file.dart';
 
 class PreparationRepositoryImpl implements PreparationRepository {
   final PreparationRemoteDataSource _source;
 
   PreparationRepositoryImpl(this._source);
-
-  @override
-  Future<Either<Failure, Preparation>> completedPreparation({
-    required int id,
-    required PlatformFile file,
-  }) async {
-    try {
-      final response = await _source.completedPreparation(id: id, file: file);
-      return Right(response.toEntity());
-    } on UpdateException catch (e) {
-      return Left(UpdateFailure(e.message));
-    }
-  }
 
   @override
   Future<Either<Failure, Preparation>> createPreparation({
@@ -64,18 +50,33 @@ class PreparationRepositoryImpl implements PreparationRepository {
   }
 
   @override
+  Future<Either<Failure, List<Preparation>>>
+  findPreparationByCodeOrDestination({required String params}) async {
+    try {
+      final response = await _source.findPreparationByCodeOrDestination(
+        params: params,
+      );
+      return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
   Future<Either<Failure, Preparation>> updateStatusPreparation({
     required int id,
-    required String params,
-    int? locationId,
+    required String status,
     int? totalBox,
+    int? locationId,
+    String? remarks,
   }) async {
     try {
       final response = await _source.updateStatusPreparation(
         id: id,
-        params: params,
-        locationId: locationId,
+        status: status,
         totalBox: totalBox,
+        locationId: locationId,
+        remarks: remarks,
       );
       return Right(response.toEntity());
     } on UpdateException catch (e) {

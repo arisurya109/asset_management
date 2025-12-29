@@ -10,13 +10,8 @@ import '../data/repositories/user/user_repository_impl.dart';
 import '../data/source/user/user_remote_data_source.dart';
 import '../data/source/user/user_remote_data_source_impl.dart';
 import '../domain/repositories/user/user_repository.dart';
-import '../presentation/bloc/user/user_bloc.dart';
 
 userInjection(GetIt locator) {
-  locator.registerFactory(
-    () => UserBloc(locator(), locator(), locator(), locator(), locator()),
-  );
-
   locator.registerLazySingleton(() => CreateUserUseCase(locator()));
   locator.registerLazySingleton(() => FindAllUserUseCase(locator()));
   locator.registerLazySingleton(() => FindUserByIdUseCase(locator()));

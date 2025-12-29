@@ -19,4 +19,7 @@ abstract class AssetRepository {
     required String assetCode,
     required String location,
   });
+  Future<Either<Failure, List<AssetEntity>>> findAssetByQuery({
+    required String params,
+  });
 }

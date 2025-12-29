@@ -1,11 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:equatable/equatable.dart';
+
+import 'package:asset_management/domain/entities/master/location.dart';
 
 // ignore: must_be_immutable
 class LocationModel extends Equatable {
   int? id;
+  int? isStorage;
   String? name;
   String? locationType;
   String? boxType;
@@ -16,6 +18,7 @@ class LocationModel extends Equatable {
 
   LocationModel({
     this.id,
+    this.isStorage,
     this.name,
     this.locationType,
     this.boxType,
@@ -28,6 +31,7 @@ class LocationModel extends Equatable {
   factory LocationModel.fromAPI(Map<String, dynamic> map) {
     return LocationModel(
       id: map['id'] != null ? map['id'] as int : null,
+      isStorage: map['is_storage'] != null ? map['is_storage'] as int : null,
       name: map['name'] != null ? map['name'] as String : null,
       locationType: map['location_type'] != null
           ? map['location_type'] as String
@@ -45,6 +49,7 @@ class LocationModel extends Equatable {
   factory LocationModel.fromEntity(Location params) {
     return LocationModel(
       id: params.id,
+      isStorage: params.isStorage,
       name: params.name,
       locationType: params.locationType,
       boxType: params.boxType,
@@ -58,6 +63,7 @@ class LocationModel extends Equatable {
   Map<String, dynamic> toAPI() {
     return <String, dynamic>{
       'id': id,
+      'is_storage': isStorage,
       'name': name,
       'code': code,
       'init': init,
@@ -71,6 +77,7 @@ class LocationModel extends Equatable {
   Location toEntity() {
     return Location(
       id: id,
+      isStorage: isStorage,
       name: name,
       init: init,
       code: code,
@@ -83,6 +90,16 @@ class LocationModel extends Equatable {
 
   @override
   List<Object?> get props {
-    return [id, name, locationType, boxType, code, init, parentId, parentName];
+    return [
+      id,
+      name,
+      locationType,
+      boxType,
+      code,
+      init,
+      parentId,
+      parentName,
+      isStorage,
+    ];
   }
 }

@@ -7,7 +7,7 @@ class User extends Equatable {
   String? username;
   String? name;
   int? isActive;
-  List<dynamic>? modules;
+  List<Map<String, dynamic>>? modules;
 
   User({this.id, this.username, this.name, this.isActive, this.modules});
 

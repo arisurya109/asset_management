@@ -5,12 +5,9 @@ import 'package:asset_management/domain/repositories/printer/printer_repository.
 import 'package:asset_management/domain/usecases/printer/get_connection_printer_use_case.dart';
 import 'package:asset_management/domain/usecases/printer/get_ip_printer_use_case.dart';
 import 'package:asset_management/domain/usecases/printer/set_default_printer_use_case.dart';
-import 'package:asset_management/presentation/bloc/printer/printer_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 printerInjection(GetIt locator) {
-  locator.registerFactory(() => PrinterBloc(locator(), locator(), locator()));
-
   locator.registerLazySingleton(() => SetDefaultPrinterUseCase(locator()));
   locator.registerLazySingleton(() => GetIpPrinterUseCase(locator()));
   locator.registerLazySingleton(() => GetConnectionPrinterUseCase(locator()));

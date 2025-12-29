@@ -20,24 +20,27 @@ class PermissionsRemoteDataSourceImpl implements PermissionsRemoteDataSource {
 
       if (token == null) {
         throw NotFoundException(message: 'Token expired');
+      }
+
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/module'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        final List<dynamic> datas = body['data'] ?? [];
+
+        return datas
+            .map((e) => PermissionsModel.fromJson(e as Map<String, dynamic>))
+            .toList();
       } else {
-        final response = await _client.get(
-          Uri.parse('${ApiHelper.baseUrl}/module'),
-          headers: ApiHelper.headersToken(token),
-        );
-
-        if (response.statusCode == 200) {
-          final body = jsonDecode(response.body);
-
-          List datas = body['data'];
-
-          return datas.map((e) => PermissionsModel.fromJson(e)).toList();
-        } else {
-          final message = ApiHelper.getErrorMessage(response.body);
-          throw NotFoundException(message: message);
-        }
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
       }
     } catch (e) {
+      if (e is NotFoundException) rethrow;
       throw NotFoundException(message: e.toString());
     }
   }

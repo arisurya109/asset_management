@@ -15,6 +15,7 @@ class AppTextField extends StatefulWidget {
   bool? obscureText;
   void Function(String)? onChanged;
   double? fontSize;
+  FocusNode? focusNode;
 
   AppTextField({
     super.key,
@@ -28,6 +29,7 @@ class AppTextField extends StatefulWidget {
     this.obscureText,
     this.onChanged,
     this.fontSize = 12,
+    this.focusNode,
   });
 
   @override
@@ -43,11 +45,12 @@ class _AppTextFieldState extends State<AppTextField> {
             onChanged: widget.onChanged,
             controller: widget.controller,
             onSubmitted: widget.onSubmitted,
+            focusNode: widget.focusNode,
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              fontSize: widget.fontSize,
+              fontSize: widget.fontSize! + 1,
             ),
             decoration: InputDecoration(
               suffixIcon: widget.obscureText != null
@@ -69,7 +72,7 @@ class _AppTextFieldState extends State<AppTextField> {
               ),
               hintStyle: TextStyle(
                 color: Colors.grey,
-                fontSize: widget.fontSize,
+                fontSize: widget.fontSize! + 1,
                 fontWeight: FontWeight.w400,
               ),
               focusedBorder: OutlineInputBorder(
@@ -89,7 +92,7 @@ class _AppTextFieldState extends State<AppTextField> {
               Text(
                 widget.title,
                 style: TextStyle(
-                  fontSize: widget.fontSize,
+                  fontSize: widget.fontSize! + 1,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -98,12 +101,13 @@ class _AppTextFieldState extends State<AppTextField> {
                 obscureText: widget.obscureText ?? false,
                 onChanged: widget.onChanged,
                 controller: widget.controller,
+                focusNode: widget.focusNode,
                 onSubmitted: widget.onSubmitted,
                 keyboardType: widget.keyboardType,
                 textInputAction: widget.textInputAction,
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
-                  fontSize: widget.fontSize,
+                  fontSize: widget.fontSize! + 1,
                 ),
                 decoration: InputDecoration(
                   suffixIcon: widget.obscureText != null
@@ -125,7 +129,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   ),
                   hintStyle: TextStyle(
                     color: Colors.grey,
-                    fontSize: widget.fontSize,
+                    fontSize: widget.fontSize! + 1,
                     fontWeight: FontWeight.w400,
                   ),
                   focusedBorder: OutlineInputBorder(

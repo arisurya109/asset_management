@@ -38,6 +38,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
           throw CreateException(message: message);
         }
       }
+    } on CreateException catch (_) {
+      rethrow;
     } catch (e) {
       throw CreateException(message: e.toString());
     }

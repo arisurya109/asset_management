@@ -10,10 +10,6 @@ import 'package:asset_management/domain/usecases/preparation_item/find_all_prepa
 import 'package:get_it/get_it.dart';
 
 preparationItemInjection(GetIt locator) {
-  // locator.registerFactory(
-  //   () => PreparationItemBloc(locator(), locator(), locator(), locator()),
-  // );
-
   locator.registerLazySingleton(() => CreatePreparationItemUseCase(locator()));
   locator.registerLazySingleton(() => DeletePreparationItemUseCase(locator()));
   locator.registerLazySingleton(

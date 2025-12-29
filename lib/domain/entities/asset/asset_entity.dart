@@ -21,6 +21,7 @@ class AssetEntity extends Equatable {
   String? types;
   String? color;
   String? location;
+  String? locationDetail;
   String? purchaseOrder;
   String? remarks;
 
@@ -43,6 +44,7 @@ class AssetEntity extends Equatable {
     this.types,
     this.color,
     this.location,
+    this.locationDetail,
     this.purchaseOrder,
     this.remarks,
   });
@@ -68,6 +70,7 @@ class AssetEntity extends Equatable {
       types,
       color,
       location,
+      locationDetail,
       purchaseOrder,
       remarks,
     ];

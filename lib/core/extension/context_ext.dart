@@ -2,6 +2,10 @@ import 'package:asset_management/core/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 extension ContextExt on BuildContext {
+  void requestFocus(FocusNode params) {
+    FocusScope.of(this).requestFocus(params);
+  }
+
   void showSnackbar(
     String message, {
     Color backgroundColor = AppColors.kBase,
@@ -31,6 +35,7 @@ extension ContextExt on BuildContext {
   }) async {
     await showDialog(
       context: this,
+      barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
           backgroundColor: Colors.white,
@@ -78,19 +83,46 @@ extension ContextExt on BuildContext {
     return MediaQuery.of(this).size.width;
   }
 
-  pushReplacment(Widget params) {
+  pushReplacmentExt(Widget params) {
     Navigator.pushReplacement(
       this,
       MaterialPageRoute(builder: (context) => params),
     );
   }
 
-  push(Widget params) {
+  pushExt(Widget params) {
     Navigator.push(this, MaterialPageRoute(builder: (context) => params));
   }
 
-  pop() {
+  popExt() {
     Navigator.pop(this);
+  }
+
+  void dialogLoadingDesktop() {
+    showDialog(
+      context: this,
+      barrierDismissible: false,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: AppColors.kWhite,
+          alignment: Alignment.center,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+          child: Container(
+            width: 220,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 42),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: CircularProgressIndicator(color: AppColors.kBase),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   void dialogLoading() {

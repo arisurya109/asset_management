@@ -17,4 +17,5 @@ abstract class AssetRemoteDataSource {
     required String assetCode,
     required String location,
   });
+  Future<List<AssetsModel>> findAssetByQuery({required String params});
 }

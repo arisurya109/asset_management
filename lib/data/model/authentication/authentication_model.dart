@@ -28,7 +28,7 @@ class AuthenticationModel extends Equatable {
 
   factory AuthenticationModel.fromEntity(Authentication params) {
     return AuthenticationModel(
-      username: params.username ?? '',
+      username: params.username,
       password: params.password,
       newPassword: params.newPassword,
     );

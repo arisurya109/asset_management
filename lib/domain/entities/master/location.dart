@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 // ignore: must_be_immutable
 class Location extends Equatable {
   int? id;
+  int? isStorage;
   String? name;
   String? locationType;
   String? boxType;
@@ -15,6 +16,7 @@ class Location extends Equatable {
 
   Location({
     this.id,
+    this.isStorage,
     this.name,
     this.locationType,
     this.boxType,
@@ -26,6 +28,16 @@ class Location extends Equatable {
 
   @override
   List<Object?> get props {
-    return [id, name, locationType, boxType, code, init, parentId, parentName];
+    return [
+      id,
+      name,
+      locationType,
+      boxType,
+      code,
+      init,
+      parentId,
+      parentName,
+      isStorage,
+    ];
   }
 }

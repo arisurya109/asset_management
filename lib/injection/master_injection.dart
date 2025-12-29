@@ -19,32 +19,9 @@ import 'package:asset_management/domain/usecases/master/find_all_location_use_ca
 import 'package:asset_management/domain/usecases/master/find_all_preparation_template_item_by_template_id_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_preparation_template_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_vendor_use_case.dart';
-import 'package:asset_management/presentation/bloc/master/master_bloc.dart';
 import 'package:get_it/get_it.dart';
 
 masterInjection(GetIt locator) {
-  locator.registerFactory(
-    () => MasterBloc(
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-      locator(),
-    ),
-  );
-
   locator.registerLazySingleton(() => FindAllAssetBrandUseCase(locator()));
   locator.registerLazySingleton(() => FindAllAssetCategoryUseCase(locator()));
   locator.registerLazySingleton(() => FindAllAssetModelUseCase(locator()));

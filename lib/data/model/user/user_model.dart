@@ -10,7 +10,7 @@ class UserModel extends Equatable {
   String? username;
   String? name;
   int? isActive;
-  List<dynamic>? modules;
+  List<Map<String, dynamic>>? modules;
 
   UserModel({this.id, this.username, this.name, this.isActive, this.modules});
 
@@ -45,7 +45,11 @@ class UserModel extends Equatable {
       username: map['username'] != null ? map['username'] as String : null,
       name: map['name'] != null ? map['name'] as String : null,
       isActive: map['is_active'] != null ? map['is_active'] as int : null,
-      modules: map['modules'] != null ? map['modules'] as List<dynamic> : null,
+      modules: map['modules'] != null
+          ? List<Map<String, dynamic>>.from(
+              (map['modules'] as List).map((e) => Map<String, dynamic>.from(e)),
+            )
+          : null,
     );
   }
 
@@ -55,7 +59,11 @@ class UserModel extends Equatable {
       'username': username,
       'name': name,
       'is_active': isActive,
-      'modules': modules,
+      'modules': modules
+          ?.map(
+            (e) => {"id": e['id'], "name": e['name'], "module": e['module']},
+          )
+          .toList(),
     };
   }
 }
