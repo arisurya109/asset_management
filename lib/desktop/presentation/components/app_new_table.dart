@@ -201,6 +201,9 @@ class _AppNewTableState extends State<AppNewTable> {
             title: 'Export',
             icons: Icons.download_rounded,
             onPressed: widget.onExport,
+            borderColor: AppColors.kBase,
+            iconColors: AppColors.kBase,
+            titleColor: AppColors.kBase,
           ),
         if (widget.onExport != null) AppSpace.horizontal(16),
         AppTextFieldSearchDesktop(

@@ -36,4 +36,8 @@ abstract class MasterRemoteDataSource {
   );
   Future<List<PreparationTemplateItemModel>>
   findAllPreparationTemplateItemByTemplateId(int params);
+
+  // Location
+  Future<List<LocationModel>> findLocationByQuery(String query);
+  Future<List<LocationModel>> findLocationByStorage(int params);
 }

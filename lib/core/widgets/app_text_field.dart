@@ -125,7 +125,7 @@ class _AppTextFieldState extends State<AppTextField> {
                   hintText: widget.hintText,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 18,
+                    vertical: 16,
                   ),
                   hintStyle: TextStyle(
                     color: Colors.grey,

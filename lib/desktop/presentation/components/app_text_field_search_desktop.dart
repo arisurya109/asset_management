@@ -39,12 +39,19 @@ class AppTextFieldSearchDesktop extends StatelessWidget {
         controller: controller,
         focusNode: focusNode,
         enabled: enabled,
-        style: const TextStyle(fontSize: 12),
+        style: TextStyle(
+          fontSize: 12,
+          color: enabled == false ? AppColors.kGrey : null,
+        ),
         onSubmitted: onSubmitted,
         decoration: InputDecoration(
           contentPadding: EdgeInsets.symmetric(
             horizontal: 12,
             vertical: enabled == false ? 12 : 0,
+          ),
+          disabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: BorderSide(color: AppColors.kGrey),
           ),
           isDense: true,
           hintText: hintText,

@@ -34,47 +34,47 @@ class HomeCubit extends Cubit<int> {
         },
       ],
     },
-    // {
-    //   'name': 'Master',
-    //   'items': [
-    //     {
-    //       'value': 5,
-    //       'title': 'Asset Type',
-    //       'path': '/types',
-    //       'permission': 'master_view',
-    //     },
-    //     {
-    //       'value': 5,
-    //       'title': 'Asset Brand',
-    //       'path': '/master',
-    //       'permission': 'master_view',
-    //     },
-    //     {
-    //       'value': 6,
-    //       'title': 'Asset Category',
-    //       'path': '/master',
-    //       'permission': 'master_view',
-    //     },
-    //     {
-    //       'value': 7,
-    //       'title': 'Asset Model',
-    //       'path': '/master',
-    //       'permission': 'master_view',
-    //     },
-    //     {
-    //       'value': 8,
-    //       'title': 'Location',
-    //       'path': '/master',
-    //       'permission': 'master_view',
-    //     },
-    //     {
-    //       'value': 9,
-    //       'title': 'Set Preparation',
-    //       'path': '/master',
-    //       'permission': 'master_view',
-    //     },
-    //   ],
-    // },
+    {
+      'name': 'Master',
+      'items': [
+        {
+          'value': 5,
+          'title': 'Asset Type',
+          'path': '/types',
+          'permission': 'master_view',
+        },
+        {
+          'value': 5,
+          'title': 'Asset Brand',
+          'path': '/master',
+          'permission': 'master_view',
+        },
+        {
+          'value': 6,
+          'title': 'Asset Category',
+          'path': '/master',
+          'permission': 'master_view',
+        },
+        {
+          'value': 7,
+          'title': 'Asset Model',
+          'path': '/master',
+          'permission': 'master_view',
+        },
+        {
+          'value': 8,
+          'title': 'Location',
+          'path': '/location',
+          'permission': 'master_view',
+        },
+        {
+          'value': 9,
+          'title': 'Set Preparation',
+          'path': '/master',
+          'permission': 'master_view',
+        },
+      ],
+    },
   ];
 
   List<Map<String, dynamic>> navbar = List.from(_navbar);

@@ -226,4 +226,28 @@ class MasterRepositoryImpl implements MasterRepository {
       return Left(NotFoundFailure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<Location>>> findLocationByQuery(
+    String query,
+  ) async {
+    try {
+      final response = await _source.findLocationByQuery(query);
+      return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Location>>> findLocationByStorage(
+    int params,
+  ) async {
+    try {
+      final response = await _source.findLocationByStorage(params);
+      return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
 }

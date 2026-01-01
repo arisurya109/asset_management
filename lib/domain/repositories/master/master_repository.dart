@@ -45,4 +45,8 @@ abstract class MasterRepository {
 
   Future<Either<Failure, List<PreparationTemplateItem>>>
   findAllPreparationTemplateItemByTemplateId(int params);
+
+  // Location
+  Future<Either<Failure, List<Location>>> findLocationByQuery(String query);
+  Future<Either<Failure, List<Location>>> findLocationByStorage(int params);
 }

@@ -74,6 +74,11 @@ class HomeDesktopView extends StatelessWidget {
                               ? AppColors.kBase
                               : AppColors.kWhite,
                           child: InkWell(
+                            overlayColor: WidgetStatePropertyAll(
+                              isSelected
+                                  ? AppColors.kBase
+                                  : AppColors.kBackground,
+                            ),
                             onTap: () {
                               homeCubit.changeMenu(item['value']);
                               if (item.containsKey('path')) {

@@ -1,9 +1,12 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/asset/asset_detail_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/home/home_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/location/add_location_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/location/location_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/login/login_desktop_view.dart';
-import 'package:asset_management/desktop/presentation/view/master/master_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/add_new_preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation_update/preparation_update_view.dart';
@@ -64,17 +67,20 @@ class Routes {
               );
             },
           ),
-          GoRoute(
-            path: '/master',
-            pageBuilder: (context, state) {
-              return _buildDesktopTransition(
-                state: state,
-                child: MasterDesktopView(),
-              );
-            },
-          ),
+
           GoRoute(
             path: '/asset',
+            routes: [
+              GoRoute(
+                path: 'detail',
+                pageBuilder: (context, state) {
+                  return _buildDesktopTransition(
+                    state: state,
+                    child: AssetDetailDesktopView(),
+                  );
+                },
+              ),
+            ],
             pageBuilder: (context, state) {
               context.read<AssetDesktopBloc>().add(OnFindAllAssets());
               return _buildDesktopTransition(
@@ -91,6 +97,27 @@ class Routes {
                 child: PreparationUpdateView(),
               );
             },
+          ),
+          GoRoute(
+            path: '/location',
+            pageBuilder: (context, state) {
+              context.read<LocationDesktopBloc>().add(OnFindAllLocation());
+              return _buildDesktopTransition(
+                state: state,
+                child: LocationDesktopView(),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                pageBuilder: (context, state) {
+                  return _buildDesktopTransition(
+                    state: state,
+                    child: AddLocationDesktopView(),
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: '/preparation',

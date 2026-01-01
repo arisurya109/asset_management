@@ -452,4 +452,56 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       }
     }
   }
+
+  @override
+  Future<List<LocationModel>> findLocationByQuery(String query) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/location?query=$query'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        List datas = body['data'];
+
+        return datas.map((e) => LocationModel.fromAPI(e)).toList();
+      } else {
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<List<LocationModel>> findLocationByStorage(int params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/location?is_storage=$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        List datas = body['data'];
+
+        return datas.map((e) => LocationModel.fromAPI(e)).toList();
+      } else {
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
 }
