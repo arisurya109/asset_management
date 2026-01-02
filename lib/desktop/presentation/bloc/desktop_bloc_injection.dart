@@ -3,6 +3,7 @@ import 'package:asset_management/desktop/presentation/bloc/authentication_deskto
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/preparation_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
+import 'package:asset_management/desktop/presentation/cubit/add_location_datas/add_location_datas_cubit.dart';
 import 'package:asset_management/desktop/presentation/cubit/add_preparation_datas/add_preparation_datas_cubit.dart';
 import 'package:asset_management/desktop/presentation/cubit/home/home_cubit.dart';
 import 'package:asset_management/desktop/presentation/cubit/preparation_update/preparation_update_cubit.dart';
@@ -27,4 +28,5 @@ desktopBlocInjection() {
     () => AddPreparationDatasCubit(locator(), locator(), locator()),
   );
   locator.registerFactory(() => LocationDesktopBloc(locator(), locator()));
+  locator.registerFactory(() => AddLocationDatasCubit(locator()));
 }

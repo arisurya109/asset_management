@@ -98,7 +98,7 @@ class AppCardItem extends StatelessWidget {
                           horizontal: 12,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.kBackground,
+                          color: AppColors.kBackgroundMobile,
                           borderRadius: BorderRadius.circular(5),
                         ),
                         child: Row(

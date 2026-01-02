@@ -40,4 +40,5 @@ abstract class MasterRemoteDataSource {
   // Location
   Future<List<LocationModel>> findLocationByQuery(String query);
   Future<List<LocationModel>> findLocationByStorage(int params);
+  Future<List<String>> findLocationType();
 }

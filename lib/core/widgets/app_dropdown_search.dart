@@ -113,7 +113,7 @@ class AppDropDownSearch<T> extends StatelessWidget {
               hintStyle: TextStyle(
                 color: Colors.grey,
                 fontWeight: FontWeight.w400,
-                fontSize: fontSize + 1,
+                fontSize: fontSize - 1,
               ),
               isDense: true,
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),

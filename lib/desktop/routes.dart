@@ -1,6 +1,5 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
-import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_detail_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/home/home_desktop_view.dart';
@@ -10,8 +9,6 @@ import 'package:asset_management/desktop/presentation/view/login/login_desktop_v
 import 'package:asset_management/desktop/presentation/view/preparation/add_new_preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation_update/preparation_update_view.dart';
-import 'package:asset_management/desktop/presentation/view/user_management/add_new_user_desktop_view.dart';
-import 'package:asset_management/desktop/presentation/view/user_management/user_management_desktop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';

@@ -504,4 +504,32 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       }
     }
   }
+
+  @override
+  Future<List<String>> findLocationType() async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/location?type'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        List<String> datas = (body['data'] as List<dynamic>)
+            .map((e) => e.toString())
+            .toList();
+
+        return datas;
+      } else {
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
 }

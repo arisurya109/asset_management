@@ -49,4 +49,5 @@ abstract class MasterRepository {
   // Location
   Future<Either<Failure, List<Location>>> findLocationByQuery(String query);
   Future<Either<Failure, List<Location>>> findLocationByStorage(int params);
+  Future<Either<Failure, List<String>>> findLocationType();
 }

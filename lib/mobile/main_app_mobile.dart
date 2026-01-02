@@ -1,6 +1,7 @@
 import 'package:asset_management/mobile/my_custom_scroll.dart';
 import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/inventory/inventory_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/preparation/preparation_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/purchase_order/purchase_order_bloc.dart';
@@ -38,6 +39,7 @@ class MainAppMobile extends StatelessWidget {
         ),
         BlocProvider(create: (context) => locator<PreparationBloc>()),
         BlocProvider(create: (context) => locator<PickingBloc>()),
+        BlocProvider(create: (context) => locator<InventoryBloc>()),
       ],
       child: MaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),
@@ -51,7 +53,7 @@ class MainAppMobile extends StatelessWidget {
           appBarTheme: AppBarTheme(
             centerTitle: true,
             surfaceTintColor: AppColors.kWhite,
-            backgroundColor: AppColors.kBackground,
+            backgroundColor: AppColors.kBackgroundMobile,
             titleTextStyle: TextStyle(
               color: Colors.teal,
               fontSize: 16,
@@ -62,7 +64,7 @@ class MainAppMobile extends StatelessWidget {
           ),
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
-          scaffoldBackgroundColor: AppColors.kBackground,
+          scaffoldBackgroundColor: AppColors.kBackgroundMobile,
         ),
       ),
     );
