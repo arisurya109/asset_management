@@ -1,8 +1,6 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/preparation/preparation_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/user/user_bloc.dart';
 import 'package:asset_management/mobile/presentation/components/app_header_drawer.dart';
 import 'package:asset_management/mobile/presentation/components/app_item_drawer.dart';
 import 'package:asset_management/mobile/presentation/view/assets/asset_view.dart';
@@ -12,13 +10,8 @@ import 'package:asset_management/mobile/presentation/view/category/asset_categor
 import 'package:asset_management/mobile/presentation/view/change_password/change_password_view.dart';
 import 'package:asset_management/mobile/presentation/view/location/location_view.dart';
 import 'package:asset_management/mobile/presentation/view/model/asset_model_view.dart';
-import 'package:asset_management/mobile/presentation/view/preparation/preparation_view.dart';
-import 'package:asset_management/mobile/presentation/view/preparation_set/preparation_template_view.dart';
 import 'package:asset_management/mobile/presentation/view/printer/printer_view.dart';
-import 'package:asset_management/mobile/presentation/view/purchase_order/purchase_order_view.dart';
 import 'package:asset_management/mobile/presentation/view/type/asset_type_view.dart';
-import 'package:asset_management/mobile/presentation/view/user_management/user_management_view.dart';
-import 'package:asset_management/mobile/presentation/view/vendor/vendor_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -39,7 +32,10 @@ class _AppDrawerState extends State<AppDrawer> {
       child: BlocBuilder<AuthenticationBloc, AuthenticationState>(
         builder: (context, state) {
           final user = state.user;
-          final permission = state.user?.modules;
+          final permissions = state.user?.modules;
+          final List<String> permission =
+              permissions?.map((p) => p['name'] as String).toList() ?? [];
+
           return Column(
             children: [
               Container(
@@ -59,7 +55,7 @@ class _AppDrawerState extends State<AppDrawer> {
                           context.pushExt(ChangePasswordView());
                         },
                       ),
-                      if (permission?.contains('master_view') == true)
+                      if (permission.contains('master_view') == true)
                         BlocBuilder<MasterBloc, MasterState>(
                           builder: (context, state) {
                             return ExpansionTile(
@@ -131,68 +127,17 @@ class _AppDrawerState extends State<AppDrawer> {
                                     context.pushExt(LocationView());
                                   },
                                 ),
-                                AppItemDrawer(
-                                  title: 'Vendor',
-                                  fontSize: widget.isLarge ? 14 : 12,
-                                  onTap: () {
-                                    isExpanded = false;
-                                    context.popExt();
-                                    context.pushExt(VendorView());
-                                  },
-                                ),
-                                AppItemDrawer(
-                                  title: 'Preparation Set',
-                                  fontSize: widget.isLarge ? 14 : 12,
-                                  onTap: () {
-                                    isExpanded = false;
-                                    context.popExt();
-                                    context.pushExt(PreparationTemplateView());
-                                  },
-                                ),
                               ],
                             );
                           },
                         ),
-                      if (permission?.contains('assets_view') == true)
+                      if (permission.contains('assets_view') == true)
                         AppItemDrawer(
                           title: 'Assets',
                           fontSize: widget.isLarge ? 14 : 12,
                           onTap: () {
                             context.popExt();
                             context.pushExt(AssetView());
-                          },
-                        ),
-                      if (permission?.contains('preparation_view') == true)
-                        AppItemDrawer(
-                          title: 'Preparation',
-                          fontSize: widget.isLarge ? 14 : 12,
-                          onTap: () {
-                            context.popExt();
-                            context.read<PreparationBloc>().add(
-                              OnFindAllPreparation(),
-                            );
-                            // context.pushExt(PreparationView());
-                          },
-                        ),
-
-                      if (permission?.contains('user_view') == true)
-                        AppItemDrawer(
-                          title: 'User Management',
-                          fontSize: widget.isLarge ? 14 : 12,
-                          onTap: () {
-                            context.popExt();
-                            context.read<UserBloc>().add(OnFindAllUserEvent());
-                            context.pushExt(UserManagementView());
-                          },
-                        ),
-
-                      if (permission?.contains('purchase_view') == true)
-                        AppItemDrawer(
-                          title: 'Purchase Order',
-                          fontSize: widget.isLarge ? 14 : 12,
-                          onTap: () {
-                            context.popExt();
-                            context.pushExt(PurchaseOrderView());
                           },
                         ),
                       AppItemDrawer(

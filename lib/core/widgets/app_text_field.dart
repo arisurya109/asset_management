@@ -68,21 +68,21 @@ class _AppTextFieldState extends State<AppTextField> {
               hintText: widget.hintText,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 12,
-                vertical: 18,
+                vertical: 8,
               ),
               hintStyle: TextStyle(
                 color: Colors.grey,
-                fontSize: widget.fontSize! + 1,
                 fontWeight: FontWeight.w400,
+                fontSize: widget.fontSize! - 1,
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(4),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(4),
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(5),
+                borderRadius: BorderRadius.circular(4),
               ),
             ),
           )
@@ -125,21 +125,21 @@ class _AppTextFieldState extends State<AppTextField> {
                   hintText: widget.hintText,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: 12,
-                    vertical: 16,
+                    vertical: 8,
                   ),
                   hintStyle: TextStyle(
                     color: Colors.grey,
-                    fontSize: widget.fontSize! + 1,
                     fontWeight: FontWeight.w400,
+                    fontSize: widget.fontSize! - 1,
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               ),

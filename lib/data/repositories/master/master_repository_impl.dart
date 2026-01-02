@@ -250,4 +250,14 @@ class MasterRepositoryImpl implements MasterRepository {
       return Left(NotFoundFailure(e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, List<String>>> findLocationType() async {
+    try {
+      final response = await _source.findLocationType();
+      return Right(response);
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
 }

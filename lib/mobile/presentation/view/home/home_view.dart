@@ -1,9 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
-import 'package:asset_management/mobile/presentation/view/picking/picking_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asset_management/core/core.dart';
@@ -58,136 +55,132 @@ class _HomeViewState extends State<HomeView> {
     return Scaffold(
       appBar: AppBar(title: Text('Asset Management')),
       drawer: AppDrawer(isLarge: isLarge),
-      body: SingleChildScrollView(
-        child: BlocBuilder<AssetBloc, AssetState>(
-          builder: (context, state) {
-            final totalQuantity = state.assets?.fold<int>(
-              0,
-              (previousValue, asset) => previousValue + (asset.quantity ?? 0),
-            );
-
-            final assets = state.assets;
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-              child: BlocBuilder<MasterBloc, MasterState>(
-                builder: (context, state) {
-                  List dashboard = [
-                    {
-                      'title': 'Model',
-                      'icon': Assets.iAssetModel,
-                      'value': state.models?.length.toString(),
-                    },
-                    {
-                      'title': 'Category',
-                      'icon': Assets.iAssetCategory,
-                      'value': state.categories?.length.toString(),
-                    },
-                    {
-                      'title': 'Location',
-                      'icon': Assets.iLocation,
-                      'value': state.locations?.length.toString(),
-                    },
-                    {
-                      'title': 'Brand',
-                      'icon': Assets.iAssetBrand,
-                      'value': state.brands?.length.toString(),
-                    },
-                    {
-                      'title': 'Quantity',
-                      'icon': Assets.iAssetMaster,
-                      'value': totalQuantity.toString(),
-                    },
-                    {
-                      'title': 'Assets',
-                      'icon': Assets.iAssetMaster,
-                      'value': assets?.length.toString(),
-                    },
-                  ];
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AppDashboardContent(
-                        dashboard: dashboard,
-                        isLarge: isLarge,
-                      ),
-                      AppSpace.vertical(16),
-                      Text(
-                        'Operations',
-                        style: TextStyle(
-                          fontSize: isLarge ? 16 : 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      AppSpace.vertical(16),
-                      GridView.builder(
-                        itemCount: operations.length,
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: isLarge ? 3 : 3,
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1 / 1,
-                        ),
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          final operation = operations[index];
-                          return Material(
-                            color: AppColors.kWhite,
-                            borderRadius: BorderRadius.circular(5),
-                            child: InkWell(
-                              onTap: () {
-                                if (operation['title'] == 'Picking') {
-                                  context.read<PickingBloc>().add(
-                                    OnFindAllPickingTask(
-                                      context
-                                          .read<AuthenticationBloc>()
-                                          .state
-                                          .user!
-                                          .id!,
-                                    ),
-                                  );
-                                }
-                                context.pushExt(operation['view']);
-                              },
-                              borderRadius: BorderRadius.circular(5),
-                              child: Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(5),
-                                ),
-                                child: Column(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    AppAssetImg(
-                                      operation['icon'],
-                                      color: AppColors.kBase,
-                                      height: isLarge ? 26 : 22,
-                                      width: isLarge ? 26 : 22,
-                                    ),
-                                    Text(
-                                      operation['title'],
-                                      style: TextStyle(
-                                        fontSize: isLarge ? 12 : 11,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-                      AppSpace.vertical(24),
-                    ],
-                  );
-                },
-              ),
-            );
-          },
+      body: GridView.builder(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        itemCount: operations.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: isLarge ? 3 : 3,
+          crossAxisSpacing: 12,
+          mainAxisSpacing: 12,
+          childAspectRatio: 1 / 1,
         ),
+        itemBuilder: (context, index) {
+          final operation = operations[index];
+          return Material(
+            color: AppColors.kWhite,
+            borderRadius: BorderRadius.circular(5),
+            child: InkWell(
+              onTap: () {
+                if (operation['title'] == 'Picking') {
+                  context.read<PickingBloc>().add(
+                    OnFindAllPickingTask(
+                      context.read<AuthenticationBloc>().state.user!.id!,
+                    ),
+                  );
+                }
+                context.pushExt(operation['view']);
+              },
+              borderRadius: BorderRadius.circular(5),
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    AppAssetImg(
+                      operation['icon'],
+                      color: AppColors.kBase,
+                      height: isLarge ? 26 : 22,
+                      width: isLarge ? 26 : 22,
+                    ),
+                    Text(
+                      operation['title'],
+                      style: TextStyle(
+                        fontSize: isLarge ? 12 : 11,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
       ),
+
+      // SingleChildScrollView(
+      //   child: BlocBuilder<AssetBloc, AssetState>(
+      //     builder: (context, state) {
+      //       final totalQuantity = state.assets?.fold<int>(
+      //         0,
+      //         (previousValue, asset) => previousValue + (asset.quantity ?? 0),
+      //       );
+
+      //       final assets = state.assets;
+      //       return Padding(
+      //         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      //         child: BlocBuilder<MasterBloc, MasterState>(
+      //           builder: (context, state) {
+      //             List dashboard = [
+      //               {
+      //                 'title': 'Model',
+      //                 'icon': Assets.iAssetModel,
+      //                 'value': state.models?.length.toString(),
+      //               },
+      //               {
+      //                 'title': 'Category',
+      //                 'icon': Assets.iAssetCategory,
+      //                 'value': state.categories?.length.toString(),
+      //               },
+      //               {
+      //                 'title': 'Location',
+      //                 'icon': Assets.iLocation,
+      //                 'value': state.locations?.length.toString(),
+      //               },
+      //               {
+      //                 'title': 'Brand',
+      //                 'icon': Assets.iAssetBrand,
+      //                 'value': state.brands?.length.toString(),
+      //               },
+      //               {
+      //                 'title': 'Quantity',
+      //                 'icon': Assets.iAssetMaster,
+      //                 'value': totalQuantity.toString(),
+      //               },
+      //               {
+      //                 'title': 'Assets',
+      //                 'icon': Assets.iAssetMaster,
+      //                 'value': assets?.length.toString(),
+      //               },
+      //             ];
+      //             return Column(
+      //               crossAxisAlignment: CrossAxisAlignment.start,
+      //               children: [
+      //                 AppDashboardContent(
+      //                   dashboard: dashboard,
+      //                   isLarge: isLarge,
+      //                 ),
+      //                 AppSpace.vertical(16),
+      //                 Text(
+      //                   'Operations',
+      //                   style: TextStyle(
+      //                     fontSize: isLarge ? 16 : 14,
+      //                     fontWeight: FontWeight.w500,
+      //                   ),
+      //                 ),
+      //                 AppSpace.vertical(16),
+
+      //                 AppSpace.vertical(24),
+      //               ],
+      //             );
+      //           },
+      //         ),
+      //       );
+      //     },
+      //   ),
+      // ),
     );
   }
 }

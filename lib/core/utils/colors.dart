@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const kBase = Color(0XFF29A198);
+  static const kBackgroundMobile = Color(0xFFF3F5F7);
   static const kBackground = Color(0xFFE0E0E0);
   static const kWhite = Color(0XFFFFFFFF);
   static const kBlack = Color(0XFF000000);

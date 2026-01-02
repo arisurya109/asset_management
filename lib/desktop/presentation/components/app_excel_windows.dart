@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:open_filex/open_filex.dart';
+// import 'package:open_filex/open_filex.dart';
 
 class AppExcelWindows {
   static Future<void> exportAssetData({
@@ -78,7 +78,7 @@ class AppExcelWindows {
         await file.writeAsBytes(fileBytes);
 
         // 7. Berikan opsi untuk langsung membuka file setelah selesai
-        await OpenFilex.open(outputFile);
+        // await OpenFilex.open(outputFile);
       }
     } catch (e) {
       // Handle error jika file sedang terbuka (locked) atau akses ditolak

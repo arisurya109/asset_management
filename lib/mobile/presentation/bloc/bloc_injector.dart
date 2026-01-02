@@ -1,5 +1,6 @@
 import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/inventory/inventory_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/permissions/permissions_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:get_it/get_it.dart';
 final locator = GetIt.instance;
 
 mobileBlocInjection() {
+  locator.registerFactory(() => InventoryBloc(locator(), locator()));
   locator.registerFactory(
     () => AssetBloc(locator(), locator(), locator(), locator()),
   );

@@ -1,10 +1,6 @@
+import 'package:asset_management/mobile/presentation/bloc/inventory/inventory_bloc.dart';
 import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
-import 'package:asset_management/domain/entities/asset/asset_entity.dart';
-import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/mobile/main_export.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
-import 'package:asset_management/mobile/presentation/view/inventory/inventory_asset_box_view.dart';
 import 'package:asset_management/mobile/presentation/view/inventory/inventory_detail_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 
@@ -18,7 +14,17 @@ class InventoryView extends StatefulWidget {
 }
 
 class _InventoryViewState extends State<InventoryView> {
-  String query = '';
+  late TextEditingController _searchC;
+  late FocusNode _searchFn;
+  bool _isSearchActive = false;
+
+  @override
+  void initState() {
+    _searchC = TextEditingController();
+    _searchFn = FocusNode();
+    _searchFn.requestFocus();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,46 +37,79 @@ class _InventoryViewState extends State<InventoryView> {
   Widget _mobileInventory({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Inventory')),
-      body: BlocBuilder<MasterBloc, MasterState>(
+      body: BlocBuilder<InventoryBloc, InventoryState>(
         builder: (context, state) {
-          final location = state.locations;
-          final assets = context.read<AssetBloc>().state.assets;
+          final boxs = state.inventory?.boxs;
+          final totalBox = state.inventory?.totalBox;
+          final assets = state.assets;
 
-          List<Location> filteredLocation = [];
-          List<AssetEntity> filteredAsset = [];
-
-          if (query.isNotEmpty || query != '') {
-            filteredLocation = location!.where((element) {
-              final parentName = element.parentName?.toLowerCase() ?? '';
-              return parentName.contains(query.toLowerCase());
-            }).toList();
-            filteredAsset = assets!.where((element) {
-              final location = element.location?.toLowerCase() ?? '';
-              return location.contains(query.toLowerCase());
-            }).toList();
-          }
-
-          final totalQuantity = filteredAsset.fold<int>(
+          final totalQuantity = assets?.fold<int>(
             0,
             (previousValue, asset) => previousValue + (asset.quantity ?? 0),
           );
 
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Column(
               children: [
-                AppSpace.vertical(12),
-                AppTextField(
-                  noTitle: true,
-                  hintText: 'Search...',
-                  fontSize: isLarge ? 14 : 12,
-                  keyboardType: TextInputType.text,
-                  onChanged: (value) => setState(() {
-                    query = value;
-                  }),
+                TextField(
+                  controller: _searchC,
+                  focusNode: _searchFn,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (value) {
+                    if (value.isFilled()) {
+                      setState(() => _isSearchActive = true);
+                      context.read<InventoryBloc>().add(OnFindInventory(value));
+                    }
+                  },
+                  onChanged: (value) {
+                    if (!value.isFilled() && _isSearchActive) {
+                      setState(() => _isSearchActive = false);
+                      context.read<InventoryBloc>().add(OnClearAll());
+                    }
+                  },
+                  style: TextStyle(fontSize: 12),
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 8,
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: BorderSide(color: AppColors.kGrey),
+                    ),
+                    isDense: true,
+                    hintText: 'Search by rack or box',
+                    hintStyle: TextStyle(fontSize: 13),
+                    prefixIcon: Icon(Icons.search),
+                    suffixIcon: _isSearchActive
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () {
+                              setState(() {
+                                _searchC.clear();
+                                _isSearchActive = false;
+                              });
+                              context.read<InventoryBloc>().add(OnClearAll());
+                            },
+                          )
+                        : null,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(4),
+                      borderSide: const BorderSide(
+                        color: AppColors.kBase,
+                        width: 1,
+                      ),
+                    ),
+                  ),
                 ),
+
                 AppSpace.vertical(12),
-                if (query.isEmpty && query == '')
+                if (!_searchC.value.text.isFilled())
                   Expanded(
                     flex: 5,
                     child: Center(
@@ -83,81 +122,66 @@ class _InventoryViewState extends State<InventoryView> {
                       ),
                     ),
                   ),
+
                 Expanded(
                   child: ListView(
                     children: [
-                      if (filteredLocation.isNotEmpty)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppSpace.vertical(8),
-                            Text(
-                              'Total Box : ${filteredLocation.length.toString()}',
-                              style: TextStyle(
-                                fontSize: isLarge ? 14 : 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            AppSpace.vertical(12),
-                          ],
-                        ),
-                      ...filteredLocation.map((e) {
-                        return AppCardItem(
-                          title: e.name,
-                          leading: e.locationType,
-                          noDescription: true,
-                          fontSize: isLarge ? 14 : 12,
-                          onTap: () => context.pushExt(
-                            InventoryAssetBoxView(location: e),
+                      if (_searchC.value.text.isFilled() && totalBox != null)
+                        Text(
+                          ' Total Box : ${state.inventory!.totalBox}',
+                          style: TextStyle(
+                            fontSize: isLarge ? 14 : 12,
+                            fontWeight: FontWeight.w600,
                           ),
-                          subtitle:
-                              'Asset : ${assets?.where((element) {
-                                return element.location == e.name;
-                              }).length} | Quantity : ${assets?.where((element) {
-                                return element.location == e.name;
-                              }).fold<int>(0, (total, asset) => total + (asset.quantity ?? 0))}',
-                        );
-                      }),
-                      if (filteredAsset.isNotEmpty)
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            AppSpace.vertical(8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Total Asset : ${filteredAsset.length.toString()}',
-                                  style: TextStyle(
-                                    fontSize: isLarge ? 14 : 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  'Total Quantity : $totalQuantity',
-                                  style: TextStyle(
-                                    fontSize: isLarge ? 14 : 12,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            AppSpace.vertical(12),
-                          ],
                         ),
-                      ...filteredAsset.map((e) {
-                        return AppCardItem(
-                          title: e.assetCode ?? e.model,
-                          leading: e.location,
-                          noDescription: false,
-                          fontSize: isLarge ? 14 : 12,
-                          onTap: () =>
-                              context.pushExt(InventoryDetailView(params: e)),
-                          subtitle: e.serialNumber ?? e.quantity.toString(),
-                          descriptionLeft: e.status ?? '',
-                          descriptionRight: e.conditions ?? '',
-                        );
-                      }),
+                      AppSpace.vertical(10),
+                      if (_searchC.value.text.isFilled() && boxs != null)
+                        ...boxs.map((e) {
+                          return AppCardItem(
+                            title: e.name,
+                            leading: e.boxType,
+                            noDescription: true,
+                            fontSize: isLarge ? 14 : 12,
+                            onTap: () {},
+                            subtitle: 'Quantity : ${e.quantityAsset}',
+                          );
+                        }),
+                      if (_searchC.value.text.isFilled() && assets != null)
+                        Text(
+                          ' Total Quantity : $totalQuantity',
+                          style: TextStyle(
+                            fontSize: isLarge ? 14 : 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      AppSpace.vertical(10),
+                      if (_searchC.value.text.isFilled() && assets != null)
+                        ...assets.map((e) {
+                          if (!e.status.isFilled() &&
+                              !e.conditions.isFilled()) {
+                            return AppCardItem(
+                              title: e.model,
+                              leading: e.locationDetail,
+                              noDescription: true,
+                              subtitle: '${e.quantity} Pcs',
+                              fontSize: isLarge ? 14 : 12,
+                              onTap: () => context.pushExt(
+                                InventoryDetailView(params: e),
+                              ),
+                            );
+                          }
+                          return AppCardItem(
+                            title: e.assetCode ?? e.model,
+                            leading: e.locationDetail,
+                            noDescription: false,
+                            fontSize: isLarge ? 14 : 12,
+                            onTap: () =>
+                                context.pushExt(InventoryDetailView(params: e)),
+                            subtitle: e.serialNumber ?? '${e.quantity} Unit',
+                            descriptionLeft: e.status ?? '',
+                            descriptionRight: e.conditions ?? '',
+                          );
+                        }),
                     ],
                   ),
                 ),
