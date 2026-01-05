@@ -1,6 +1,4 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asset_management/core/core.dart';
@@ -10,7 +8,6 @@ import 'package:asset_management/mobile/presentation/view/migration/migration_vi
 import 'package:asset_management/mobile/presentation/view/registration/registration_view.dart';
 import 'package:asset_management/mobile/presentation/view/transfer/asset_transfer_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -37,10 +34,9 @@ class _HomeViewState extends State<HomeView> {
       'icon': Assets.iAssetManagement,
     },
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
-    // {'title': 'Picking', 'view': PickingView(), 'icon': Assets.iPicking},
-    {'title': 'Counting', 'view': Scaffold(), 'icon': Assets.iCount},
-    {'title': 'Receive', 'view': Scaffold(), 'icon': Assets.iCount},
-    {'title': 'Return', 'view': Scaffold(), 'icon': Assets.iCount},
+    // {'title': 'Counting', 'view': Scaffold(), 'icon': Assets.iCount},
+    // {'title': 'Receive', 'view': Scaffold(), 'icon': Assets.iCount},
+    // {'title': 'Return', 'view': Scaffold(), 'icon': Assets.iCount},
   ];
 
   @override
@@ -71,13 +67,6 @@ class _HomeViewState extends State<HomeView> {
             borderRadius: BorderRadius.circular(5),
             child: InkWell(
               onTap: () {
-                if (operation['title'] == 'Picking') {
-                  context.read<PickingBloc>().add(
-                    OnFindAllPickingTask(
-                      context.read<AuthenticationBloc>().state.user!.id!,
-                    ),
-                  );
-                }
                 context.pushExt(operation['view']);
               },
               borderRadius: BorderRadius.circular(5),
@@ -109,78 +98,6 @@ class _HomeViewState extends State<HomeView> {
           );
         },
       ),
-
-      // SingleChildScrollView(
-      //   child: BlocBuilder<AssetBloc, AssetState>(
-      //     builder: (context, state) {
-      //       final totalQuantity = state.assets?.fold<int>(
-      //         0,
-      //         (previousValue, asset) => previousValue + (asset.quantity ?? 0),
-      //       );
-
-      //       final assets = state.assets;
-      //       return Padding(
-      //         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      //         child: BlocBuilder<MasterBloc, MasterState>(
-      //           builder: (context, state) {
-      //             List dashboard = [
-      //               {
-      //                 'title': 'Model',
-      //                 'icon': Assets.iAssetModel,
-      //                 'value': state.models?.length.toString(),
-      //               },
-      //               {
-      //                 'title': 'Category',
-      //                 'icon': Assets.iAssetCategory,
-      //                 'value': state.categories?.length.toString(),
-      //               },
-      //               {
-      //                 'title': 'Location',
-      //                 'icon': Assets.iLocation,
-      //                 'value': state.locations?.length.toString(),
-      //               },
-      //               {
-      //                 'title': 'Brand',
-      //                 'icon': Assets.iAssetBrand,
-      //                 'value': state.brands?.length.toString(),
-      //               },
-      //               {
-      //                 'title': 'Quantity',
-      //                 'icon': Assets.iAssetMaster,
-      //                 'value': totalQuantity.toString(),
-      //               },
-      //               {
-      //                 'title': 'Assets',
-      //                 'icon': Assets.iAssetMaster,
-      //                 'value': assets?.length.toString(),
-      //               },
-      //             ];
-      //             return Column(
-      //               crossAxisAlignment: CrossAxisAlignment.start,
-      //               children: [
-      //                 AppDashboardContent(
-      //                   dashboard: dashboard,
-      //                   isLarge: isLarge,
-      //                 ),
-      //                 AppSpace.vertical(16),
-      //                 Text(
-      //                   'Operations',
-      //                   style: TextStyle(
-      //                     fontSize: isLarge ? 16 : 14,
-      //                     fontWeight: FontWeight.w500,
-      //                   ),
-      //                 ),
-      //                 AppSpace.vertical(16),
-
-      //                 AppSpace.vertical(24),
-      //               ],
-      //             );
-      //           },
-      //         ),
-      //       );
-      //     },
-      //   ),
-      // ),
     );
   }
 }

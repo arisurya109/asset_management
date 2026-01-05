@@ -1,7 +1,9 @@
-import 'package:asset_management/desktop/presentation/components/app_button_header_table.dart';
-import 'package:asset_management/desktop/presentation/components/app_text_field_search_desktop.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter/material.dart';
+
+import 'package:asset_management/desktop/presentation/components/app_button_header_table.dart';
+import 'package:asset_management/desktop/presentation/components/app_text_field_search_desktop.dart';
 
 import '../../../core/core.dart';
 
@@ -21,11 +23,11 @@ class AppDataTableColumn {
   });
 }
 
+// ignore: must_be_immutable
 class AppNewTable extends StatefulWidget {
   final List<AppDataTableColumn> columns;
   final List<Map<String, String>> datas;
   final double? minWidth;
-  final bool isLoading;
   final Function(String query) onSearchSubmit;
   final Function() onClear;
   final String? hintTextField;
@@ -34,12 +36,17 @@ class AppNewTable extends StatefulWidget {
   final String? titleAdd;
   final void Function(Map<String, String> data)? onTap;
   final ScrollController? horizontalScrollController;
+  int? rowsPerPage;
+  List<int>? availableRowsPerPage;
+  final Function(int index)? onPageChanged;
+  final int totalData;
+  final Function(int? rowsPerPage)? onRowsPerPageChanged;
 
-  const AppNewTable({
+  AppNewTable({
     super.key,
-    required this.datas,
     required this.columns,
-    required this.isLoading,
+    required this.datas,
+    this.minWidth = 1000,
     required this.onSearchSubmit,
     required this.onClear,
     this.hintTextField,
@@ -48,7 +55,11 @@ class AppNewTable extends StatefulWidget {
     this.titleAdd,
     this.onTap,
     this.horizontalScrollController,
-    this.minWidth = 1000,
+    this.rowsPerPage = 10,
+    this.availableRowsPerPage = const [10, 20, 50, 100],
+    this.onPageChanged,
+    required this.totalData,
+    this.onRowsPerPageChanged,
   });
 
   @override
@@ -58,9 +69,7 @@ class AppNewTable extends StatefulWidget {
 class _AppNewTableState extends State<AppNewTable> {
   late TextEditingController _searchC;
   late PaginatorController _paginatorController;
-  int rowPerPage = 10;
   bool _isSearchActive = false;
-
   int? _sortColumnIndex;
   bool _sortAscending = true;
 
@@ -119,26 +128,35 @@ class _AppNewTableState extends State<AppNewTable> {
           border: Border.all(color: const Color(0xFFE2E8F0)),
           borderRadius: BorderRadius.circular(8),
         ),
-        child: PaginatedDataTable2(
+        child: AsyncPaginatedDataTable2(
           wrapInCard: false,
+          onPageChanged: widget.onPageChanged != null
+              ? (value) => widget.onPageChanged!(value)
+              : null,
           minWidth: widget.minWidth,
           controller: _paginatorController,
-          empty: widget.isLoading
-              ? Center(child: CircularProgressIndicator(color: AppColors.kBase))
-              : Center(child: Text('Not Found')),
+          empty: Center(child: Text('Not Found')),
           border: TableBorder(
             horizontalInside: BorderSide(color: const Color(0xFFE2E8F0)),
           ),
-          availableRowsPerPage: [10, 20, 50, 100],
-          onRowsPerPageChanged: (value) => setState(() {
+          availableRowsPerPage: widget.availableRowsPerPage!,
+          onRowsPerPageChanged: (value) {
             if (value != null) {
-              setState(() => rowPerPage = value);
+              widget.rowsPerPage = value;
+
+              _paginatorController.goToFirstPage();
+
+              if (widget.onRowsPerPageChanged != null) {
+                widget.onRowsPerPageChanged!(value);
+              } else if (widget.onPageChanged != null) {
+                widget.onPageChanged!(0);
+              }
             }
-          }),
+          },
           isHorizontalScrollBarVisible:
               widget.horizontalScrollController != null ? true : false,
           horizontalScrollController: widget.horizontalScrollController,
-          rowsPerPage: rowPerPage,
+          rowsPerPage: widget.rowsPerPage!,
           dividerThickness: 0,
           sortArrowAlwaysVisible: true,
           headingRowHeight: 40,
@@ -172,10 +190,11 @@ class _AppNewTableState extends State<AppNewTable> {
               },
             );
           }).toList(),
-          source: AppNewDataTable(
+          source: AppAsyncDataSource(
             datas: widget.datas,
             columns: widget.columns,
             onTap: widget.onTap,
+            totalData: widget.totalData,
           ),
         ),
       ),
@@ -246,11 +265,87 @@ class _AppNewTableState extends State<AppNewTable> {
   }
 }
 
-class AppNewDataTable extends DataTableSource {
+class AppAsyncDataSource extends AsyncDataTableSource {
   final List<Map<String, String>> datas;
+  final int totalData;
   final List<AppDataTableColumn> columns;
   final void Function(Map<String, String> data)? onTap;
-  AppNewDataTable({required this.datas, required this.columns, this.onTap});
+
+  AppAsyncDataSource({
+    required this.datas,
+    required this.columns,
+    this.onTap,
+    required this.totalData,
+  });
+
+  @override
+  Future<AsyncRowsResponse> getRows(int startIndex, int count) async {
+    final List<DataRow> rows = datas.map((data) {
+      return DataRow2(
+        onTap: onTap != null ? () => onTap!(data) : null,
+        cells: columns.map((col) {
+          final String value = data[col.key] ?? "-";
+
+          if (col.badgeConfig != null) {
+            final color =
+                col.badgeConfig![value.toLowerCase()] ?? AppColors.kBase;
+            return DataCell(_buildBadge(value, color));
+          }
+
+          return DataCell(
+            Text(
+              value,
+              style: const TextStyle(color: Color(0xFF334155), fontSize: 12),
+              overflow: TextOverflow.ellipsis,
+            ),
+          );
+        }).toList(),
+      );
+    }).toList();
+
+    return AsyncRowsResponse(totalData, rows);
+  }
+
+  Widget _buildBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(3),
+        border: Border.all(color: color.withOpacity(0.2)),
+      ),
+      child: Text(
+        text.toUpperCase(),
+        style: TextStyle(
+          color: color,
+          fontSize: 9,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get rowCount => totalData;
+
+  @override
+  int get selectedRowCount => 0;
+}
+
+class AppNewDataTable extends DataTableSource {
+  final List<Map<String, String>> datas;
+  final int totalData;
+  final List<AppDataTableColumn> columns;
+  final void Function(Map<String, String> data)? onTap;
+  AppNewDataTable({
+    required this.datas,
+    required this.columns,
+    this.onTap,
+    required this.totalData,
+  });
 
   @override
   DataRow? getRow(int index) {
@@ -301,7 +396,7 @@ class AppNewDataTable extends DataTableSource {
   @override
   bool get isRowCountApproximate => false;
   @override
-  int get rowCount => datas.length;
+  int get rowCount => totalData;
   @override
   int get selectedRowCount => 0;
 }

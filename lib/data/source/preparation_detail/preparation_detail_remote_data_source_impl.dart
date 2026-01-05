@@ -139,8 +139,6 @@ class PreparationDetailRemoteDataSourceImpl
         headers: ApiHelper.headersToken(token),
       );
 
-      print(response.body);
-
       if (response.statusCode == 200) {
         final decoded = jsonDecode(response.body);
         final data = decoded['data'];

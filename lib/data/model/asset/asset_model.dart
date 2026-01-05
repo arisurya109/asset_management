@@ -5,7 +5,6 @@ import 'package:equatable/equatable.dart';
 
 class AssetsModel extends Equatable {
   int? id;
-  int? isMigration;
   String? assetIdOld;
   String? serialNumber;
   String? assetCode;
@@ -28,7 +27,6 @@ class AssetsModel extends Equatable {
 
   AssetsModel({
     this.id,
-    this.isMigration,
     this.assetIdOld,
     this.serialNumber,
     this.assetCode,
@@ -54,7 +52,6 @@ class AssetsModel extends Equatable {
   List<Object?> get props {
     return [
       id,
-      isMigration,
       assetIdOld,
       serialNumber,
       assetCode,
@@ -80,7 +77,6 @@ class AssetsModel extends Equatable {
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'id': id,
-      'is_migration': isMigration,
       'asset_id_old': assetIdOld,
       'serial_number': serialNumber,
       'status': status,
@@ -135,7 +131,6 @@ class AssetsModel extends Equatable {
       color: params.color,
       colorId: params.colorId,
       conditions: params.conditions,
-      isMigration: params.isMigration,
       location: params.location,
       locationDetail: params.locationDetail,
       locationId: params.locationId,
@@ -161,7 +156,6 @@ class AssetsModel extends Equatable {
       color: color,
       colorId: colorId,
       conditions: conditions,
-      isMigration: isMigration,
       locationDetail: locationDetail,
       location: location,
       locationId: locationId,

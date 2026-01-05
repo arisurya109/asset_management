@@ -1,7 +1,8 @@
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/mobile/main_export.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/location/location_bloc.dart';
+import 'package:asset_management/mobile/presentation/cubit/datas_cubit.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 
 import '../../../../../core/core.dart';
@@ -15,19 +16,15 @@ class CreateLocationView extends StatefulWidget {
 
 class _CreateLocationViewState extends State<CreateLocationView> {
   Location? parentLocation;
-  List<String> locationType = [
-    'OFFICE',
-    'STORE',
-    'WAREHOUSE',
-    'DIVISION',
-    'RACK',
-    'BOX',
-    'TABLE',
-  ];
   List<String> boxType = ['CARDBOX', 'TOTEBOX'];
   late TextEditingController nameC;
+  late FocusNode nameFn;
   late TextEditingController codeC;
+  late FocusNode codeFn;
+
   late TextEditingController initC;
+  late FocusNode initFn;
+
   String? boxTypeSelected;
   String? locationTypeSelected;
 
@@ -36,7 +33,23 @@ class _CreateLocationViewState extends State<CreateLocationView> {
     nameC = TextEditingController();
     codeC = TextEditingController();
     initC = TextEditingController();
+    nameFn = FocusNode();
+    codeFn = FocusNode();
+    initFn = FocusNode();
+    nameFn.requestFocus();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameC.dispose();
+    codeC.dispose();
+    initC.dispose();
+    nameFn.dispose();
+    codeFn.dispose();
+    initFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
   }
 
   @override
@@ -50,116 +63,130 @@ class _CreateLocationViewState extends State<CreateLocationView> {
   Widget _mobileCreateLocation({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Create Location'), elevation: 0),
-      body: BlocBuilder<MasterBloc, MasterState>(
+      body: BlocBuilder<DatasCubit, void>(
         builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SingleChildScrollView(
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Column(
                 children: [
-                  AppSpace.vertical(12),
-                  AppDropDownSearch<Location>(
-                    title: 'Parent',
-                    items: state.locations ?? [],
-                    hintText: 'Selected Parent',
-                    selectedItem: parentLocation,
+                  AppTextField(
+                    controller: nameC,
+                    title: 'Name',
+                    hintText: 'Example : Ruang Server',
+                    focusNode: nameFn,
+                    keyboardType: TextInputType.text,
                     fontSize: isLarge ? 14 : 12,
-                    compareFn: (value, value1) => value.name == value1.name,
-                    itemAsString: (value) => value.name!,
-                    onChanged: (value) => setState(() {
-                      parentLocation = value;
-                    }),
+                    textInputAction: TextInputAction.next,
                   ),
-                  AppSpace.vertical(16),
-                  AppDropDownSearch<String>(
-                    title: 'Location Type',
-                    items: locationType,
+                  AppSpace.vertical(12),
+                  AppTextField(
+                    controller: initC,
+                    title: 'Init',
+                    hintText: 'Example : WHS (Optional)',
+                    focusNode: initFn,
+                    keyboardType: TextInputType.text,
                     fontSize: isLarge ? 14 : 12,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  AppSpace.vertical(12),
+                  AppTextField(
+                    controller: codeC,
+                    title: 'Code',
+                    hintText: 'Example : 999 (Optional)',
+                    focusNode: codeFn,
+                    keyboardType: TextInputType.number,
+                    fontSize: isLarge ? 14 : 12,
+                    textInputAction: TextInputAction.next,
+                  ),
+                  AppSpace.vertical(12),
+                  AppDropDownSearch<String>(
+                    fontSize: isLarge ? 14 : 12,
+                    title: 'Type',
                     hintText: 'Selected Type',
-                    selectedItem: locationTypeSelected,
+                    borderRadius: 4,
                     compareFn: (value, value1) => value == value1,
                     itemAsString: (value) => value,
+                    selectedItem: locationTypeSelected,
+                    onFind: (_) async =>
+                        await context.read<DatasCubit>().getLocationTypes(),
                     onChanged: (value) => setState(() {
                       locationTypeSelected = value;
                     }),
                   ),
-                  AppSpace.vertical(16),
-                  AppDropDownSearch<String>(
-                    title: 'Box Type',
-                    items: boxType,
+                  AppSpace.vertical(12),
+                  AppDropDownSearch<Location>(
                     fontSize: isLarge ? 14 : 12,
-                    hintText: 'Selected Box Type',
-                    selectedItem: boxTypeSelected,
+                    title: 'Parent',
+                    hintText: 'Selected Parent (Optional)',
+                    borderRadius: 4,
+                    compareFn: (value, value1) => value == value1,
+                    itemAsString: (value) => value.name!,
+                    selectedItem: parentLocation,
+                    onFind: (_) async =>
+                        await context.read<DatasCubit>().getLocations(),
+                    onChanged: (value) => setState(() {
+                      parentLocation = value;
+                    }),
+                  ),
+                  AppSpace.vertical(12),
+                  AppDropDownSearch<String>(
+                    fontSize: isLarge ? 14 : 12,
+                    title: 'Box Type',
+                    hintText: 'Selected Box Type (Optional)',
+                    borderRadius: 4,
                     compareFn: (value, value1) => value == value1,
                     itemAsString: (value) => value,
+                    selectedItem: boxTypeSelected,
+                    items: boxType,
                     onChanged: (value) => setState(() {
                       boxTypeSelected = value;
                     }),
                   ),
                   AppSpace.vertical(16),
-                  AppTextField(
-                    controller: nameC,
-                    hintText: 'Example : Information Technology',
-                    keyboardType: TextInputType.text,
-                    fontSize: isLarge ? 14 : 12,
-                    textInputAction: TextInputAction.next,
-                    title: 'Name Location',
-                  ),
-                  AppSpace.vertical(16),
-                  AppTextField(
-                    controller: codeC,
-                    fontSize: isLarge ? 14 : 12,
-                    hintText: 'Example : 909',
-                    keyboardType: TextInputType.number,
-                    textInputAction: TextInputAction.next,
-                    title: 'Code Location',
-                  ),
-                  AppSpace.vertical(16),
-                  AppTextField(
-                    controller: initC,
-                    fontSize: isLarge ? 14 : 12,
-                    hintText: 'Example : IT',
-                    keyboardType: TextInputType.text,
-                    textInputAction: TextInputAction.go,
-                    title: 'Init Location',
-                    onSubmitted: (_) => _onSubmit(isLarge),
-                  ),
-                  AppSpace.vertical(32),
-                  BlocConsumer<MasterBloc, MasterState>(
+                  BlocConsumer<LocationBloc, LocationState>(
                     listener: (context, state) {
-                      setState(() {
-                        nameC.clear();
-                        parentLocation = null;
-                        locationTypeSelected = null;
-                        boxTypeSelected = null;
-                        codeC.clear();
-                        initC.clear();
-                      });
-                      if (state.status == StatusMaster.failed) {
+                      if (state.status == StatusLocation.failure) {
                         context.showSnackbar(
-                          state.message ?? 'Failed to create location',
+                          state.message!,
                           backgroundColor: AppColors.kRed,
                           fontSize: isLarge ? 14 : 12,
                         );
+                        setState(() {
+                          nameC.clear();
+                          initC.clear();
+                          codeC.clear();
+                          locationTypeSelected = null;
+                          parentLocation = null;
+                          boxTypeSelected = null;
+                        });
                       }
 
-                      if (state.status == StatusMaster.success) {
+                      if (state.status == StatusLocation.success) {
                         context.showSnackbar(
-                          'Successfully create location',
+                          'Successfully create ${nameC.value.text.trim().toUpperCase()}',
                           fontSize: isLarge ? 14 : 12,
                         );
+                        setState(() {
+                          nameC.clear();
+                          initC.clear();
+                          codeC.clear();
+                          locationTypeSelected = null;
+                          parentLocation = null;
+                          boxTypeSelected = null;
+                        });
                       }
                     },
                     builder: (context, state) {
                       return AppButton(
-                        title: state.status == StatusMaster.loading
+                        title: state.status == StatusLocation.loading
                             ? 'Loading...'
                             : 'Create',
-                        width: double.maxFinite,
                         fontSize: isLarge ? 16 : 14,
-                        onPressed: state.status == StatusMaster.loading
+                        onPressed: state.status == StatusLocation.loading
                             ? null
                             : () => _onSubmit(isLarge),
+                        width: double.maxFinite,
                       );
                     },
                   ),
@@ -176,37 +203,37 @@ class _CreateLocationViewState extends State<CreateLocationView> {
     final name = nameC.value.text.trim();
     final init = initC.value.text.trim();
     final code = codeC.value.text.trim().toString();
-    if (locationTypeSelected == null) {
-      context.showSnackbar(
-        'Location type is not empty',
-        fontSize: isLarge ? 14 : 12,
-      );
-    } else if (!nameC.value.text.trim().isFilled()) {
+
+    if (!nameC.value.text.trim().isFilled()) {
       context.showSnackbar(
         'Location name is not empty',
         fontSize: isLarge ? 14 : 12,
+        backgroundColor: AppColors.kRed,
+      );
+    } else if (locationTypeSelected == null) {
+      context.showSnackbar(
+        'Location type is not empty',
+        fontSize: isLarge ? 14 : 12,
+        backgroundColor: AppColors.kRed,
       );
     } else {
       context.showDialogConfirm(
         title: 'Are your sure create new location ?',
         fontSize: isLarge ? 14 : 12,
         content:
-            'Parent : ${parentLocation?.name}\nLocation Type : $locationTypeSelected\nLocation Name : $name',
+            '''Name : $name
+Init : $init
+Code : $code
+Type : $locationTypeSelected
+            ''',
         onCancelText: 'No',
         onConfirmText: 'Yes',
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          final isStorage =
-              (locationTypeSelected == 'WAREHOUSE' ||
-                  locationTypeSelected == 'RACK' ||
-                  locationTypeSelected == 'BOX')
-              ? 1
-              : 0;
-          context.read<MasterBloc>().add(
+          context.read<LocationBloc>().add(
             OnCreateLocationEvent(
               Location(
                 name: name,
-                isStorage: isStorage,
                 init: init,
                 code: code,
                 locationType: locationTypeSelected,

@@ -15,6 +15,10 @@ abstract class MasterRemoteDataSource {
   Future<List<LocationModel>> findAllLocation();
   Future<List<VendorModel>> findAllVendor();
 
+  Future<List<AssetBrandModel>> findAssetBrandByQuery(String params);
+  Future<List<AssetCategoryModel>> findAssetCategoryByQuery(String params);
+  Future<List<AssetModelModel>> findAssetModelByQuery(String params);
+
   Future<AssetTypeModel> createAssetType(AssetTypeModel params);
   Future<AssetBrandModel> createAssetBrand(AssetBrandModel params);
   Future<AssetCategoryModel> createAssetCategory(AssetCategoryModel params);
@@ -39,6 +43,6 @@ abstract class MasterRemoteDataSource {
 
   // Location
   Future<List<LocationModel>> findLocationByQuery(String query);
-  Future<List<LocationModel>> findLocationByStorage(int params);
+  Future<List<LocationModel>> findLocationByStorage(String params);
   Future<List<String>> findLocationType();
 }

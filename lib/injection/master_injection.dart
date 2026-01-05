@@ -19,12 +19,20 @@ import 'package:asset_management/domain/usecases/master/find_all_location_use_ca
 import 'package:asset_management/domain/usecases/master/find_all_preparation_template_item_by_template_id_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_preparation_template_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_vendor_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_asset_brand_by_query_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_asset_category_by_query_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_asset_model_by_query_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_location_by_query_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_location_by_storage_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_location_type_use_case.dart';
 import 'package:get_it/get_it.dart';
 
 masterInjection(GetIt locator) {
+  locator.registerLazySingleton(
+    () => FindAssetCategoryByQueryUseCase(locator()),
+  );
+  locator.registerLazySingleton(() => FindAssetModelByQueryUseCase(locator()));
+  locator.registerLazySingleton(() => FindAssetBrandByQueryUseCase(locator()));
   locator.registerLazySingleton(() => FindLocationTypeUseCase(locator()));
   locator.registerLazySingleton(() => FindLocationByQueryUseCase(locator()));
   locator.registerLazySingleton(() => FindLocationByStorageUseCase(locator()));

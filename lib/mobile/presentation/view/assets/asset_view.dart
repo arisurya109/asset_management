@@ -1,7 +1,7 @@
 import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
+import 'package:asset_management/mobile/presentation/components/app_text_field_search.dart';
 import 'package:asset_management/mobile/presentation/view/assets/asset_detail_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +15,26 @@ class AssetView extends StatefulWidget {
 }
 
 class _AssetViewState extends State<AssetView> {
-  String searchQ = '';
+  late TextEditingController _searchC;
+  late FocusNode _searchFn;
+  bool _isSearchActive = false;
+
+  @override
+  void initState() {
+    _searchC = TextEditingController();
+    _searchFn = FocusNode();
+    _searchFn.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchC.dispose();
+    _searchFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
@@ -30,84 +49,105 @@ class _AssetViewState extends State<AssetView> {
       body: BlocBuilder<AssetBloc, AssetState>(
         builder: (context, state) {
           if (state.status == StatusAsset.loading) {
-            return Center(
-              child: CircularProgressIndicator(color: AppColors.kBase),
-            );
+            return Center(child: CircularProgressIndicator());
           }
 
-          if (state.assets != null || state.assets != []) {
-            final assets = state.assets
-              ?..sort((a, b) => a.id!.compareTo(b.id!));
-            List<AssetEntity> filteredAssets = [];
-
-            if (searchQ.isNotEmpty || searchQ != '') {
-              filteredAssets = assets!.where((element) {
-                final assetCode = element.assetCode?.toLowerCase() ?? '';
-                final location = element.location?.toLowerCase() ?? '';
-                final serialNumber = element.serialNumber?.toLowerCase() ?? '';
-                final status = element.status?.toLowerCase() ?? '';
-                final conditions = element.conditions?.toLowerCase() ?? '';
-                final model = element.model?.toLowerCase() ?? '';
-                final purchaseOrder =
-                    element.purchaseOrder?.toLowerCase() ?? '';
-                return assetCode.contains(searchQ.toLowerCase()) ||
-                    location.contains(searchQ.toLowerCase()) ||
-                    serialNumber.contains(searchQ.toLowerCase()) ||
-                    status.contains(searchQ.toLowerCase()) ||
-                    conditions.contains(searchQ.toLowerCase()) ||
-                    model.contains(searchQ.toLowerCase()) ||
-                    purchaseOrder.contains(searchQ.toLowerCase());
-              }).toList();
-            }
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  AppSpace.vertical(16),
-                  AppTextField(
-                    hintText: 'Search...',
-                    fontSize: isLarge ? 14 : 12,
-                    keyboardType: TextInputType.text,
-                    noTitle: true,
-                    onChanged: (value) => setState(() {
-                      searchQ = value;
-                    }),
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+            child: Column(
+              children: [
+                AppTextFieldSearch(
+                  controller: _searchC,
+                  isSearchActive: _isSearchActive,
+                  hintText: 'Search',
+                  focusNode: _searchFn,
+                  textInputAction: TextInputAction.search,
+                  keyboardType: TextInputType.text,
+                  onSubmitted: (value) {
+                    if (value.isFilled()) {
+                      setState(() => _isSearchActive = true);
+                      context.read<AssetBloc>().add(OnFindAssetByQuery(value));
+                    }
+                  },
+                  onChanged: (value) {
+                    if (!value.isFilled() && _isSearchActive) {
+                      setState(() => _isSearchActive = false);
+                      context.read<AssetBloc>().add(OnClearAll());
+                    }
+                  },
+                  onClear: () {
+                    setState(() {
+                      _searchC.clear();
+                      _isSearchActive = false;
+                    });
+                    context.read<AssetBloc>().add(OnClearAll());
+                  },
+                ),
+                AppSpace.vertical(16),
+                if (!_searchC.value.text.isFilled())
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'Please input asset code, serial number or location',
+                        style: TextStyle(
+                          color: AppColors.kGrey,
+                          fontSize: isLarge ? 14 : 12,
+                        ),
+                      ),
+                    ),
                   ),
-                  AppSpace.vertical(16),
+
+                if (_searchC.value.text.isFilled() && state.assets == null)
+                  Expanded(
+                    child: Center(
+                      child: Text(
+                        'Asset not found',
+                        style: TextStyle(
+                          color: AppColors.kGrey,
+                          fontSize: isLarge ? 14 : 12,
+                        ),
+                      ),
+                    ),
+                  ),
+                if (_searchC.value.text.isFilled() && state.assets != null)
                   Expanded(
                     child: ListView.builder(
-                      itemCount: filteredAssets.isEmpty
-                          ? assets?.length
-                          : filteredAssets.length,
+                      padding: EdgeInsets.zero,
+                      itemCount: state.assets?.length,
                       itemBuilder: (context, index) {
-                        final asset = filteredAssets.isEmpty
-                            ? assets![index]
-                            : filteredAssets[index];
-                        return AppCardItem(
-                          onTap: () {
-                            context.read<AssetBloc>().add(
-                              OnFindAssetDetailEvent(asset.id!),
-                            );
-                            context.pushExt(AssetDetailView(params: asset));
-                          },
-                          title: asset.assetCode ?? asset.model,
-                          fontSize: isLarge ? 14 : 12,
-                          subtitle: asset.assetCode != null
-                              ? asset.serialNumber
-                              : '${asset.quantity} Pcs',
-                          noDescription: asset.uom == 0 ? true : false,
-                          leading: asset.location ?? '',
-                          descriptionLeft: asset.status ?? '',
-                          descriptionRight: asset.conditions ?? '',
-                        );
+                        final asset = state.assets?[index];
+                        final isConsumable = asset?.uom == 0;
+
+                        return isConsumable
+                            ? AppCardItem(
+                                onTap: () => context.pushExt(
+                                  AssetDetailView(params: asset!),
+                                ),
+                                title: asset?.model,
+                                leading: asset?.types,
+                                subtitle: asset?.category,
+                                descriptionLeft: '${asset?.quantity} PCS',
+                                descriptionRight: asset?.locationDetail,
+                                fontSize: isLarge ? 14 : 12,
+                              )
+                            : AppCardItem(
+                                onTap: () => context.pushExt(
+                                  AssetDetailView(params: asset!),
+                                ),
+                                title: asset?.assetCode,
+                                leading: asset?.types,
+                                subtitle:
+                                    asset?.serialNumber ?? asset?.category,
+                                descriptionLeft: asset?.status,
+                                descriptionRight: asset?.conditions,
+                                fontSize: isLarge ? 14 : 12,
+                              );
                       },
                     ),
                   ),
-                ],
-              ),
-            );
-          }
-          return Container();
+              ],
+            ),
+          );
         },
       ),
     );

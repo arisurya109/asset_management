@@ -17,6 +17,16 @@ abstract class MasterRepository {
   Future<Either<Failure, List<Location>>> findAllLocation();
   Future<Either<Failure, List<Vendor>>> findAllVendor();
 
+  Future<Either<Failure, List<AssetBrand>>> findAssetBrandByQuery(
+    String params,
+  );
+  Future<Either<Failure, List<AssetCategory>>> findAssetCategoryByQuery(
+    String params,
+  );
+  Future<Either<Failure, List<AssetModel>>> findAssetModelByQuery(
+    String params,
+  );
+
   Future<Either<Failure, AssetType>> createAssetType(AssetType params);
   Future<Either<Failure, AssetBrand>> createAssetBrand(AssetBrand params);
   Future<Either<Failure, AssetCategory>> createAssetCategory(
@@ -48,6 +58,6 @@ abstract class MasterRepository {
 
   // Location
   Future<Either<Failure, List<Location>>> findLocationByQuery(String query);
-  Future<Either<Failure, List<Location>>> findLocationByStorage(int params);
+  Future<Either<Failure, List<Location>>> findLocationByStorage(String params);
   Future<Either<Failure, List<String>>> findLocationType();
 }

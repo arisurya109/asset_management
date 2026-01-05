@@ -1,4 +1,3 @@
-import 'package:asset_management/core/core.dart';
 import 'package:asset_management/desktop/presentation/bloc/authentication_desktop/authentication_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
@@ -36,19 +35,18 @@ class LocationDesktopView extends StatelessWidget {
                       'name': e.name ?? '',
                       'code': e.code ?? '',
                       'init': e.init ?? '',
-                      'category': e.isStorage == 1 ? 'STORAGE' : 'NON STORAGE',
                       'type': e.locationType ?? '',
                     };
                   }).toList() ??
                   [];
               return AppNewTable(
                 datas: datas,
+                totalData: 2000,
                 onAdd: hasPermission
                     ? () => context.push('/location/add')
                     : null,
                 titleAdd: hasPermission ? 'Add Location' : null,
                 hintTextField: 'Search By Name or Init',
-                isLoading: state.status == StatusLocationDesktop.loading,
                 onSearchSubmit: (query) => context
                     .read<LocationDesktopBloc>()
                     .add(OnFindAllLocationByQuery(query)),
@@ -64,14 +62,6 @@ class LocationDesktopView extends StatelessWidget {
                   ),
                   AppDataTableColumn(label: 'CODE', key: 'code'),
                   AppDataTableColumn(label: 'INIT', key: 'init'),
-                  AppDataTableColumn(
-                    label: 'CATEGORY',
-                    key: 'category',
-                    badgeConfig: {
-                      'storage': AppColors.kBlue,
-                      'non storage': AppColors.kOrangeDark,
-                    },
-                  ),
                   AppDataTableColumn(
                     label: 'TYPE',
                     key: 'type',

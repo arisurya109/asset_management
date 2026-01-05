@@ -3,8 +3,7 @@ import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/registration/registration_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -30,56 +29,63 @@ class _RegistrationConsumableViewState
   }
 
   @override
+  void dispose() {
+    quantity.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MasterBloc, MasterState>(
+    return BlocBuilder<RegistrationCubit, RegistrationState>(
       builder: (context, state) {
         return Column(
           children: [
             AppDropDownSearch<Location>(
-              items: state.locations!
-                ..sort((a, b) => a.name!.compareTo(b.name!)),
-              showSearchBox: true,
-              fontSize: widget.isLarge ? 12 : 10,
-              compareFn: (p0, p1) => p0 == p1,
+              title: "Location",
+              fontSize: widget.isLarge ? 14 : 12,
+              hintText: "Select location",
+              borderRadius: 4,
+              onFind: (value) async =>
+                  await context.read<RegistrationCubit>().getLocations(),
+              itemAsString: (item) => item.name ?? '',
+              selectedItem: location,
+              compareFn: (a, b) => a.name == b.name,
               onChanged: (value) => setState(() {
                 location = value;
               }),
-              selectedItem: location,
-              itemAsString: (p0) => p0.name!,
-              hintText: 'Selected Location',
-              title: 'Location',
             ),
             AppSpace.vertical(16),
             AppDropDownSearch<AssetModel>(
-              items: state.models!
-                  .where((element) => element.isConsumable == 1)
-                  .toList(),
-              showSearchBox: true,
-              fontSize: widget.isLarge ? 12 : 10,
-              compareFn: (p0, p1) => p0 == p1,
+              title: "Model",
+              hintText: "Select Model",
+              fontSize: widget.isLarge ? 14 : 12,
+              borderRadius: 4,
+              onFind: (value) async => await context
+                  .read<RegistrationCubit>()
+                  .getAssetModelsConsumable(),
+              itemAsString: (item) => item.name ?? '',
+              selectedItem: model,
+              compareFn: (a, b) => a.name == b.name,
               onChanged: (value) => setState(() {
                 model = value;
               }),
-              selectedItem: model,
-              itemAsString: (p0) => '${p0.categoryName} ${p0.name}',
-              hintText: 'Selected Model',
-              title: 'Model',
             ),
             AppSpace.vertical(16),
             AppTextField(
               controller: quantity,
               hintText: 'Example : 34',
               title: 'Quantity',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _onSubmit(),
             ),
             AppSpace.vertical(32),
-            BlocConsumer<AssetBloc, AssetState>(
+            BlocConsumer<RegistrationCubit, RegistrationState>(
               listener: (context, state) {
                 quantity.clear();
-                if (state.status == StatusAsset.failed) {
+                if (state.status == StatusRegistration.failure) {
                   context.showSnackbar(
                     state.message!,
                     fontSize: widget.isLarge ? 12 : 10,
@@ -87,7 +93,7 @@ class _RegistrationConsumableViewState
                   );
                 }
 
-                if (state.status == StatusAsset.success) {
+                if (state.status == StatusRegistration.success) {
                   context.showSnackbar(
                     'Successfully registration asset',
                     fontSize: widget.isLarge ? 12 : 10,
@@ -96,12 +102,12 @@ class _RegistrationConsumableViewState
               },
               builder: (context, state) {
                 return AppButton(
-                  title: state.status == StatusAsset.loading
+                  title: state.status == StatusRegistration.loading
                       ? 'Loading...'
                       : 'Add',
                   width: double.maxFinite,
                   fontSize: widget.isLarge ? 14 : 12,
-                  onPressed: state.status == StatusAsset.loading
+                  onPressed: state.status == StatusRegistration.loading
                       ? null
                       : _onSubmit,
                 );
@@ -126,16 +132,12 @@ class _RegistrationConsumableViewState
         fontSize: widget.isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          context.read<AssetBloc>().add(
-            OnCreateAssetsEvent(
-              AssetEntity(
-                serialNumber: '',
-                assetModelId: model!.id,
-                locationId: location?.id,
-                quantity: int.parse(qty),
-                uom: 0,
-                isMigration: 0,
-              ),
+          context.read<RegistrationCubit>().onRegistAsset(
+            AssetEntity(
+              assetModelId: model!.id,
+              locationId: location?.id,
+              quantity: int.parse(qty),
+              uom: 0,
             ),
           );
           Navigator.pop(context);

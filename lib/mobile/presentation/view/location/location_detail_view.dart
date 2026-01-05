@@ -23,10 +23,7 @@ class LocationDetailView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Asset Detail'),
-        actions:
-            params.locationType == 'BOX' ||
-                params.locationType == 'RACK' ||
-                params.locationType == 'TABLE'
+        actions: params.isStorage == 1 || params.locationType == 'TABLE'
             ? [
                 BlocListener<PrinterBloc, PrinterState>(
                   listener: (context, state) {

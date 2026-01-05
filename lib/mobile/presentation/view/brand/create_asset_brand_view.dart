@@ -1,5 +1,5 @@
 import 'package:asset_management/domain/entities/master/asset_brand.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/brand/brand_bloc.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,11 +16,16 @@ class CreateAssetBrandView extends StatefulWidget {
 class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
   late TextEditingController nameC;
   late TextEditingController initC;
+  late FocusNode nameFn;
+  late FocusNode initFn;
 
   @override
   void initState() {
     nameC = TextEditingController();
     initC = TextEditingController();
+    nameFn = FocusNode();
+    initFn = FocusNode();
+    nameFn.requestFocus();
     super.initState();
   }
 
@@ -28,6 +33,9 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
   void dispose() {
     nameC.dispose();
     initC.dispose();
+    nameFn.dispose();
+    initFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
@@ -50,6 +58,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
               AppSpace.vertical(12),
               AppTextField(
                 controller: nameC,
+                focusNode: nameFn,
                 hintText: 'Example : DELL',
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
@@ -59,6 +68,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
               AppSpace.vertical(16),
               AppTextField(
                 controller: initC,
+                focusNode: initFn,
                 fontSize: isLarge ? 14 : 12,
                 hintText: 'Example : DLL',
                 keyboardType: TextInputType.text,
@@ -67,11 +77,11 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                 onSubmitted: (_) => _onSubmit(isLarge),
               ),
               AppSpace.vertical(32),
-              BlocConsumer<MasterBloc, MasterState>(
+              BlocConsumer<BrandBloc, BrandState>(
                 listener: (context, state) {
                   nameC.clear();
                   initC.clear();
-                  if (state.status == StatusMaster.failed) {
+                  if (state.status == StatusBrand.failure) {
                     context.showSnackbar(
                       state.message ?? 'Failed to create asset brand',
                       backgroundColor: AppColors.kRed,
@@ -79,7 +89,7 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                     );
                   }
 
-                  if (state.status == StatusMaster.success) {
+                  if (state.status == StatusBrand.success) {
                     context.showSnackbar(
                       'Successfully create asset brand',
                       fontSize: isLarge ? 14 : 12,
@@ -88,12 +98,12 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
                 },
                 builder: (context, state) {
                   return AppButton(
-                    title: state.status == StatusMaster.loading
+                    title: state.status == StatusBrand.loading
                         ? 'Loading...'
                         : 'Create',
                     width: double.maxFinite,
                     fontSize: isLarge ? 16 : 14,
-                    onPressed: state.status == StatusMaster.loading
+                    onPressed: state.status == StatusBrand.loading
                         ? null
                         : () => _onSubmit(isLarge),
                   );
@@ -118,8 +128,8 @@ class CreateAssetBrandViewState extends State<CreateAssetBrandView> {
         fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          context.read<MasterBloc>().add(
-            OnCreateBrandEvent(AssetBrand(name: name, init: init)),
+          context.read<BrandBloc>().add(
+            OnCreateAssetBrand(AssetBrand(name: name, init: init)),
           );
           Navigator.pop(context);
         },

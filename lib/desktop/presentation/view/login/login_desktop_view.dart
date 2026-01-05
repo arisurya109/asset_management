@@ -42,10 +42,6 @@ class _LoginDesktopViewState extends State<LoginDesktopView> {
     super.dispose();
   }
 
-  void submitLogin() {
-    print('Interactive Actived');
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

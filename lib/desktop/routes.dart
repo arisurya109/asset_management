@@ -9,6 +9,7 @@ import 'package:asset_management/desktop/presentation/view/login/login_desktop_v
 import 'package:asset_management/desktop/presentation/view/preparation/add_new_preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation_update/preparation_update_view.dart';
+import 'package:asset_management/desktop/presentation/view/return/return_desktop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -79,7 +80,9 @@ class Routes {
               ),
             ],
             pageBuilder: (context, state) {
-              context.read<AssetDesktopBloc>().add(OnFindAllAssets());
+              context.read<AssetDesktopBloc>().add(
+                OnFindAssetPagination(limit: 10, page: 1),
+              );
               return _buildDesktopTransition(
                 state: state,
                 child: AssetDesktopView(),
@@ -92,6 +95,15 @@ class Routes {
               return _buildDesktopTransition(
                 state: state,
                 child: PreparationUpdateView(),
+              );
+            },
+          ),
+          GoRoute(
+            path: '/return',
+            pageBuilder: (context, state) {
+              return _buildDesktopTransition(
+                state: state,
+                child: ReturnDesktopView(),
               );
             },
           ),

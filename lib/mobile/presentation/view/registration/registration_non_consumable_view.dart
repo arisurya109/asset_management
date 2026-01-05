@@ -1,10 +1,10 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
+import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/printer/printer_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/registration/registration_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -23,6 +23,7 @@ class RegistrationNonConsumableView extends StatefulWidget {
 class _RegistrationNonConsumableViewState
     extends State<RegistrationNonConsumableView> {
   AssetModel? model;
+  AssetCategory? category;
   Location? location;
   String? status;
   String? conditions;
@@ -46,48 +47,68 @@ class _RegistrationNonConsumableViewState
     serialNumber.dispose();
     purchaseOrderNumber.dispose();
     description.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<MasterBloc, MasterState>(
+    return BlocBuilder<RegistrationCubit, RegistrationState>(
       builder: (context, state) {
         return Column(
           children: [
             AppDropDownSearch<Location>(
               title: "Location",
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               hintText: "Select location",
-              borderRadius: 5,
-              items: state.locations!
-                ..sort((a, b) => a.name!.compareTo(b.name!)),
+              borderRadius: 4,
+              onFind: (value) async =>
+                  await context.read<RegistrationCubit>().getLocations(),
               itemAsString: (item) => item.name ?? '',
               selectedItem: location,
               compareFn: (a, b) => a.name == b.name,
-              onChanged: (value) {
-                setState(() => location = value);
-              },
+              onChanged: (value) => setState(() {
+                location = value;
+              }),
+            ),
+            AppSpace.vertical(16),
+            AppDropDownSearch<AssetCategory>(
+              title: "Category",
+              hintText: "Select Category",
+              fontSize: widget.isLarge ? 14 : 12,
+              borderRadius: 4,
+              onFind: (value) async =>
+                  await context.read<RegistrationCubit>().getAssetCategories(),
+              itemAsString: (item) => item.name ?? '',
+              selectedItem: category,
+              compareFn: (a, b) => a.name == b.name,
+              onChanged: (value) => setState(() {
+                category = value;
+              }),
             ),
             AppSpace.vertical(16),
             AppDropDownSearch<AssetModel>(
               title: "Model",
               hintText: "Select Model",
-              fontSize: widget.isLarge ? 12 : 10,
-              borderRadius: 5,
-              items: state.models ?? [],
+              fontSize: widget.isLarge ? 14 : 12,
+              borderRadius: 4,
+              onFind: category == null
+                  ? null
+                  : (value) async => await context
+                        .read<RegistrationCubit>()
+                        .getAssetModels(category!.name!),
               itemAsString: (item) => item.name ?? '',
               selectedItem: model,
               compareFn: (a, b) => a.name == b.name,
-              onChanged: (value) {
-                setState(() => model = value);
-              },
+              onChanged: (value) => setState(() {
+                model = value;
+              }),
             ),
             AppSpace.vertical(16),
             AppDropDownSearch<String>(
               title: 'Color',
               hintText: "Selected Color",
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               borderRadius: 5,
               items: AssetsHelper.colors,
               itemAsString: (item) => item,
@@ -119,7 +140,7 @@ class _RegistrationNonConsumableViewState
             AppDropDownSearch<String>(
               title: 'Condition',
               hintText: 'Selected Condition',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               borderRadius: 5,
               items: AssetsHelper.conditions,
               itemAsString: (item) => item,
@@ -133,7 +154,7 @@ class _RegistrationNonConsumableViewState
             AppDropDownSearch<String>(
               title: 'Status',
               hintText: 'Selected Status',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               borderRadius: 5,
               items: AssetsHelper.status,
               itemAsString: (item) => item,
@@ -148,7 +169,7 @@ class _RegistrationNonConsumableViewState
               controller: description,
               hintText: 'Optional',
               title: 'Description',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
             ),
@@ -157,7 +178,7 @@ class _RegistrationNonConsumableViewState
               controller: purchaseOrderNumber,
               hintText: 'Optional',
               title: 'Purchase Order Number',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.next,
             ),
@@ -166,16 +187,16 @@ class _RegistrationNonConsumableViewState
               controller: serialNumber,
               hintText: 'Optional',
               title: 'Serial Number',
-              fontSize: widget.isLarge ? 12 : 10,
+              fontSize: widget.isLarge ? 14 : 12,
               keyboardType: TextInputType.text,
               textInputAction: TextInputAction.go,
               onSubmitted: (_) => _onSubmit(),
             ),
             AppSpace.vertical(32),
-            BlocConsumer<AssetBloc, AssetState>(
+            BlocConsumer<RegistrationCubit, RegistrationState>(
               listener: (context, state) {
                 serialNumber.clear();
-                if (state.status == StatusAsset.failed) {
+                if (state.status == StatusRegistration.failure) {
                   context.showSnackbar(
                     state.message!,
                     backgroundColor: AppColors.kRed,
@@ -183,23 +204,23 @@ class _RegistrationNonConsumableViewState
                   );
                 }
 
-                if (state.status == StatusAsset.success &&
-                    state.response != null) {
-                  final asset = state.response;
+                if (state.status == StatusRegistration.success &&
+                    state.asset != null) {
+                  final asset = state.asset;
                   context.read<PrinterBloc>().add(
-                    OnPrintAssetId(state.response!.assetCode!),
+                    OnPrintAssetId(asset!.assetCode!),
                   );
                   context.showDialogConfirm(
                     title: 'Successfully Registration',
                     content:
-                        'Asset Code : ${asset?.assetCode}\nSerial Number : ${asset?.serialNumber}\nLocation : ${asset?.location}',
+                        'Asset Code : ${asset.assetCode}\nSerial Number : ${asset.serialNumber}\nLocation : ${asset.location}',
                     onCancel: () => context.popExt(),
                     onCancelText: 'Done',
                     fontSize: widget.isLarge ? 12 : 10,
                     onConfirm: () {
                       context.popExt();
                       context.read<PrinterBloc>().add(
-                        OnPrintAssetId(asset!.assetCode!),
+                        OnPrintAssetId(asset.assetCode!),
                       );
                     },
                     onConfirmText: 'Reprint',
@@ -208,12 +229,12 @@ class _RegistrationNonConsumableViewState
               },
               builder: (context, state) {
                 return AppButton(
-                  fontSize: widget.isLarge ? 14 : 12,
-                  title: state.status == StatusAsset.loading
+                  fontSize: widget.isLarge ? 16 : 14,
+                  title: state.status == StatusRegistration.loading
                       ? 'Loading...'
                       : 'Registration',
                   width: double.maxFinite,
-                  onPressed: state.status == StatusAsset.loading
+                  onPressed: state.status == StatusRegistration.loading
                       ? null
                       : _onSubmit,
                 );
@@ -231,33 +252,39 @@ class _RegistrationNonConsumableViewState
     final po = purchaseOrderNumber.value.text.trim();
     final desc = description.value.text.trim();
 
-    if (model != null &&
+    if (location != null &&
+        model != null &&
         colorId != null &&
         conditions != null &&
         status != null) {
       context.showDialogConfirm(
         title: 'Are you sure registration asset ?',
-        content: 'Model : ${model?.name}\nSerial Number : $sn\n',
+        content:
+            '''Location : ${location?.name}
+Category : ${category?.name}
+Model : ${model?.name}
+Condition : $conditions
+Status : $status
+PO : $po
+Serial Number : $sn
+Description : $desc''',
         onCancelText: 'No',
         onConfirmText: 'Yes',
-        fontSize: widget.isLarge ? 12 : 10,
+        fontSize: widget.isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          context.read<AssetBloc>().add(
-            OnCreateAssetsEvent(
-              AssetEntity(
-                assetModelId: model!.id,
-                serialNumber: sn.isEmpty ? '' : sn,
-                locationId: location?.id,
-                colorId: colorId,
-                isMigration: 0,
-                conditions: conditions,
-                quantity: 1,
-                remarks: desc,
-                uom: 1,
-                status: status,
-                purchaseOrder: po,
-              ),
+          context.read<RegistrationCubit>().onRegistAsset(
+            AssetEntity(
+              assetModelId: model!.id,
+              serialNumber: sn.isFilled() ? sn : null,
+              locationId: location?.id,
+              colorId: colorId,
+              conditions: conditions,
+              quantity: 1,
+              remarks: desc.isFilled() ? desc : null,
+              uom: 1,
+              status: status,
+              purchaseOrder: po.isFilled() ? po : null,
             ),
           );
           Navigator.pop(context);

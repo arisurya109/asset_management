@@ -1,40 +1,29 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'asset_bloc.dart';
 
-enum StatusAsset { initial, loading, failed, success }
+enum StatusAsset { initial, loading, failure, success }
 
 // ignore: must_be_immutable
 class AssetState extends Equatable {
   StatusAsset? status;
   List<AssetEntity>? assets;
-  List<AssetDetail>? assetDetails;
-  AssetEntity? response;
   String? message;
 
-  AssetState({
-    this.status = StatusAsset.initial,
-    this.assets,
-    this.assetDetails,
-    this.response,
-    this.message,
-  });
+  AssetState({this.status = StatusAsset.initial, this.assets, this.message});
 
   @override
-  List<Object?> get props => [status, assets, assetDetails, message, response];
+  List<Object?> get props => [status, assets, message];
 
   AssetState copyWith({
     StatusAsset? status,
     List<AssetEntity>? assets,
-    List<AssetDetail>? assetDetails,
+    bool clearAll = false,
     String? message,
-    AssetEntity? response,
   }) {
     return AssetState(
       status: status ?? this.status,
-      assets: assets ?? this.assets,
-      assetDetails: assetDetails ?? this.assetDetails,
+      assets: clearAll ? null : (assets ?? this.assets),
       message: message ?? this.message,
-      response: response ?? this.response,
     );
   }
 }

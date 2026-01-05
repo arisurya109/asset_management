@@ -8,7 +8,7 @@ class FindLocationByStorageUseCase {
 
   FindLocationByStorageUseCase(this._repository);
 
-  Future<Either<Failure, List<Location>>> call(int params) async {
+  Future<Either<Failure, List<Location>>> call(String params) async {
     return _repository.findLocationByStorage(params);
   }
 }

@@ -1,14 +1,10 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
-import 'package:asset_management/desktop/presentation/components/app_segmented_desktop.dart';
-import 'package:asset_management/desktop/presentation/cubit/add_preparation_datas/add_preparation_datas_cubit.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../domain/entities/user/user.dart';

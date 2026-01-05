@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 
 class AssetEntity extends Equatable {
   int? id;
-  int? isMigration;
   String? assetIdOld;
   String? serialNumber;
   String? assetCode;
@@ -27,7 +26,6 @@ class AssetEntity extends Equatable {
 
   AssetEntity({
     this.id,
-    this.isMigration,
     this.assetIdOld,
     this.serialNumber,
     this.assetCode,
@@ -53,7 +51,6 @@ class AssetEntity extends Equatable {
   List<Object?> get props {
     return [
       id,
-      isMigration,
       assetIdOld,
       serialNumber,
       assetCode,

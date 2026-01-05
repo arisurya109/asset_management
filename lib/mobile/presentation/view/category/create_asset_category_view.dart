@@ -1,5 +1,5 @@
 import 'package:asset_management/domain/entities/master/asset_category.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/category/category_bloc.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,11 +17,16 @@ class CreateAssetCategoryView extends StatefulWidget {
 class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
   late TextEditingController nameC;
   late TextEditingController initC;
+  late FocusNode nameFn;
+  late FocusNode initFn;
 
   @override
   void initState() {
     nameC = TextEditingController();
     initC = TextEditingController();
+    nameFn = FocusNode();
+    initFn = FocusNode();
+    nameFn.requestFocus();
     super.initState();
   }
 
@@ -29,6 +34,9 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
   void dispose() {
     nameC.dispose();
     initC.dispose();
+    nameFn.dispose();
+    initFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
@@ -52,6 +60,7 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
               AppTextField(
                 controller: nameC,
                 hintText: 'Example : Computer',
+                focusNode: nameFn,
                 keyboardType: TextInputType.text,
                 textInputAction: TextInputAction.next,
                 title: 'Name',
@@ -60,6 +69,7 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
               AppSpace.vertical(16),
               AppTextField(
                 controller: initC,
+                focusNode: initFn,
                 fontSize: isLarge ? 14 : 12,
                 hintText: 'Example : CPU',
                 keyboardType: TextInputType.text,
@@ -68,18 +78,18 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
                 onSubmitted: (_) => _onSubmit(isLarge),
               ),
               AppSpace.vertical(32),
-              BlocConsumer<MasterBloc, MasterState>(
+              BlocConsumer<CategoryBloc, CategoryState>(
                 listener: (context, state) {
                   nameC.clear();
                   initC.clear();
-                  if (state.status == StatusMaster.failed) {
+                  if (state.status == StatusCategory.failure) {
                     context.showSnackbar(
                       state.message ?? 'Failed to create asset category',
                       backgroundColor: AppColors.kRed,
                       fontSize: isLarge ? 14 : 12,
                     );
                   }
-                  if (state.status == StatusMaster.success) {
+                  if (state.status == StatusCategory.success) {
                     context.showSnackbar(
                       'Successfully create asset category',
                       fontSize: isLarge ? 14 : 12,
@@ -88,12 +98,12 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
                 },
                 builder: (context, state) {
                   return AppButton(
-                    title: state.status == StatusMaster.loading
+                    title: state.status == StatusCategory.loading
                         ? 'Loading...'
                         : 'Create',
                     width: double.maxFinite,
                     fontSize: isLarge ? 16 : 14,
-                    onPressed: state.status == StatusMaster.loading
+                    onPressed: state.status == StatusCategory.loading
                         ? null
                         : () => _onSubmit(isLarge),
                   );
@@ -118,8 +128,8 @@ class CreateAssetCategoryViewState extends State<CreateAssetCategoryView> {
         fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          context.read<MasterBloc>().add(
-            OnCreateCategoryEvent(AssetCategory(name: name, init: init)),
+          context.read<CategoryBloc>().add(
+            OnCreateCategory(AssetCategory(name: name, init: init)),
           );
           Navigator.pop(context);
         },

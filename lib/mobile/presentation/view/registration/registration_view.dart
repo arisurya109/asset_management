@@ -28,11 +28,10 @@ class _RegistrationViewState extends State<RegistrationView> {
     return Scaffold(
       appBar: AppBar(title: Text('Registration')),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.fromLTRB(16, 5, 16, 16),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              AppSpace.vertical(12),
               AppSegmentedButton(
                 fontSize: isLarge ? 14 : 12,
                 options: segmentedTypeList,

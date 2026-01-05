@@ -27,6 +27,14 @@ class _InventoryViewState extends State<InventoryView> {
   }
 
   @override
+  void dispose() {
+    _searchC.dispose();
+    _searchFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobileLScaffold: _mobileInventory(),
@@ -115,6 +123,22 @@ class _InventoryViewState extends State<InventoryView> {
                     child: Center(
                       child: Text(
                         'Please input location rack or box',
+                        style: TextStyle(
+                          color: AppColors.kGrey,
+                          fontSize: isLarge ? 14 : 12,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                if (_searchC.value.text.isFilled() &&
+                    boxs == null &&
+                    assets == null)
+                  Expanded(
+                    flex: 5,
+                    child: Center(
+                      child: Text(
+                        'Location not found',
                         style: TextStyle(
                           color: AppColors.kGrey,
                           fontSize: isLarge ? 14 : 12,

@@ -1,10 +1,8 @@
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/printer/printer_bloc.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 import '../../../../../core/core.dart';
 
@@ -141,97 +139,97 @@ class AssetDetailView extends StatelessWidget {
               fontSize: isLarge ? 14 : 12,
             ),
             AppSpace.vertical(18),
-            BlocBuilder<AssetBloc, AssetState>(
-              builder: (context, state) {
-                if (state.status == StatusAsset.success) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Center(
-                        child: Text(
-                          'History',
-                          style: TextStyle(
-                            fontSize: isLarge ? 14 : 12,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                      AppSpace.vertical(16),
-                      Divider(color: AppColors.kBase),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: state.assetDetails?.length,
-                        itemBuilder: (context, index) {
-                          final movement = state.assetDetails?[index];
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'Type',
-                                movement?.movementType ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'From',
-                                movement?.fromLocation ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'To',
-                                movement?.toLocation ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'User',
-                                movement?.movementBy ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'Date',
-                                DateFormat(
-                                  'd - MMMM - y',
-                                ).format(movement!.movementDate!),
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'Time',
-                                DateFormat(
-                                  'HH:mm',
-                                ).format(movement.movementDate!),
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'References Number',
-                                movement.referencesNumber ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(18),
-                              _descriptionItem(
-                                'Notes',
-                                movement.notes ?? '',
-                                fontSize: isLarge ? 14 : 12,
-                              ),
-                              AppSpace.vertical(24),
-                              if (index != state.assetDetails!.length - 1)
-                                Divider(color: AppColors.kBase),
-                            ],
-                          );
-                        },
-                      ),
-                    ],
-                  );
-                }
-                return SizedBox();
-              },
-            ),
+            // BlocBuilder<AssetBloc, AssetState>(
+            //   builder: (context, state) {
+            //     if (state.status == StatusAsset.success) {
+            //       return Column(
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: [
+            //           Center(
+            //             child: Text(
+            //               'History',
+            //               style: TextStyle(
+            //                 fontSize: isLarge ? 14 : 12,
+            //                 fontWeight: FontWeight.w500,
+            //               ),
+            //             ),
+            //           ),
+            //           AppSpace.vertical(16),
+            //           Divider(color: AppColors.kBase),
+            //           ListView.builder(
+            //             shrinkWrap: true,
+            //             physics: NeverScrollableScrollPhysics(),
+            //             itemCount: state.assetDetails?.length,
+            //             itemBuilder: (context, index) {
+            //               final movement = state.assetDetails?[index];
+            //               return Column(
+            //                 crossAxisAlignment: CrossAxisAlignment.start,
+            //                 children: [
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'Type',
+            //                     movement?.movementType ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'From',
+            //                     movement?.fromLocation ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'To',
+            //                     movement?.toLocation ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'User',
+            //                     movement?.movementBy ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'Date',
+            //                     DateFormat(
+            //                       'd - MMMM - y',
+            //                     ).format(movement!.movementDate!),
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'Time',
+            //                     DateFormat(
+            //                       'HH:mm',
+            //                     ).format(movement.movementDate!),
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'References Number',
+            //                     movement.referencesNumber ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(18),
+            //                   _descriptionItem(
+            //                     'Notes',
+            //                     movement.notes ?? '',
+            //                     fontSize: isLarge ? 14 : 12,
+            //                   ),
+            //                   AppSpace.vertical(24),
+            //                   if (index != state.assetDetails!.length - 1)
+            //                     Divider(color: AppColors.kBase),
+            //                 ],
+            //               );
+            //             },
+            //           ),
+            //         ],
+            //       );
+            //     }
+            //     return SizedBox();
+            //   },
+            // ),
           ],
         ),
       ),

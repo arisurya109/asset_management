@@ -42,6 +42,7 @@ class AppTextFieldSearchDesktop extends StatelessWidget {
         style: TextStyle(
           fontSize: 12,
           color: enabled == false ? AppColors.kGrey : null,
+          fontWeight: enabled! ? FontWeight.w500 : FontWeight.w400,
         ),
         onSubmitted: onSubmitted,
         decoration: InputDecoration(
@@ -55,13 +56,18 @@ class AppTextFieldSearchDesktop extends StatelessWidget {
           ),
           isDense: true,
           hintText: hintText,
+          hintStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
           prefixIcon: withSearchIcon!
               ? const Icon(Icons.search, size: 16)
               : null,
           suffixIcon: suffixIcon,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(4),
-            borderSide: const BorderSide(color: Color(0xFFE2E8F0)),
+            borderSide: const BorderSide(color: AppColors.kBlack, width: 1),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(4),
+            borderSide: const BorderSide(color: AppColors.kBlack, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(4),

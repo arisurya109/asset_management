@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asset_management/mobile/presentation/bloc/model/model_bloc.dart';
 import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
-import 'package:asset_management/domain/entities/master/asset_model.dart';
+import 'package:asset_management/mobile/presentation/components/app_text_field_search.dart';
 import 'package:asset_management/mobile/presentation/view/model/create_asset_model_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
 
 class AssetModelView extends StatefulWidget {
   const AssetModelView({super.key});
@@ -18,7 +18,25 @@ class AssetModelView extends StatefulWidget {
 }
 
 class _AssetModelViewState extends State<AssetModelView> {
-  String query = '';
+  late TextEditingController _searchC;
+  late FocusNode _searchFn;
+  bool _isSearchActive = false;
+
+  @override
+  void initState() {
+    _searchC = TextEditingController();
+    _searchFn = FocusNode();
+    _searchFn.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchC.dispose();
+    _searchFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,93 +49,107 @@ class _AssetModelViewState extends State<AssetModelView> {
   Widget _mobileModel({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
-        final permission = state.user!.modules;
+        final permission =
+            state.user!.modules?.map((p) => p['name'] as String).toList() ?? [];
         return Scaffold(
           appBar: AppBar(
             title: Text('Asset Model'),
-            actions: permission?.contains('master_add') == true
+            actions: permission.contains('master_add') == true
                 ? [
                     IconButton(
-                      onPressed: () => context.pushExt(CreateAssetModelView()),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        context.pushExt(CreateAssetModelView());
+                      },
                       icon: Icon(Icons.add),
                     ),
                   ]
                 : null,
           ),
-          body: BlocBuilder<MasterBloc, MasterState>(
+          body: BlocBuilder<ModelBloc, ModelState>(
             builder: (context, state) {
-              if (state.status == StatusMaster.loading) {
-                return Center(
-                  child: CircularProgressIndicator(color: AppColors.kBase),
-                );
-              } else if (state.status == StatusMaster.failed) {
-                return Center(
-                  child: Text(
-                    state.message ?? '',
-                    style: TextStyle(fontSize: isLarge ? 14 : 12),
-                  ),
-                );
-              } else if (state.models != null || state.models != []) {
-                final models = state.models
-                  ?..sort((a, b) => a.name!.compareTo(b.name!));
-                List<AssetModel> filteredModels = [];
-
-                if (query.isNotEmpty || query != '') {
-                  filteredModels = models!.where((element) {
-                    final name = element.name?.toLowerCase() ?? '';
-                    final typeName = element.typeName?.toLowerCase() ?? '';
-                    final brandName = element.brandName?.toLowerCase() ?? '';
-                    final categoryName =
-                        element.categoryName?.toLowerCase() ?? '';
-                    return name.contains(query.toLowerCase()) ||
-                        typeName.contains(query.toLowerCase()) ||
-                        brandName.contains(query.toLowerCase()) ||
-                        categoryName.contains(query.toLowerCase());
-                  }).toList();
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      AppSpace.vertical(16),
-                      AppTextField(
-                        noTitle: true,
-                        hintText: 'Search...',
-                        fontSize: isLarge ? 14 : 12,
-                        onChanged: (value) => setState(() {
-                          query = value;
-                        }),
+              if (state.status == StatusModel.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                child: Column(
+                  children: [
+                    AppTextFieldSearch(
+                      controller: _searchC,
+                      focusNode: _searchFn,
+                      isSearchActive: _isSearchActive,
+                      hintText: 'Search',
+                      textInputAction: TextInputAction.search,
+                      keyboardType: TextInputType.text,
+                      onSubmitted: (value) {
+                        if (value.isFilled()) {
+                          setState(() => _isSearchActive = true);
+                          context.read<ModelBloc>().add(
+                            OnFindModelByQuery(value),
+                          );
+                        }
+                      },
+                      onChanged: (value) {
+                        if (!value.isFilled() && _isSearchActive) {
+                          setState(() => _isSearchActive = false);
+                          context.read<ModelBloc>().add(OnClearAll());
+                        }
+                      },
+                      onClear: () {
+                        setState(() {
+                          _searchC.clear();
+                          _isSearchActive = false;
+                        });
+                        context.read<ModelBloc>().add(OnClearAll());
+                      },
+                    ),
+                    AppSpace.vertical(16),
+                    if (!_searchC.value.text.isFilled())
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Please input model name, type, category or brand',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
                       ),
-                      AppSpace.vertical(16),
+
+                    if (_searchC.value.text.isFilled() && state.models == null)
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Model not found',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (_searchC.value.text.isFilled() && state.models != null)
                       Expanded(
                         child: ListView.builder(
-                          itemCount: filteredModels.isEmpty
-                              ? models?.length
-                              : filteredModels.length,
+                          padding: EdgeInsets.zero,
+                          itemCount: state.models?.length,
                           itemBuilder: (context, index) {
-                            final type = filteredModels.isNotEmpty
-                                ? filteredModels[index]
-                                : models?[index];
+                            final model = state.models?[index];
                             return AppCardItem(
-                              title: type?.name,
-                              fontSize: isLarge ? 14 : 12,
-                              leading: type?.typeName,
-                              subtitle: type?.categoryName,
-                              descriptionLeft: type?.unit == 1 ? 'Unit' : 'Pcs',
-                              descriptionRight: type?.isConsumable == 1
-                                  ? 'Consumable'
-                                  : 'Non Consumable',
+                              title: model?.name,
+                              leading: model?.typeName,
+                              subtitle:
+                                  '${model?.categoryName} | ${model?.brandName}',
+                              noDescription: true,
                             );
                           },
                         ),
                       ),
-                    ],
-                  ),
-                );
-              } else {
-                return Container();
-              }
+                  ],
+                ),
+              );
             },
           ),
         );

@@ -28,7 +28,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_brand'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/brand'),
         body: jsonEncode(params.toJson()),
         headers: ApiHelper.headersToken(token),
       );
@@ -55,7 +55,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_category'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/category'),
         body: jsonEncode(params.toJson()),
         headers: ApiHelper.headersToken(token),
       );
@@ -80,7 +80,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_model'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/model'),
         body: jsonEncode(params.toJson()),
         headers: ApiHelper.headersToken(token),
       );
@@ -105,7 +105,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/asset_type'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/type'),
         body: jsonEncode(params.toJson()),
         headers: ApiHelper.headersToken(token),
       );
@@ -180,7 +180,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/asset_brand'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/brand'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -204,7 +204,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/asset_category'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/category'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -228,7 +228,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/asset_model'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/model'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -252,7 +252,7 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
       throw CreateException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/asset_type'),
+        Uri.parse('${ApiHelper.baseUrl}/asset/type'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -480,14 +480,14 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
   }
 
   @override
-  Future<List<LocationModel>> findLocationByStorage(int params) async {
+  Future<List<LocationModel>> findLocationByStorage(String params) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/location?is_storage=$params'),
+        Uri.parse('${ApiHelper.baseUrl}/location?category=$params'),
         headers: ApiHelper.headersToken(token),
       );
 
@@ -529,6 +529,80 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
         throw NotFoundException(
           message: ApiHelper.getErrorMessage(response.body),
         );
+      }
+    }
+  }
+
+  @override
+  Future<List<AssetBrandModel>> findAssetBrandByQuery(String params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/asset/brand?query=$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final bodyResponse = jsonDecode(response.body);
+        List datas = bodyResponse['data'];
+
+        return datas.map((e) => AssetBrandModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<List<AssetCategoryModel>> findAssetCategoryByQuery(
+    String params,
+  ) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/asset/category?query=$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final bodyResponse = jsonDecode(response.body);
+        List datas = bodyResponse['data'];
+
+        return datas.map((e) => AssetCategoryModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<List<AssetModelModel>> findAssetModelByQuery(String params) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/asset/model?query=$params'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final bodyResponse = jsonDecode(response.body);
+        List datas = bodyResponse['data'];
+
+        return datas.map((e) => AssetModelModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
       }
     }
   }

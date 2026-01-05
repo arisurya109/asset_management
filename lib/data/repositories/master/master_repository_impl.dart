@@ -241,7 +241,7 @@ class MasterRepositoryImpl implements MasterRepository {
 
   @override
   Future<Either<Failure, List<Location>>> findLocationByStorage(
-    int params,
+    String params,
   ) async {
     try {
       final response = await _source.findLocationByStorage(params);
@@ -256,6 +256,42 @@ class MasterRepositoryImpl implements MasterRepository {
     try {
       final response = await _source.findLocationType();
       return Right(response);
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<AssetBrand>>> findAssetBrandByQuery(
+    String params,
+  ) async {
+    try {
+      final response = await _source.findAssetBrandByQuery(params);
+      return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<AssetCategory>>> findAssetCategoryByQuery(
+    String params,
+  ) async {
+    try {
+      final response = await _source.findAssetCategoryByQuery(params);
+      return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<AssetModel>>> findAssetModelByQuery(
+    String params,
+  ) async {
+    try {
+      final response = await _source.findAssetModelByQuery(params);
+      return Right(response.map((e) => e.toEntity()).toList());
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
     }

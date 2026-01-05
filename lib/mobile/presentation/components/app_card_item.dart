@@ -16,6 +16,7 @@ class AppCardItem extends StatelessWidget {
   IconData? iconLeft;
   IconData? iconRight;
   bool? noDescription;
+  bool? noSubtitle;
   void Function()? onTap;
   double? fontSize;
 
@@ -31,13 +32,15 @@ class AppCardItem extends StatelessWidget {
     this.iconLeft,
     this.iconRight,
     this.noDescription = false,
+    this.noSubtitle = false,
     this.onTap,
     this.fontSize = 12,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      width: context.deviceWidth,
       padding: const EdgeInsets.only(bottom: 12),
       child: Material(
         color: AppColors.kWhite,
@@ -58,8 +61,9 @@ class AppCardItem extends StatelessWidget {
                   children: [
                     Text(
                       title ?? 'Title',
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        fontSize: fontSize,
+                        fontSize: fontSize! + 1,
                         fontWeight: FontWeight.bold,
                         color: AppColors.kBlack,
                       ),
@@ -72,6 +76,7 @@ class AppCardItem extends StatelessWidget {
                       ),
                       child: Text(
                         leading ?? 'Leading',
+                        overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: fontSize,
                           color: colorTextLeading,
@@ -81,71 +86,84 @@ class AppCardItem extends StatelessWidget {
                     ),
                   ],
                 ),
-                AppSpace.vertical(8),
-                Text(
-                  subtitle ?? 'Subtitle',
-                  style: TextStyle(
-                    fontSize: fontSize,
-                    color: AppColors.kBlack,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                AppSpace.vertical(8),
+                noSubtitle == false
+                    ? Column(
+                        children: [
+                          AppSpace.vertical(5),
+                          Text(
+                            subtitle ?? 'Subtitle',
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: AppColors.kBlack,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      )
+                    : SizedBox(),
                 noDescription == false
-                    ? Container(
-                        padding: EdgeInsets.symmetric(
-                          vertical: 8,
-                          horizontal: 12,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.kBackgroundMobile,
-                          borderRadius: BorderRadius.circular(5),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
+                    ? Column(
+                        children: [
+                          AppSpace.vertical(8),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 8,
+                              horizontal: 12,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.kBackgroundMobile,
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                iconLeft != null
-                                    ? Icon(
-                                        iconLeft,
-                                        size: fontSize,
-                                        color: AppColors.kGrey,
-                                      )
-                                    : SizedBox(),
-                                AppSpace.horizontal(5),
-                                Text(
-                                  descriptionLeft ?? 'Desc Left',
-                                  style: TextStyle(
-                                    fontSize: fontSize,
-                                    color: AppColors.kBlack,
-                                  ),
+                                Row(
+                                  children: [
+                                    iconLeft != null
+                                        ? Icon(
+                                            iconLeft,
+                                            size: fontSize,
+                                            color: AppColors.kGrey,
+                                          )
+                                        : SizedBox(),
+                                    AppSpace.horizontal(5),
+                                    Text(
+                                      descriptionLeft ?? 'Desc Left',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: fontSize,
+                                        color: AppColors.kBlack,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Text('|'),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    iconRight != null
+                                        ? Icon(
+                                            iconRight,
+                                            size: fontSize,
+                                            color: AppColors.kGrey,
+                                          )
+                                        : SizedBox(),
+                                    AppSpace.horizontal(5),
+                                    Text(
+                                      descriptionRight ?? 'Desc Right',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: fontSize,
+                                        color: AppColors.kBlack,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            Text('|'),
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                iconRight != null
-                                    ? Icon(
-                                        iconRight,
-                                        size: fontSize,
-                                        color: AppColors.kGrey,
-                                      )
-                                    : SizedBox(),
-                                AppSpace.horizontal(5),
-                                Text(
-                                  descriptionRight ?? 'Desc Right',
-                                  style: TextStyle(
-                                    fontSize: fontSize,
-                                    color: AppColors.kBlack,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       )
                     : SizedBox(),
               ],

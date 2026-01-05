@@ -17,11 +17,16 @@ class LoginView extends StatefulWidget {
 class _LoginViewState extends State<LoginView> {
   late TextEditingController usernameC;
   late TextEditingController passwordC;
+  late FocusNode usernameFn;
+  late FocusNode passwordFn;
 
   @override
   void initState() {
     usernameC = TextEditingController();
     passwordC = TextEditingController();
+    usernameFn = FocusNode();
+    passwordFn = FocusNode();
+    usernameFn.requestFocus();
     super.initState();
   }
 
@@ -29,17 +34,29 @@ class _LoginViewState extends State<LoginView> {
   void dispose() {
     usernameC.dispose();
     passwordC.dispose();
+    usernameFn.dispose();
+    passwordFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
-  loginSubmit() {
+  loginSubmit(bool isLarge) {
+    FocusManager.instance.primaryFocus?.unfocus();
     final username = usernameC.value.text.trim();
     final password = passwordC.value.text.trim();
 
     if (!username.isFilled()) {
-      context.showSnackbar('Username cannot be empty');
+      context.showSnackbar(
+        'Username cannot be empty',
+        backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
+      );
     } else if (!password.isFilled()) {
-      context.showSnackbar('Password cannot be empty');
+      context.showSnackbar(
+        'Password cannot be empty',
+        backgroundColor: AppColors.kRed,
+        fontSize: isLarge ? 14 : 12,
+      );
     } else {
       context.read<AuthenticationBloc>().add(
         OnLoginEvent(Authentication(username: username, password: password)),
@@ -92,6 +109,7 @@ class _LoginViewState extends State<LoginView> {
               AppSpace.vertical(32),
               AppTextField(
                 title: 'Username',
+                focusNode: usernameFn,
                 controller: usernameC,
                 hintText: 'Username',
                 fontSize: isLarge ? 14 : 12,
@@ -103,9 +121,10 @@ class _LoginViewState extends State<LoginView> {
                 title: 'Password',
                 fontSize: isLarge ? 14 : 12,
                 controller: passwordC,
+                focusNode: passwordFn,
                 obscureText: true,
                 hintText: 'Password',
-                onSubmitted: (_) => loginSubmit(),
+                onSubmitted: (_) => loginSubmit(isLarge),
                 textInputAction: TextInputAction.go,
                 keyboardType: TextInputType.text,
               ),
@@ -116,6 +135,7 @@ class _LoginViewState extends State<LoginView> {
                     context.showSnackbar(
                       state.message!,
                       backgroundColor: AppColors.kRed,
+                      fontSize: isLarge ? 14 : 12,
                     );
                   }
                   if (state.status == StatusAuthentication.success) {
@@ -131,7 +151,7 @@ class _LoginViewState extends State<LoginView> {
                     width: double.maxFinite,
                     onPressed: state.status == StatusAuthentication.loading
                         ? null
-                        : loginSubmit,
+                        : () => loginSubmit(isLarge),
                   );
                 },
               ),

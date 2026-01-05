@@ -1,11 +1,12 @@
-import 'package:asset_management/core/widgets/app_dropdown_search.dart';
-import 'package:asset_management/domain/entities/asset/asset_entity.dart';
-import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
-import 'package:asset_management/mobile/responsive_layout.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first, use_build_context_synchronously
+import 'package:asset_management/domain/entities/movement/movement.dart';
+import 'package:asset_management/mobile/presentation/bloc/transfer/transfer_bloc.dart';
+import 'package:asset_management/mobile/presentation/components/app_text_field_locking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'package:asset_management/mobile/presentation/cubit/datas_cubit.dart';
+import 'package:asset_management/mobile/responsive_layout.dart';
 
 import '../../../../../../core/core.dart';
 
@@ -17,9 +18,32 @@ class TransferView extends StatefulWidget {
 }
 
 class _TransferViewState extends State<TransferView> {
-  AssetEntity? asset;
-  Location? fromL;
-  Location? toL;
+  late TextEditingController _destinationC;
+  late TextEditingController _assetCodeC;
+  late FocusNode _destinationFn;
+  late FocusNode _assetCodeFn;
+
+  bool _isLockDestination = false;
+
+  @override
+  void initState() {
+    _destinationC = TextEditingController();
+    _assetCodeC = TextEditingController();
+    _destinationFn = FocusNode();
+    _assetCodeFn = FocusNode();
+    _destinationFn.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _destinationC.dispose();
+    _assetCodeC.dispose();
+    _destinationFn.dispose();
+    _assetCodeFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,117 +56,121 @@ class _TransferViewState extends State<TransferView> {
   Widget _mobileTransfer({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Transfer')),
-      body: BlocBuilder<MasterBloc, MasterState>(
+      body: BlocBuilder<DatasCubit, void>(
         builder: (context, state) {
           return Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  AppDropDownSearch<Location>(
-                    title: 'From Location',
-                    items:
-                        state.locations!
-                            .where(
-                              (element) =>
-                                  element.locationType == 'BOX' ||
-                                  element.locationType == 'RACK' ||
-                                  element.name == 'GUDANG I',
-                            )
-                            .toList()
-                          ..sort((a, b) => a.name!.compareTo(b.name!)),
-                    hintText: 'Selected From Location',
+            padding: EdgeInsets.fromLTRB(16, 8, 16, 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Destination',
+                  style: TextStyle(
                     fontSize: isLarge ? 14 : 12,
-                    compareFn: (value1, value) => value1.name == value.name,
-                    selectedItem: fromL,
-                    onChanged: (value) => setState(() {
-                      fromL = value;
-                    }),
-                    itemAsString: (value) => value.name.toString(),
+                    fontWeight: FontWeight.w500,
                   ),
-                  AppSpace.vertical(16),
-                  AppDropDownSearch<Location>(
-                    title: 'To Location',
-                    onChanged: (value) => setState(() {
-                      toL = value;
-                    }),
+                ),
+                AppSpace.vertical(5),
+                AppTextFieldLocking(
+                  controller: _destinationC,
+                  focusNode: _destinationFn,
+                  textInputAction: TextInputAction.next,
+                  hintText: 'Example : NW.04.01.01',
+                  fontSize: isLarge ? 14 : 12,
+                  readOnly: _isLockDestination,
+                  onSubmitted: (value) async {
+                    if (value.isFilled()) {
+                      _assetCodeFn.requestFocus();
+                    }
+                  },
+                  isLocked: () => setState(() {
+                    _isLockDestination = !_isLockDestination;
+                  }),
+                ),
+                AppSpace.vertical(16),
+                Text(
+                  'Asset Code',
+                  style: TextStyle(
                     fontSize: isLarge ? 14 : 12,
-                    items:
-                        state.locations!
-                            .where(
-                              (element) =>
-                                  element.locationType == 'BOX' ||
-                                  element.locationType == 'RACK' &&
-                                      element != fromL,
-                            )
-                            .toList()
-                          ..sort((a, b) => a.name!.compareTo(b.name!)),
-                    hintText: 'Selected To Location',
-                    compareFn: (value1, value) => value1.name == value.name,
-                    selectedItem: toL,
-                    itemAsString: (value) => value.name.toString(),
+                    fontWeight: FontWeight.w500,
                   ),
-                  AppSpace.vertical(16),
-                  BlocBuilder<AssetBloc, AssetState>(
-                    builder: (context, state) {
-                      return AppDropDownSearch<AssetEntity>(
-                        title: 'Asset',
-                        items:
-                            state.assets
-                                ?.where(
-                                  (element) =>
-                                      element.location == fromL?.name &&
-                                      element.uom == 1,
-                                )
-                                .toList() ??
-                            [],
-                        onChanged: (value) => setState(() {
-                          asset = value;
-                        }),
+                ),
+                AppSpace.vertical(5),
+                AppTextFieldLocking(
+                  controller: _assetCodeC,
+                  focusNode: _assetCodeFn,
+                  textInputAction: TextInputAction.search,
+                  hintText: 'Example : AST-CPU-2601010001',
+                  fontSize: isLarge ? 14 : 12,
+                  onSubmitted: (value) => _onSubmit(isLarge),
+                ),
+                AppSpace.vertical(32),
+                BlocConsumer<TransferBloc, TransferState>(
+                  listener: (context, state) {
+                    if (state.status == StatusTransfer.loading) {
+                      context.dialogLoading();
+                    }
+                    if (state.status == StatusTransfer.failure) {
+                      context.popExt();
+                      context.showSnackbar(
+                        state.message ?? '',
+                        backgroundColor: AppColors.kRed,
                         fontSize: isLarge ? 14 : 12,
-                        hintText: 'Selected Asset',
-                        compareFn: (value1, value) =>
-                            value1.assetCode == value.assetCode,
-                        selectedItem: asset,
-                        itemAsString: (value) => value.assetCode.toString(),
                       );
-                    },
-                  ),
-                  AppSpace.vertical(32),
-                  BlocConsumer<AssetBloc, AssetState>(
-                    listener: (context, state) {
-                      setState(() {
-                        asset = null;
-                      });
-                      if (state.status == StatusAsset.initial) {
-                        context.showSnackbar(
-                          state.message ?? '',
-                          fontSize: isLarge ? 14 : 12,
-                          backgroundColor: AppColors.kRed,
-                        );
-                      }
-                      if (state.status == StatusAsset.success) {
-                        context.showSnackbar(
-                          'Successfully transfer asset',
-                          fontSize: isLarge ? 14 : 12,
-                        );
-                      }
-                    },
-                    builder: (context, state) {
-                      return AppButton(
-                        title: state.status == StatusAsset.loading
-                            ? 'Loading...'
-                            : 'Submit',
-                        width: double.maxFinite,
-                        fontSize: isLarge ? 16 : 14,
-                        onPressed: state.status == StatusAsset.loading
-                            ? null
-                            : () => _onSubmit(isLarge),
+                      _assetCodeC.clear();
+                      _assetCodeFn.requestFocus();
+                    }
+                    if (state.status == StatusTransfer.loaded) {
+                      context.popExt();
+                      final destination = _destinationC.value.text.trim();
+                      context.showDialogConfirm(
+                        title: 'Are your sure transfer asset ?',
+                        content:
+                            'Destination : $destination\nAsset Code : ${state.asset?.assetCode}\nLocation : ${state.asset?.locationDetail}\nCategory : ${state.asset?.category}\nModel : ${state.asset?.model}',
+                        onCancelText: 'No',
+                        onConfirmText: 'Yes',
+                        fontSize: isLarge ? 14 : 12,
+                        onCancel: () => Navigator.pop(context),
+                        onConfirm: () {
+                          context.read<TransferBloc>().add(
+                            OnTransferAsset(
+                              Movement(
+                                assetId: state.asset?.id,
+                                destination: destination,
+                                fromLocation: state.asset?.locationDetail,
+                                type: 'TRANSFER',
+                              ),
+                            ),
+                          );
+                          Navigator.pop(context);
+                        },
                       );
-                    },
-                  ),
-                ],
-              ),
+                    }
+                    if (state.status == StatusTransfer.success) {
+                      context.popExt();
+                      context.showSnackbar(
+                        state.message ?? '',
+                        fontSize: isLarge ? 14 : 12,
+                      );
+                      _assetCodeC.clear();
+                      _assetCodeFn.requestFocus();
+                    }
+                  },
+                  builder: (context, state) {
+                    return AppButton(
+                      title: state.status == StatusTransfer.loading
+                          ? 'Loading...'
+                          : 'Transfer',
+                      onPressed: state.status == StatusTransfer.loading
+                          ? null
+                          : () => _onSubmit(isLarge),
+                      fontSize: isLarge ? 14 : 12,
+                      height: 35,
+                      width: context.deviceWidth,
+                    );
+                  },
+                ),
+              ],
             ),
           );
         },
@@ -150,57 +178,25 @@ class _TransferViewState extends State<TransferView> {
     );
   }
 
-  _onSubmit(bool isLarge) {
-    final from = fromL?.id;
-    final to = toL?.id;
-    final assetId = asset?.id;
+  _onSubmit(bool isLarge) async {
+    final params = _assetCodeC.value.text.trim();
+    final destination = _destinationC.value.text.trim();
+    FocusManager.instance.primaryFocus?.unfocus();
 
-    if (from == null) {
+    if (!destination.isFilled()) {
       context.showSnackbar(
-        'From location cannot be empty',
+        'Destination cannot be empty',
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
-    } else if (to == null) {
+    } else if (!params.isFilled()) {
       context.showSnackbar(
-        'To location cannot be empty',
-        backgroundColor: AppColors.kRed,
-        fontSize: isLarge ? 14 : 12,
-      );
-    } else if (asset == null) {
-      context.showSnackbar(
-        'Asset Code cannot be emoty',
-        backgroundColor: AppColors.kRed,
-        fontSize: isLarge ? 14 : 12,
-      );
-    } else if (from == to) {
-      context.showSnackbar(
-        'Failed, From the same location and destination',
+        'Asset Code cannot be empty',
         backgroundColor: AppColors.kRed,
         fontSize: isLarge ? 14 : 12,
       );
     } else {
-      context.showDialogConfirm(
-        title: 'Are your sure transfer asset ?',
-        content:
-            'From : ${fromL?.name}\nTo : ${toL?.name}\nAsset Code : ${asset?.assetCode}',
-        onCancelText: 'No',
-        onConfirmText: 'Yes',
-        fontSize: isLarge ? 14 : 12,
-        onCancel: () => Navigator.pop(context),
-        onConfirm: () {
-          context.read<AssetBloc>().add(
-            OnCreateAssetTransferEvent(
-              assetId: assetId!,
-              fromLocationId: from,
-              toLocationId: to,
-              movementType: 'TRANSFER',
-              quantity: 1,
-            ),
-          );
-          Navigator.pop(context);
-        },
-      );
+      context.read<TransferBloc>().add(OnGetAssetByAssetCode(params));
     }
   }
 }

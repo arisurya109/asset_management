@@ -1,15 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:asset_management/mobile/responsive_layout.dart';
+import 'package:asset_management/mobile/presentation/bloc/brand/brand_bloc.dart';
+import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
+import 'package:asset_management/mobile/presentation/components/app_text_field_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/domain/entities/master/asset_brand.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
 import 'package:asset_management/mobile/presentation/view/brand/create_asset_brand_view.dart';
-
-import '../../components/app_list_tile_custom.dart';
+import 'package:asset_management/mobile/responsive_layout.dart';
 
 class AssetBrandView extends StatefulWidget {
   const AssetBrandView({super.key});
@@ -19,7 +18,24 @@ class AssetBrandView extends StatefulWidget {
 }
 
 class _AssetBrandViewState extends State<AssetBrandView> {
-  String query = '';
+  late TextEditingController _searchC;
+  late FocusNode _searchFn;
+  bool _isSearchActive = false;
+
+  @override
+  void initState() {
+    _searchC = TextEditingController();
+    _searchFn = FocusNode();
+    _searchFn.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchC.dispose();
+    _searchFn.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,83 +48,107 @@ class _AssetBrandViewState extends State<AssetBrandView> {
   Widget _mobileBrand({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
-        final permission = state.user!.modules;
+        final permission =
+            state.user!.modules?.map((p) => p['name'] as String).toList() ?? [];
+
         return Scaffold(
           appBar: AppBar(
             title: Text('Asset Brand'),
-            actions: permission?.contains('master_add') == true
+            actions: permission.contains('master_add') == true
                 ? [
                     IconButton(
-                      onPressed: () => context.pushExt(CreateAssetBrandView()),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        context.pushExt(CreateAssetBrandView());
+                      },
                       icon: Icon(Icons.add),
                     ),
                   ]
                 : null,
           ),
-          body: BlocBuilder<MasterBloc, MasterState>(
+          body: BlocBuilder<BrandBloc, BrandState>(
             builder: (context, state) {
-              if (state.status == StatusMaster.loading) {
-                return Center(
-                  child: CircularProgressIndicator(color: AppColors.kBase),
-                );
-              } else if (state.status == StatusMaster.failed) {
-                return Center(
-                  child: Text(
-                    state.message ?? '',
-                    style: TextStyle(fontSize: isLarge ? 14 : 12),
-                  ),
-                );
-              } else if (state.brands != null || state.brands != []) {
-                final brands = state.brands
-                  ?..sort((a, b) => a.name!.compareTo(b.name!));
-                List<AssetBrand> filteredBrand = [];
-
-                if (query.isNotEmpty || query != '') {
-                  filteredBrand = brands!.where((element) {
-                    final name = element.name?.toLowerCase() ?? '';
-                    final init = element.init?.toLowerCase() ?? '';
-                    return name.contains(query.toLowerCase()) ||
-                        init.contains(query.toLowerCase());
-                  }).toList();
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      AppSpace.vertical(16),
-                      AppTextField(
-                        noTitle: true,
-                        hintText: 'Search...',
-                        fontSize: isLarge ? 14 : 12,
-                        onChanged: (value) => setState(() {
-                          query = value;
-                        }),
+              if (state.status == StatusBrand.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                child: Column(
+                  children: [
+                    AppTextFieldSearch(
+                      controller: _searchC,
+                      focusNode: _searchFn,
+                      isSearchActive: _isSearchActive,
+                      hintText: 'Search',
+                      textInputAction: TextInputAction.search,
+                      keyboardType: TextInputType.text,
+                      onSubmitted: (value) {
+                        if (value.isFilled()) {
+                          setState(() => _isSearchActive = true);
+                          context.read<BrandBloc>().add(
+                            OnFindAssetBrandByQuery(value),
+                          );
+                        }
+                      },
+                      onChanged: (value) {
+                        if (!value.isFilled() && _isSearchActive) {
+                          setState(() => _isSearchActive = false);
+                          context.read<BrandBloc>().add(OnClearAll());
+                        }
+                      },
+                      onClear: () {
+                        setState(() {
+                          _searchC.clear();
+                          _isSearchActive = false;
+                        });
+                        context.read<BrandBloc>().add(OnClearAll());
+                      },
+                    ),
+                    AppSpace.vertical(16),
+                    if (!_searchC.value.text.isFilled())
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Please input brand name or init',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
                       ),
-                      AppSpace.vertical(16),
+
+                    if (_searchC.value.text.isFilled() && state.brands == null)
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Category not found',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (_searchC.value.text.isFilled() && state.brands != null)
                       Expanded(
                         child: ListView.builder(
-                          itemCount: filteredBrand.isEmpty
-                              ? brands?.length
-                              : filteredBrand.length,
+                          padding: EdgeInsets.zero,
+                          itemCount: state.brands?.length,
                           itemBuilder: (context, index) {
-                            final brand = filteredBrand.isNotEmpty
-                                ? filteredBrand[index]
-                                : brands?[index];
-                            return AppListTileCustom(
+                            final brand = state.brands?[index];
+                            return AppCardItem(
                               title: brand?.name,
-                              fontSize: isLarge ? 14 : 12,
-                              trailing: brand?.init,
+                              leading: brand?.init,
+                              noDescription: true,
+                              noSubtitle: true,
                             );
                           },
                         ),
                       ),
-                    ],
-                  ),
-                );
-              } else {
-                return Container();
-              }
+                  ],
+                ),
+              );
             },
           ),
         );

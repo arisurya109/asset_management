@@ -7,10 +7,10 @@ class AssetDesktopEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class OnFindAllAssets extends AssetDesktopEvent {}
+class OnFindAssetPagination extends AssetDesktopEvent {
+  final int? limit;
+  final int? page;
+  final String? query;
 
-class OnFindAssetsByQuery extends AssetDesktopEvent {
-  final String params;
-
-  const OnFindAssetsByQuery(this.params);
+  const OnFindAssetPagination({this.limit, this.page, this.query});
 }

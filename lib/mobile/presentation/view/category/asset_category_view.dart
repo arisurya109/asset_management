@@ -1,5 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:asset_management/domain/entities/master/asset_category.dart';
+import 'package:asset_management/mobile/presentation/bloc/category/category_bloc.dart';
+import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
+import 'package:asset_management/mobile/presentation/components/app_text_field_search.dart';
 import 'package:asset_management/mobile/presentation/view/category/create_asset_category_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
@@ -7,9 +9,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
-
-import '../../components/app_list_tile_custom.dart';
 
 class AssetCategoryView extends StatefulWidget {
   const AssetCategoryView({super.key});
@@ -19,7 +18,24 @@ class AssetCategoryView extends StatefulWidget {
 }
 
 class _AssetCategoryViewState extends State<AssetCategoryView> {
-  String query = '';
+  late TextEditingController _searchC;
+  late FocusNode _searchFn;
+  bool _isSearchActive = false;
+
+  @override
+  void initState() {
+    _searchC = TextEditingController();
+    _searchFn = FocusNode();
+    _searchFn.requestFocus();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _searchC.dispose();
+    _searchFn.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,77 +48,109 @@ class _AssetCategoryViewState extends State<AssetCategoryView> {
   Widget _mobileCategory({bool isLarge = true}) {
     return BlocBuilder<AuthenticationBloc, AuthenticationState>(
       builder: (context, state) {
-        final permission = state.user!.modules;
+        final permission =
+            state.user!.modules?.map((p) => p['name'] as String).toList() ?? [];
+
         return Scaffold(
           appBar: AppBar(
             title: Text('Asset Category'),
-            actions: permission?.contains('master_add') == true
+            actions: permission.contains('master_add') == true
                 ? [
                     IconButton(
-                      onPressed: () =>
-                          context.pushExt(CreateAssetCategoryView()),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        context.pushExt(CreateAssetCategoryView());
+                      },
                       icon: Icon(Icons.add),
                     ),
                   ]
                 : null,
           ),
-          body: BlocBuilder<MasterBloc, MasterState>(
+          body: BlocBuilder<CategoryBloc, CategoryState>(
             builder: (context, state) {
-              if (state.status == StatusMaster.loading) {
-                return Center(
-                  child: CircularProgressIndicator(color: AppColors.kBase),
-                );
-              } else if (state.categories != null || state.categories != []) {
-                final categories = state.categories
-                  ?..sort((a, b) => a.name!.compareTo(b.name!));
-                List<AssetCategory> filteredCategories = [];
-
-                if (query.isNotEmpty || query != '') {
-                  filteredCategories = categories!.where((element) {
-                    final name = element.name?.toLowerCase() ?? '';
-                    final init = element.init?.toLowerCase() ?? '';
-                    return name.contains(query.toLowerCase()) ||
-                        init.contains(query.toLowerCase());
-                  }).toList();
-                }
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    children: [
-                      AppSpace.vertical(16),
-                      AppTextField(
-                        noTitle: true,
-                        hintText: 'Search...',
-                        fontSize: isLarge ? 14 : 12,
-                        onChanged: (value) => setState(() {
-                          query = value;
-                        }),
+              if (state.status == StatusCategory.loading) {
+                return Center(child: CircularProgressIndicator());
+              }
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(16, 6, 16, 8),
+                child: Column(
+                  children: [
+                    AppTextFieldSearch(
+                      controller: _searchC,
+                      focusNode: _searchFn,
+                      isSearchActive: _isSearchActive,
+                      hintText: 'Search',
+                      textInputAction: TextInputAction.search,
+                      keyboardType: TextInputType.text,
+                      onSubmitted: (value) {
+                        if (value.isFilled()) {
+                          setState(() => _isSearchActive = true);
+                          context.read<CategoryBloc>().add(
+                            OnFindCategoryByQuery(value),
+                          );
+                        }
+                      },
+                      onChanged: (value) {
+                        if (!value.isFilled() && _isSearchActive) {
+                          setState(() => _isSearchActive = false);
+                          context.read<CategoryBloc>().add(OnClearAll());
+                        }
+                      },
+                      onClear: () {
+                        setState(() {
+                          _searchC.clear();
+                          _isSearchActive = false;
+                        });
+                        context.read<CategoryBloc>().add(OnClearAll());
+                      },
+                    ),
+                    AppSpace.vertical(16),
+                    if (!_searchC.value.text.isFilled())
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Please input category name or init',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
                       ),
-                      AppSpace.vertical(16),
+
+                    if (_searchC.value.text.isFilled() &&
+                        state.categories == null)
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'Category not found',
+                            style: TextStyle(
+                              color: AppColors.kGrey,
+                              fontSize: isLarge ? 14 : 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (_searchC.value.text.isFilled() &&
+                        state.categories != null)
                       Expanded(
                         child: ListView.builder(
-                          itemCount: filteredCategories.isEmpty
-                              ? categories?.length
-                              : filteredCategories.length,
+                          padding: EdgeInsets.zero,
+                          itemCount: state.categories?.length,
                           itemBuilder: (context, index) {
-                            final category = filteredCategories.isNotEmpty
-                                ? filteredCategories[index]
-                                : categories?[index];
-                            return AppListTileCustom(
+                            final category = state.categories?[index];
+                            return AppCardItem(
+                              noDescription: true,
+                              noSubtitle: true,
                               title: category?.name,
-                              trailing: category?.init,
-                              fontSize: isLarge ? 14 : 12,
+                              leading: category?.init,
                             );
                           },
                         ),
                       ),
-                    ],
-                  ),
-                );
-              } else {
-                return Container();
-              }
+                  ],
+                ),
+              );
             },
           ),
         );

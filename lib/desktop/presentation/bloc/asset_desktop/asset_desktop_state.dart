@@ -6,26 +6,26 @@ enum StatusAssetDesktop { initial, loading, failure, loaded }
 // ignore: must_be_immutable
 class AssetDesktopState extends Equatable {
   StatusAssetDesktop? status;
-  List<AssetEntity>? assets;
+  AssetEntityPagination? response;
   String? message;
 
   AssetDesktopState({
     this.status = StatusAssetDesktop.initial,
-    this.assets,
+    this.response,
     this.message,
   });
 
   @override
-  List<Object?> get props => [status, assets, message];
+  List<Object?> get props => [status, response, message];
 
   AssetDesktopState copyWith({
     StatusAssetDesktop? status,
-    List<AssetEntity>? assets,
+    AssetEntityPagination? response,
     String? message,
   }) {
     return AssetDesktopState(
       status: status ?? this.status,
-      assets: assets ?? this.assets,
+      response: response ?? this.response,
       message: message ?? this.message,
     );
   }

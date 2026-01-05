@@ -1,12 +1,14 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
+import 'package:asset_management/desktop/presentation/bloc/preparation_update/preparation_update_bloc.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_text_field_search_desktop.dart';
-import 'package:asset_management/desktop/presentation/cubit/preparation_update/preparation_update_cubit.dart';
+import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
+import 'package:asset_management/domain/entities/movement/movement.dart';
 import 'package:asset_management/mobile/main_export.dart';
 import 'package:go_router/go_router.dart';
 
@@ -19,17 +21,21 @@ class PreparationUpdateView extends StatefulWidget {
 
 class _PreparationUpdateViewState extends State<PreparationUpdateView> {
   late TextEditingController assetCodeC;
+  late TextEditingController remarksC;
   late TextEditingController locationAssetC;
   late TextEditingController categoryAssetC;
   late TextEditingController modelAssetC;
-  late TextEditingController quantityAssetC;
+  late TextEditingController statusAssetC;
+  late TextEditingController conditonsAssetC;
   late TextEditingController poAssetC;
   late TextEditingController typeAssetC;
   late FocusNode fnAssetCode;
+  late FocusNode fnRemarks;
 
   Location? toLocation;
   AssetEntity? selectedAsset;
-  List<String> locations = ['LOC1', 'LOC2', 'LOC3'];
+  List<String> listStatus = ['USE', 'REPAIR'];
+  String? selectedStatus;
 
   bool _isSearchActiveAsset = false;
   bool _isBtnUpdateActive = false;
@@ -37,13 +43,16 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
   @override
   void initState() {
     assetCodeC = TextEditingController();
+    remarksC = TextEditingController();
     locationAssetC = TextEditingController();
     categoryAssetC = TextEditingController();
     modelAssetC = TextEditingController();
-    quantityAssetC = TextEditingController();
+    statusAssetC = TextEditingController();
+    conditonsAssetC = TextEditingController();
     poAssetC = TextEditingController();
     typeAssetC = TextEditingController();
     fnAssetCode = FocusNode();
+    fnRemarks = FocusNode();
     super.initState();
   }
 
@@ -51,7 +60,8 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
     locationAssetC.clear();
     categoryAssetC.clear();
     modelAssetC.clear();
-    quantityAssetC.clear();
+    statusAssetC.clear();
+    conditonsAssetC.clear();
     poAssetC.clear();
     typeAssetC.clear();
     selectedAsset = null;
@@ -71,7 +81,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
             children: [
               // Find Asset
               Container(
-                width: 300,
+                width: 350,
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.kWhite,
@@ -85,23 +95,69 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                       title: '',
                       hintText: 'Selected Destination',
                       onFind: (String filter) async => await context
-                          .read<PreparationUpdateCubit>()
-                          .getLocationsForDropdown(),
+                          .read<DatasDesktopCubit>()
+                          .getLocationsByStorage('NON STORAGE'),
                       borderRadius: 4,
                       compareFn: (value, value1) => value.name == value1.name,
                       itemAsString: (value) => value.name!,
-                      fontSize: 10,
+                      fontSize: 12,
                       enabled: true,
                       onChanged: (value) => setState(() {
                         toLocation = value;
-                        fnAssetCode.requestFocus();
                       }),
                       showSearchBox: true,
                       selectedItem: toLocation,
                     ),
                     AppSpace.vertical(16),
+                    AppDropDownSearch<String>(
+                      title: '',
+                      hintText: 'Selected Status',
+                      items: listStatus,
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value == value1,
+                      itemAsString: (value) => value,
+                      fontSize: 12,
+                      enabled: true,
+                      onChanged: (value) => setState(() {
+                        selectedStatus = value;
+                        fnAssetCode.requestFocus();
+                      }),
+                      showSearchBox: true,
+                      selectedItem: selectedStatus,
+                    ),
+                    AppSpace.vertical(16),
                     AppTextFieldSearchDesktop(
-                      width: 300,
+                      width: 350,
+                      height: 35,
+                      hintText: 'Remarks',
+                      focusNode: fnRemarks,
+                      controller: remarksC,
+                      suffixIcon: remarksC.value.text.isFilled()
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, size: 16),
+                              onPressed: () {
+                                setState(() {
+                                  remarksC.clear();
+                                });
+                              },
+                            )
+                          : Icon(Icons.minimize, color: Colors.transparent),
+                      onChanged: (value) {
+                        if (value.isEmpty) {
+                          setState(() {
+                            remarksC.clear();
+                          });
+                        }
+                      },
+                      onSubmitted: (p0) => setState(() {
+                        fnAssetCode.requestFocus();
+                      }),
+                    ),
+                    AppSpace.vertical(16),
+
+                    AppTextFieldSearchDesktop(
+                      width: 350,
+                      height: 35,
                       hintText: 'Asset Code',
                       focusNode: fnAssetCode,
                       controller: assetCodeC,
@@ -148,7 +204,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
               AppSpace.horizontal(24),
               // Field Asset After Finding
               Container(
-                width: 300,
+                width: 350,
                 padding: EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.kWhite,
@@ -158,22 +214,13 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Quantity', style: TextStyle(fontSize: 12)),
-                    AppSpace.vertical(5),
-                    AppTextFieldSearchDesktop(
-                      hintText: 'Quantity',
-                      width: 300,
-                      controller: quantityAssetC,
-                      enabled: false,
-                    ),
-                    AppSpace.vertical(11),
                     Text('Type', style: TextStyle(fontSize: 12)),
                     AppSpace.vertical(5),
                     AppTextFieldSearchDesktop(
                       hintText: 'Type',
                       controller: typeAssetC,
                       enabled: false,
-                      width: 300,
+                      width: 350,
                     ),
                     AppSpace.vertical(11),
                     Text('Category', style: TextStyle(fontSize: 12)),
@@ -182,7 +229,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                       hintText: 'Category',
                       controller: categoryAssetC,
                       enabled: false,
-                      width: 300,
+                      width: 350,
                     ),
                     AppSpace.vertical(11),
                     Text('Model', style: TextStyle(fontSize: 12)),
@@ -191,7 +238,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                       hintText: 'Model',
                       controller: modelAssetC,
                       enabled: false,
-                      width: 300,
+                      width: 350,
                     ),
                     AppSpace.vertical(11),
                     Text('Location', style: TextStyle(fontSize: 12)),
@@ -200,7 +247,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                       hintText: 'Location',
                       controller: locationAssetC,
                       enabled: false,
-                      width: 300,
+                      width: 350,
                     ),
                     AppSpace.vertical(11),
                     Text('PO', style: TextStyle(fontSize: 12)),
@@ -209,13 +256,28 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                       hintText: 'PO',
                       controller: poAssetC,
                       enabled: false,
-                      width: 300,
+                      width: 350,
+                    ),
+                    AppSpace.vertical(11),
+                    Text('Status', style: TextStyle(fontSize: 12)),
+                    AppSpace.vertical(5),
+                    AppTextFieldSearchDesktop(
+                      hintText: 'Status',
+                      width: 350,
+                      controller: statusAssetC,
+                      enabled: false,
+                    ),
+                    AppSpace.vertical(11),
+                    Text('Condition', style: TextStyle(fontSize: 12)),
+                    AppSpace.vertical(5),
+                    AppTextFieldSearchDesktop(
+                      hintText: 'Condition',
+                      width: 350,
+                      controller: conditonsAssetC,
+                      enabled: false,
                     ),
                     AppSpace.vertical(24),
-                    BlocListener<
-                      PreparationUpdateCubit,
-                      PreparationUpdateState
-                    >(
+                    BlocListener<PreparationUpdateBloc, PreparationUpdateState>(
                       listener: (context, state) {
                         if (state.status == StatusPreparationUpdate.loading) {
                           context.dialogLoadingDesktop();
@@ -228,7 +290,11 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                             type: ToastType.error,
                             message: state.message!,
                           );
-                          fnAssetCode.requestFocus();
+                          setState(() {
+                            _clear();
+                            assetCodeC.clear();
+                            fnAssetCode.requestFocus();
+                          });
                         }
 
                         if (state.status == StatusPreparationUpdate.success) {
@@ -246,10 +312,10 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
                         }
                       },
                       child: AppButton(
-                        title: 'Update',
+                        title: 'Shipped',
                         onPressed: _isBtnUpdateActive ? () => _btn() : null,
                         height: 35,
-                        width: 300,
+                        width: 350,
                         fontSize: 11,
                       ),
                     ),
@@ -267,7 +333,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
   Future _findAsset(String value) async {
     if (value.trim().isNotEmpty) {
       setState(() => _isSearchActiveAsset = true);
-      final asset = await context.read<PreparationUpdateCubit>().findAsset(
+      final asset = await context.read<DatasDesktopCubit>().getAssetByAssetCode(
         value,
       );
 
@@ -275,9 +341,7 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
         setState(() {
           selectedAsset = asset;
           _isBtnUpdateActive = true;
-          quantityAssetC.value = TextEditingValue(
-            text: '${asset.quantity} Unit',
-          );
+
           categoryAssetC.value = TextEditingValue(text: asset.category ?? '');
           modelAssetC.value = TextEditingValue(text: asset.model ?? '');
           locationAssetC.value = TextEditingValue(
@@ -286,6 +350,10 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
           typeAssetC.value = TextEditingValue(text: asset.types ?? '');
           poAssetC.value = TextEditingValue(
             text: asset.purchaseOrder.isFilled() ? asset.purchaseOrder! : '-',
+          );
+          statusAssetC.value = TextEditingValue(text: asset.status ?? '');
+          conditonsAssetC.value = TextEditingValue(
+            text: asset.conditions ?? '',
           );
         });
       } else {
@@ -313,18 +381,31 @@ class _PreparationUpdateViewState extends State<PreparationUpdateView> {
         type: ToastType.warning,
         message: 'Not Found Asset',
       );
+    } else if (selectedStatus == null) {
+      AppToast.show(
+        context: context,
+        type: ToastType.warning,
+        message: 'Please selected status',
+      );
     } else {
       context.showDialogConfirm(
-        title: 'Update',
-        content: 'Are your sure update ?',
+        title: 'Shipped Asset',
+        content: 'Are your sure shipped asset ?',
         onCancelText: 'Cancel',
         onConfirm: () {
-          context.read<PreparationUpdateCubit>().updatePreparationAsset(
-            asetId: selectedAsset!.id!,
-            movementType: 'PREPARATION',
-            fromL: selectedAsset!.locationId!,
-            toL: toLocation!.id!,
-            qty: selectedAsset!.quantity!,
+          context.read<PreparationUpdateBloc>().add(
+            OnPreparationUpdate(
+              Movement(
+                assetId: selectedAsset?.id,
+                destination: toLocation?.name,
+                fromLocation: selectedAsset?.locationDetail,
+                type: 'PREPARATION',
+                status: selectedStatus,
+                remarks: remarksC.value.text.trim().isFilled()
+                    ? remarksC.value.text.trim()
+                    : null,
+              ),
+            ),
           );
           context.pop();
         },

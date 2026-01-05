@@ -13,11 +13,14 @@ class PrinterView extends StatefulWidget {
 
 class _PrinterViewState extends State<PrinterView> {
   late TextEditingController ipC;
+  late FocusNode ipFn;
 
   @override
   void initState() {
     final ipPrinter = context.read<PrinterBloc>().state.printer?.ipPrinter;
     ipC = TextEditingController(text: ipPrinter);
+    ipFn = FocusNode();
+    ipFn.requestFocus();
     super.initState();
   }
 
@@ -38,6 +41,14 @@ class _PrinterViewState extends State<PrinterView> {
   }
 
   @override
+  void dispose() {
+    ipC.dispose();
+    ipFn.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobileLScaffold: _mobilePrinter(),
@@ -52,17 +63,18 @@ class _PrinterViewState extends State<PrinterView> {
         padding: EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           children: [
-            AppSpace.vertical(16),
+            AppSpace.vertical(5),
             AppTextField(
               controller: ipC,
               title: 'IP Printer',
+              focusNode: ipFn,
               fontSize: isLarge ? 14 : 12,
               hintText: 'Example : 10.110.117.95',
               textInputAction: TextInputAction.go,
               keyboardType: TextInputType.number,
               onSubmitted: (_) => _submit(isLarge),
             ),
-            AppSpace.vertical(48),
+            AppSpace.vertical(32),
             BlocConsumer<PrinterBloc, PrinterState>(
               listener: (context, state) {
                 if (state.status == PrinterStatus.failed) {

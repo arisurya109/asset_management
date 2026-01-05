@@ -1,8 +1,8 @@
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
+import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
-import 'package:asset_management/mobile/presentation/bloc/master/master_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/migration/migration_cubit.dart';
 import 'package:asset_management/mobile/presentation/bloc/printer/printer_bloc.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +20,7 @@ class MigrationView extends StatefulWidget {
 
 class _MigrationViewState extends State<MigrationView> {
   AssetModel? model;
+  AssetCategory? category;
   Location? location;
   String? status;
   String? conditions;
@@ -40,6 +41,7 @@ class _MigrationViewState extends State<MigrationView> {
   void dispose() {
     description.dispose();
     assetIdOld.dispose();
+    FocusManager.instance.primaryFocus?.unfocus();
     super.dispose();
   }
 
@@ -54,7 +56,7 @@ class _MigrationViewState extends State<MigrationView> {
   Widget _mobileMigration({bool isLarge = true}) {
     return Scaffold(
       appBar: AppBar(title: Text('Migration')),
-      body: BlocBuilder<MasterBloc, MasterState>(
+      body: BlocBuilder<MigrationCubit, MigrationState>(
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -64,31 +66,51 @@ class _MigrationViewState extends State<MigrationView> {
                   AppSpace.vertical(12),
                   AppDropDownSearch<Location>(
                     title: "Location",
-                    hintText: "Select location",
+                    hintText: "Select Location",
                     borderRadius: 5,
                     fontSize: isLarge ? 14 : 12,
-                    items: state.locations!
-                      ..sort((a, b) => a.name!.compareTo(b.name!)),
+                    onFind: (_) async =>
+                        await context.read<MigrationCubit>().getLocations(),
                     itemAsString: (item) => item.name ?? '',
                     selectedItem: location,
                     compareFn: (a, b) => a.name == b.name,
-                    onChanged: (value) {
-                      setState(() => location = value);
-                    },
+                    onChanged: (value) => setState(() {
+                      location = value;
+                    }),
+                  ),
+                  AppSpace.vertical(16),
+                  AppDropDownSearch<AssetCategory>(
+                    title: "Category",
+                    hintText: "Select Category",
+                    borderRadius: 5,
+                    fontSize: isLarge ? 14 : 12,
+                    itemAsString: (item) => item.name ?? '',
+                    onFind: (_) async => await context
+                        .read<MigrationCubit>()
+                        .getAssetCategories(),
+                    selectedItem: category,
+                    compareFn: (a, b) => a.name == b.name,
+                    onChanged: (value) => setState(() {
+                      category = value;
+                    }),
                   ),
                   AppSpace.vertical(16),
                   AppDropDownSearch<AssetModel>(
                     title: "Model",
                     hintText: "Select Model",
-                    borderRadius: 5,
                     fontSize: isLarge ? 14 : 12,
-                    items: state.models ?? [],
+                    borderRadius: 4,
+                    onFind: category == null
+                        ? null
+                        : (value) async => await context
+                              .read<MigrationCubit>()
+                              .getAssetModels(category!.name!),
                     itemAsString: (item) => item.name ?? '',
                     selectedItem: model,
                     compareFn: (a, b) => a.name == b.name,
-                    onChanged: (value) {
-                      setState(() => model = value);
-                    },
+                    onChanged: (value) => setState(() {
+                      model = value;
+                    }),
                   ),
                   AppSpace.vertical(16),
                   AppDropDownSearch<String>(
@@ -170,33 +192,33 @@ class _MigrationViewState extends State<MigrationView> {
                     onSubmitted: (_) => _onSubmit(isLarge),
                   ),
                   AppSpace.vertical(32),
-                  BlocConsumer<AssetBloc, AssetState>(
+                  BlocConsumer<MigrationCubit, MigrationState>(
                     listener: (context, state) {
                       assetIdOld.clear();
-                      if (state.status == StatusAsset.failed) {
+                      if (state.status == StatusMigration.failure) {
                         context.showSnackbar(
                           state.message!,
                           backgroundColor: AppColors.kRed,
                         );
                       }
 
-                      if (state.status == StatusAsset.success &&
-                          state.response != null) {
-                        final asset = state.response;
+                      if (state.status == StatusMigration.success &&
+                          state.asset != null) {
+                        final asset = state.asset;
                         context.read<PrinterBloc>().add(
-                          OnPrintAssetId(state.response!.assetCode!),
+                          OnPrintAssetId(asset!.assetCode!),
                         );
                         context.showDialogConfirm(
                           title: 'Successfully Migration',
                           fontSize: isLarge ? 16 : 14,
                           content:
-                              'Asset Code : ${asset?.assetCode}\nSerial Number : ${asset?.serialNumber}\nLocation : ${asset?.location}',
+                              'Asset Code : ${asset.assetCode}\nSerial Number : ${asset.serialNumber}\nLocation : ${asset.location}',
                           onCancel: () => context.popExt(),
                           onCancelText: 'Done',
                           onConfirm: () {
                             context.popExt();
                             context.read<PrinterBloc>().add(
-                              OnPrintAssetId(asset!.assetCode!),
+                              OnPrintAssetId(asset.assetCode!),
                             );
                           },
                           onConfirmText: 'Reprint',
@@ -205,12 +227,12 @@ class _MigrationViewState extends State<MigrationView> {
                     },
                     builder: (context, state) {
                       return AppButton(
-                        title: state.status == StatusAsset.loading
+                        title: state.status == StatusMigration.loading
                             ? 'Loading...'
                             : 'New Registration',
                         width: double.maxFinite,
                         fontSize: isLarge ? 16 : 14,
-                        onPressed: state.status == StatusAsset.loading
+                        onPressed: state.status == StatusMigration.loading
                             ? null
                             : () => _onSubmit(isLarge),
                       );
@@ -243,20 +265,17 @@ class _MigrationViewState extends State<MigrationView> {
         fontSize: isLarge ? 14 : 12,
         onCancel: () => Navigator.pop(context),
         onConfirm: () {
-          context.read<AssetBloc>().add(
-            OnCreateAssetsEvent(
-              AssetEntity(
-                assetModelId: model!.id,
-                locationId: location?.id,
-                colorId: colorId,
-                assetIdOld: ast,
-                isMigration: 1,
-                conditions: conditions,
-                quantity: 1,
-                remarks: desc,
-                uom: 1,
-                status: status,
-              ),
+          context.read<MigrationCubit>().onMigrateAsset(
+            AssetEntity(
+              assetModelId: model!.id,
+              locationId: location?.id,
+              colorId: colorId,
+              assetIdOld: ast,
+              conditions: conditions,
+              quantity: 1,
+              remarks: desc.isFilled() ? desc : null,
+              uom: 1,
+              status: status,
             ),
           );
           Navigator.pop(context);
