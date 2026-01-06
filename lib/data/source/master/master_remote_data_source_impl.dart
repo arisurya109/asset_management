@@ -8,6 +8,7 @@ import 'package:asset_management/data/model/master/asset_category_model.dart';
 import 'package:asset_management/data/model/master/asset_model_model.dart';
 import 'package:asset_management/data/model/master/asset_type_model.dart';
 import 'package:asset_management/data/model/master/location_model.dart';
+import 'package:asset_management/data/model/master/location_pagination_model.dart';
 import 'package:asset_management/data/model/master/preparation_template_item_model.dart';
 import 'package:asset_management/data/model/master/preparation_template_model.dart';
 import 'package:asset_management/data/model/master/vendor_model.dart';
@@ -600,6 +601,37 @@ class MasterRemoteDataSourceImpl implements MasterRemoteDataSource {
         List datas = bodyResponse['data'];
 
         return datas.map((e) => AssetModelModel.fromJson(e)).toList();
+      } else {
+        final message = ApiHelper.getErrorMessage(response.body);
+        throw NotFoundException(message: message);
+      }
+    }
+  }
+
+  @override
+  Future<LocationPaginationModel> findLocationByPagination({
+    required int page,
+    required int limit,
+    String? query,
+  }) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw CreateException(message: 'Token expired');
+    } else {
+      String path = 'limit=$limit&page=$page';
+      if (query.isFilled()) {
+        path = '$path&query=$query';
+      }
+
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/location?$path'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final bodyResponse = jsonDecode(response.body);
+        return LocationPaginationModel.fromJson(bodyResponse);
       } else {
         final message = ApiHelper.getErrorMessage(response.body);
         throw NotFoundException(message: message);

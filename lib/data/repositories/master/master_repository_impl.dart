@@ -13,6 +13,7 @@ import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
+import 'package:asset_management/domain/entities/master/location_pagination.dart';
 import 'package:asset_management/domain/entities/master/preparation_template.dart';
 import 'package:asset_management/domain/entities/master/preparation_template_item.dart';
 import 'package:asset_management/domain/entities/master/vendor.dart';
@@ -292,6 +293,25 @@ class MasterRepositoryImpl implements MasterRepository {
     try {
       final response = await _source.findAssetModelByQuery(params);
       return Right(response.map((e) => e.toEntity()).toList());
+    } on NotFoundException catch (e) {
+      return Left(NotFoundFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, LocationPagination>> findLocationByPagination({
+    required int page,
+    required int limit,
+    String? query,
+  }) async {
+    try {
+      final response = await _source.findLocationByPagination(
+        limit: limit,
+        page: page,
+        query: query,
+      );
+
+      return Right(response.toEntity());
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
     }

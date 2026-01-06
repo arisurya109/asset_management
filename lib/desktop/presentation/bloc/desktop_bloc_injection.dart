@@ -24,9 +24,7 @@ desktopBlocInjection() {
   locator.registerFactory(
     () => DatasDesktopCubit(locator(), locator(), locator(), locator()),
   );
-  locator.registerFactory(
-    () => LocationDesktopBloc(locator(), locator(), locator()),
-  );
+  locator.registerFactory(() => LocationDesktopBloc(locator(), locator()));
   locator.registerFactory(() => PreparationUpdateBloc(locator()));
   locator.registerFactory(() => ReturnBloc(locator()));
 }

@@ -7,12 +7,12 @@ class LocationDesktopEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class OnFindAllLocation extends LocationDesktopEvent {}
+class OnFindLocationPagination extends LocationDesktopEvent {
+  final int? limit;
+  final int? page;
+  final String? query;
 
-class OnFindAllLocationByQuery extends LocationDesktopEvent {
-  final String query;
-
-  const OnFindAllLocationByQuery(this.query);
+  const OnFindLocationPagination({this.limit, this.page, this.query});
 }
 
 class OnCreateLocationEvent extends LocationDesktopEvent {

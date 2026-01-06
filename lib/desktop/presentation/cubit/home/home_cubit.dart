@@ -15,12 +15,12 @@ class HomeCubit extends Cubit<int> {
           'path': '/asset',
           'permission': 'assets_view',
         },
-        {
-          'value': 2,
-          'title': 'Preparation',
-          'path': '/preparation',
-          'permission': 'preparation_view',
-        },
+        // {
+        //   'value': 2,
+        //   'title': 'Preparation',
+        //   'path': '/preparation',
+        //   'permission': 'preparation_view',
+        // },
         // {
         //   'value': 3,
         //   'title': 'User Management',
@@ -38,42 +38,42 @@ class HomeCubit extends Cubit<int> {
     {
       'name': 'Master',
       'items': [
-        {
-          'value': 6,
-          'title': 'Asset Type',
-          'path': '/types',
-          'permission': 'master_view',
-        },
-        {
-          'value': 7,
-          'title': 'Asset Brand',
-          'path': '/master',
-          'permission': 'master_view',
-        },
-        {
-          'value': 8,
-          'title': 'Asset Category',
-          'path': '/master',
-          'permission': 'master_view',
-        },
-        {
-          'value': 9,
-          'title': 'Asset Model',
-          'path': '/master',
-          'permission': 'master_view',
-        },
+        // {
+        //   'value': 6,
+        //   'title': 'Asset Type',
+        //   'path': '/types',
+        //   'permission': 'master_view',
+        // },
+        // {
+        //   'value': 7,
+        //   'title': 'Asset Brand',
+        //   'path': '/master',
+        //   'permission': 'master_view',
+        // },
+        // {
+        //   'value': 8,
+        //   'title': 'Asset Category',
+        //   'path': '/master',
+        //   'permission': 'master_view',
+        // },
+        // {
+        //   'value': 9,
+        //   'title': 'Asset Model',
+        //   'path': '/master',
+        //   'permission': 'master_view',
+        // },
         {
           'value': 10,
           'title': 'Location',
           'path': '/location',
           'permission': 'master_view',
         },
-        {
-          'value': 11,
-          'title': 'Set Preparation',
-          'path': '/master',
-          'permission': 'master_view',
-        },
+        // {
+        //   'value': 11,
+        //   'title': 'Set Preparation',
+        //   'path': '/master',
+        //   'permission': 'master_view',
+        // },
       ],
     },
   ];

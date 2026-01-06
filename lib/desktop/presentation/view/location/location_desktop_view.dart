@@ -8,8 +8,32 @@ import 'package:go_router/go_router.dart';
 
 import '../../bloc/location_desktop/location_desktop_bloc.dart';
 
-class LocationDesktopView extends StatelessWidget {
+class LocationDesktopView extends StatefulWidget {
   const LocationDesktopView({super.key});
+
+  @override
+  State<LocationDesktopView> createState() => _LocationDesktopViewState();
+}
+
+class _LocationDesktopViewState extends State<LocationDesktopView> {
+  late ScrollController _horizontalScroll;
+
+  final List<int> _availableRowsPerPage = [10, 20, 50, 100];
+  int _rowsPerPage = 10;
+  int _currentPage = 1;
+  String? _searchQuery;
+
+  @override
+  void initState() {
+    _horizontalScroll = ScrollController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _horizontalScroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +49,15 @@ class LocationDesktopView extends StatelessWidget {
           body: BlocBuilder<LocationDesktopBloc, LocationDesktopState>(
             builder: (context, state) {
               final datas =
-                  state.locations?.asMap().entries.map((entry) {
+                  state.response?.locations?.asMap().entries.map((entry) {
                     int index = entry.key;
                     var e = entry.value;
+                    int noUrut =
+                        ((_currentPage - 1) * _rowsPerPage) + index + 1;
 
                     return {
                       'id': e.id.toString(),
-                      'no': (index + 1).toString(),
+                      'no': noUrut.toString(),
                       'name': e.name ?? '',
                       'code': e.code ?? '',
                       'init': e.init ?? '',
@@ -39,20 +65,65 @@ class LocationDesktopView extends StatelessWidget {
                     };
                   }).toList() ??
                   [];
+
               return AppNewTable(
                 datas: datas,
-                totalData: 2000,
+                horizontalScrollController: _horizontalScroll,
+                totalData: state.response?.totalData ?? 0,
+                availableRowsPerPage: _availableRowsPerPage,
+                rowsPerPage: _rowsPerPage,
                 onAdd: hasPermission
                     ? () => context.push('/location/add')
                     : null,
                 titleAdd: hasPermission ? 'Add Location' : null,
                 hintTextField: 'Search By Name or Init',
-                onSearchSubmit: (query) => context
-                    .read<LocationDesktopBloc>()
-                    .add(OnFindAllLocationByQuery(query)),
-                onClear: () => context.read<LocationDesktopBloc>().add(
-                  OnFindAllLocation(),
-                ),
+                onRowsPerPageChanged: (rowsPerPage) {
+                  if (rowsPerPage != null) {
+                    _rowsPerPage = rowsPerPage;
+                    _currentPage = 1;
+                    context.read<LocationDesktopBloc>().add(
+                      OnFindLocationPagination(
+                        limit: _rowsPerPage,
+                        page: _currentPage,
+                        query: _searchQuery,
+                      ),
+                    );
+                  }
+                },
+                onPageChanged: (index) {
+                  _currentPage = (index / _rowsPerPage).toInt() + 1;
+                  context.read<LocationDesktopBloc>().add(
+                    OnFindLocationPagination(
+                      limit: _rowsPerPage,
+                      page: _currentPage,
+                      query: _searchQuery,
+                    ),
+                  );
+                },
+                onSearchSubmit: (query) {
+                  _currentPage = 1;
+                  setState(() {
+                    _searchQuery = query;
+                  });
+                  context.read<LocationDesktopBloc>().add(
+                    OnFindLocationPagination(
+                      limit: _rowsPerPage,
+                      page: 1,
+                      query: _searchQuery,
+                    ),
+                  );
+                },
+                onClear: () {
+                  setState(() {
+                    _searchQuery = null;
+                  });
+                  context.read<LocationDesktopBloc>().add(
+                    OnFindLocationPagination(
+                      limit: _rowsPerPage,
+                      page: _currentPage,
+                    ),
+                  );
+                },
                 columns: [
                   AppDataTableColumn(label: 'NO', key: 'no', width: 50),
                   AppDataTableColumn(

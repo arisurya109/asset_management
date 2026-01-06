@@ -3,6 +3,7 @@ import 'package:asset_management/data/model/master/asset_category_model.dart';
 import 'package:asset_management/data/model/master/asset_model_model.dart';
 import 'package:asset_management/data/model/master/asset_type_model.dart';
 import 'package:asset_management/data/model/master/location_model.dart';
+import 'package:asset_management/data/model/master/location_pagination_model.dart';
 import 'package:asset_management/data/model/master/preparation_template_item_model.dart';
 import 'package:asset_management/data/model/master/preparation_template_model.dart';
 import 'package:asset_management/data/model/master/vendor_model.dart';
@@ -45,4 +46,9 @@ abstract class MasterRemoteDataSource {
   Future<List<LocationModel>> findLocationByQuery(String query);
   Future<List<LocationModel>> findLocationByStorage(String params);
   Future<List<String>> findLocationType();
+  Future<LocationPaginationModel> findLocationByPagination({
+    required int page,
+    required int limit,
+    String? query,
+  });
 }

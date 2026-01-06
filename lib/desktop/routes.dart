@@ -110,7 +110,9 @@ class Routes {
           GoRoute(
             path: '/location',
             pageBuilder: (context, state) {
-              context.read<LocationDesktopBloc>().add(OnFindAllLocation());
+              context.read<LocationDesktopBloc>().add(
+                OnFindLocationPagination(limit: 10, page: 1),
+              );
               return _buildDesktopTransition(
                 state: state,
                 child: LocationDesktopView(),

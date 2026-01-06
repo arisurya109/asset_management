@@ -4,6 +4,7 @@ import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
+import 'package:asset_management/domain/entities/master/location_pagination.dart';
 import 'package:asset_management/domain/entities/master/preparation_template.dart';
 import 'package:asset_management/domain/entities/master/preparation_template_item.dart';
 import 'package:asset_management/domain/entities/master/vendor.dart';
@@ -60,4 +61,9 @@ abstract class MasterRepository {
   Future<Either<Failure, List<Location>>> findLocationByQuery(String query);
   Future<Either<Failure, List<Location>>> findLocationByStorage(String params);
   Future<Either<Failure, List<String>>> findLocationType();
+  Future<Either<Failure, LocationPagination>> findLocationByPagination({
+    required int page,
+    required int limit,
+    String? query,
+  });
 }

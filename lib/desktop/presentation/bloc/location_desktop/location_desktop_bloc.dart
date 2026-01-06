@@ -1,7 +1,7 @@
 import 'package:asset_management/domain/entities/master/location.dart';
+import 'package:asset_management/domain/entities/master/location_pagination.dart';
 import 'package:asset_management/domain/usecases/master/create_location_use_case.dart';
-import 'package:asset_management/domain/usecases/master/find_all_location_use_case.dart';
-import 'package:asset_management/domain/usecases/master/find_location_by_query_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_location_by_pagination_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -10,14 +10,12 @@ part 'location_desktop_state.dart';
 
 class LocationDesktopBloc
     extends Bloc<LocationDesktopEvent, LocationDesktopState> {
-  final FindAllLocationUseCase _findAllLocationUseCase;
-  final FindLocationByQueryUseCase _findLocationByQueryUseCase;
   final CreateLocationUseCase _createLocationUseCase;
+  final FindLocationByPaginationUseCase _findLocationByPaginationUseCase;
 
   LocationDesktopBloc(
-    this._findAllLocationUseCase,
-    this._findLocationByQueryUseCase,
     this._createLocationUseCase,
+    this._findLocationByPaginationUseCase,
   ) : super(LocationDesktopState()) {
     on<OnCreateLocationEvent>((event, emit) async {
       emit(state.copyWith(status: StatusLocationDesktop.loading));
@@ -40,31 +38,14 @@ class LocationDesktopBloc
       );
     });
 
-    on<OnFindAllLocation>((event, emit) async {
+    on<OnFindLocationPagination>((event, emit) async {
       emit(state.copyWith(status: StatusLocationDesktop.loading));
 
-      final failureOrAssets = await _findAllLocationUseCase();
-
-      return failureOrAssets.fold(
-        (failure) => emit(
-          state.copyWith(
-            status: StatusLocationDesktop.failure,
-            message: failure.message,
-          ),
-        ),
-        (locations) => emit(
-          state.copyWith(
-            status: StatusLocationDesktop.loaded,
-            locations: locations,
-          ),
-        ),
+      final failureOrAssets = await _findLocationByPaginationUseCase(
+        limit: event.limit!,
+        page: event.page!,
+        query: event.query,
       );
-    });
-
-    on<OnFindAllLocationByQuery>((event, emit) async {
-      emit(state.copyWith(status: StatusLocationDesktop.loading));
-
-      final failureOrAssets = await _findLocationByQueryUseCase(event.query);
 
       return failureOrAssets.fold(
         (failure) => emit(
@@ -73,10 +54,10 @@ class LocationDesktopBloc
             message: failure.message,
           ),
         ),
-        (locations) => emit(
+        (response) => emit(
           state.copyWith(
             status: StatusLocationDesktop.loaded,
-            locations: locations,
+            response: response,
           ),
         ),
       );

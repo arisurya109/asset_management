@@ -80,7 +80,7 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
                   [];
 
               return AppNewTable(
-                onAdd: () {},
+                // onAdd: () {},
                 totalData: state.response?.totalData ?? 0,
                 titleAdd: 'Add Asset',
                 datas: datas,
@@ -88,7 +88,7 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
                 rowsPerPage: _rowsPerPage,
                 horizontalScrollController: _horizontalScroll,
                 hintTextField: 'Search...',
-                onTap: (data) => context.push('/asset/detail'),
+                // onTap: (data) => context.push('/asset/detail'),
                 onRowsPerPageChanged: (rowsPerPage) {
                   if (rowsPerPage != null) {
                     _rowsPerPage = rowsPerPage;

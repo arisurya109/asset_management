@@ -6,26 +6,26 @@ enum StatusLocationDesktop { initial, loading, failure, loaded, success }
 // ignore: must_be_immutable
 class LocationDesktopState extends Equatable {
   StatusLocationDesktop? status;
-  List<Location>? locations;
+  LocationPagination? response;
   String? message;
 
   LocationDesktopState({
     this.status = StatusLocationDesktop.initial,
-    this.locations,
+    this.response,
     this.message,
   });
 
   @override
-  List<Object?> get props => [status, locations, message];
+  List<Object?> get props => [status, response, message];
 
   LocationDesktopState copyWith({
     StatusLocationDesktop? status,
-    List<Location>? locations,
+    LocationPagination? response,
     String? message,
   }) {
     return LocationDesktopState(
       status: status ?? this.status,
-      locations: locations ?? this.locations,
+      response: response ?? this.response,
       message: message ?? this.message,
     );
   }

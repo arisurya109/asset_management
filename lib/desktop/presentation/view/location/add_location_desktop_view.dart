@@ -1,6 +1,7 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
+import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_text_field_desktop.dart';
@@ -132,11 +133,53 @@ class _AddLocationDesktopViewState extends State<AddLocationDesktopView> {
                       }),
                     ),
                     AppSpace.vertical(24),
-                    AppButton(
-                      height: 35,
-                      title: 'Add',
-                      onPressed: () => _onSubmit(),
-                      width: context.deviceWidth,
+                    BlocConsumer<LocationDesktopBloc, LocationDesktopState>(
+                      listener: (context, state) {
+                        if (state.status == StatusLocationDesktop.failure) {
+                          context.pop();
+                          setState(() {
+                            _nameC.clear();
+                            _codeC.clear();
+                            _initC.clear();
+                            _locationSelectedType = null;
+                            _parentLocation = null;
+                            _boxTypeSelected = null;
+                          });
+                          AppToast.show(
+                            context: context,
+                            type: ToastType.error,
+                            message: state.message!,
+                          );
+                        }
+
+                        if (state.status == StatusLocationDesktop.success) {
+                          context.pop();
+                          setState(() {
+                            _nameC.clear();
+                            _codeC.clear();
+                            _initC.clear();
+                            _locationSelectedType = null;
+                            _parentLocation = null;
+                            _boxTypeSelected = null;
+                          });
+                          AppToast.show(
+                            context: context,
+                            type: ToastType.success,
+                            message: state.message!,
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        return AppButton(
+                          height: 35,
+                          title: 'Add',
+                          onPressed:
+                              state.status == StatusLocationDesktop.loading
+                              ? null
+                              : () => _onSubmit(),
+                          width: context.deviceWidth,
+                        );
+                      },
                     ),
                   ],
                 );
@@ -191,19 +234,20 @@ Type : $_locationSelectedType
         onConfirmText: 'Yes',
         onCancel: () => context.pop(),
         onConfirm: () {
-          // context.read<LocationDesktopBloc>().add(
-          //   OnCreateLocationEvent(
-          //     Location(
-          //       name: name,
-          //       init: init,
-          //       code: code,
-          //       locationType: _locationSelectedType,
-          //       boxType: _boxTypeSelected,
-          //       parentId: _parentLocation?.id,
-          //     ),
-          //   ),
-          // );
+          context.read<LocationDesktopBloc>().add(
+            OnCreateLocationEvent(
+              Location(
+                name: name,
+                init: init,
+                code: code,
+                locationType: _locationSelectedType,
+                boxType: _boxTypeSelected,
+                parentId: _parentLocation?.id,
+              ),
+            ),
+          );
           context.pop();
+          context.dialogLoadingDesktop();
         },
       );
     }

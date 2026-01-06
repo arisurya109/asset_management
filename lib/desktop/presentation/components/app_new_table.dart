@@ -284,7 +284,7 @@ class AppAsyncDataSource extends AsyncDataTableSource {
       return DataRow2(
         onTap: onTap != null ? () => onTap!(data) : null,
         cells: columns.map((col) {
-          final String value = data[col.key] ?? "-";
+          final String value = data[col.key] ?? "";
 
           if (col.badgeConfig != null) {
             final color =
