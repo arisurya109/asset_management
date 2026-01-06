@@ -13,3 +13,12 @@
   - /build/app/outputs/apk/release/app-armeabi-v7a-release.apk --> Device 32-Bit
   - /build/app/outputs/apk/release/app-arm64-v8a-release.apk --> Device 64-Bit
   - /build/app/outputs/apk/release/app-x86_64-release.apk --> High Device
+
+
+### Build .exe
+- flutter pub get
+- flutter build windows
+- Download and Open Inno Setup
+- Create a new script file using the script wizard
+- Unchek All And Next
+- 3
