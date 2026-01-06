@@ -14,3 +14,9 @@ class OnFindAllLocationByQuery extends LocationDesktopEvent {
 
   const OnFindAllLocationByQuery(this.query);
 }
+
+class OnCreateLocationEvent extends LocationDesktopEvent {
+  final Location params;
+
+  const OnCreateLocationEvent(this.params);
+}

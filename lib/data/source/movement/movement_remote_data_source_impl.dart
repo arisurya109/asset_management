@@ -22,7 +22,7 @@ class MovementRemoteDataSourceImpl implements MovementRemoteDataSource {
     } else {
       final response = await _client.post(
         Uri.parse(
-          '${ApiHelper.baseUrl}/asset/${params.assetId}?movement=${params.type}',
+          '${ApiHelper.baseUrl}/asset/movement/${params.assetId}?type=${params.type}',
         ),
         body: jsonEncode(params.toJson()),
         headers: ApiHelper.headersToken(token),

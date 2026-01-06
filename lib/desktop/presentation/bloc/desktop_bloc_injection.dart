@@ -21,8 +21,12 @@ desktopBlocInjection() {
   locator.registerFactory(() => AssetDesktopBloc(locator()));
   locator.registerFactory(() => PreparationDesktopBloc(locator()));
   locator.registerFactory(() => HomeCubit());
-  locator.registerFactory(() => DatasDesktopCubit(locator(), locator()));
-  locator.registerFactory(() => LocationDesktopBloc(locator(), locator()));
+  locator.registerFactory(
+    () => DatasDesktopCubit(locator(), locator(), locator(), locator()),
+  );
+  locator.registerFactory(
+    () => LocationDesktopBloc(locator(), locator(), locator()),
+  );
   locator.registerFactory(() => PreparationUpdateBloc(locator()));
   locator.registerFactory(() => ReturnBloc(locator()));
 }

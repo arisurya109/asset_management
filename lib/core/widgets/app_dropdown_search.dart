@@ -116,7 +116,10 @@ class AppDropDownSearch<T> extends StatelessWidget {
                 fontSize: fontSize - 1,
               ),
               isDense: true,
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(borderRadius),
               ),
