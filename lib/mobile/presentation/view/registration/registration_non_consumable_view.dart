@@ -213,7 +213,7 @@ class _RegistrationNonConsumableViewState
                   context.showDialogConfirm(
                     title: 'Successfully Registration',
                     content:
-                        'Asset Code : ${asset.assetCode}\nSerial Number : ${asset.serialNumber}\nLocation : ${asset.location}',
+                        'Asset Code : ${asset.assetCode}\nSerial Number : ${asset.serialNumber}\nLocation : ${asset.locationDetail}',
                     onCancel: () => context.popExt(),
                     onCancelText: 'Done',
                     fontSize: widget.isLarge ? 12 : 10,

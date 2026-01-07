@@ -1,5 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_dynamic_calls
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
@@ -10,17 +9,17 @@ class Preparation extends Equatable {
   String? status;
   int? destinationId;
   String? destination;
+  int? temporaryLocationId;
+  String? temporaryLocation;
   int? createdId;
-  String? createdBy;
+  String? created;
   int? workerId;
-  String? workerBy;
+  String? worker;
   int? approvedId;
-  String? approvedBy;
-  int? locationId;
-  String? location;
+  String? approved;
   int? totalBox;
   String? notes;
-  String? createdAt;
+  DateTime? createdAt;
 
   Preparation({
     this.id,
@@ -29,14 +28,14 @@ class Preparation extends Equatable {
     this.status,
     this.destinationId,
     this.destination,
+    this.temporaryLocationId,
+    this.temporaryLocation,
     this.createdId,
-    this.createdBy,
+    this.created,
     this.workerId,
-    this.workerBy,
+    this.worker,
     this.approvedId,
-    this.approvedBy,
-    this.locationId,
-    this.location,
+    this.approved,
     this.totalBox,
     this.notes,
     this.createdAt,
@@ -47,19 +46,20 @@ class Preparation extends Equatable {
     return [
       id,
       code,
-      status,
       type,
+      status,
       destinationId,
       destination,
-      totalBox,
-      status,
-      notes,
-      createdBy,
+      temporaryLocationId,
+      temporaryLocation,
       createdId,
-      approvedBy,
-      createdId,
+      created,
       workerId,
-      workerBy,
+      worker,
+      approvedId,
+      approved,
+      totalBox,
+      notes,
       createdAt,
     ];
   }

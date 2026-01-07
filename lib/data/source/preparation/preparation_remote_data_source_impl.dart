@@ -1,14 +1,12 @@
-// ignore_for_file: implementation_imports
-
 import 'dart:convert';
 
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
+import 'package:asset_management/core/core.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
+import 'package:asset_management/data/model/preparation/preparation_pagination_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
 import 'package:http/http.dart' as http;
-
-import '../../../core/error/exception.dart';
 
 class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
   final http.Client _client;
@@ -23,20 +21,20 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
-      throw CreateException(message: 'Token expired');
+      throw NotFoundException(message: 'Token expired');
     } else {
       final response = await _client.post(
-        Uri.parse('${ApiHelper.baseUrl}/preparation'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation/'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode(params.toJson()),
+        body: jsonEncode(params.createToJson()),
       );
 
       if (response.statusCode == 201) {
-        final decoded = jsonDecode(response.body);
+        final body = jsonDecode(response.body);
 
-        final data = decoded['data'];
+        final datas = body['data'];
 
-        return PreparationModel.fromJSON(data);
+        return PreparationModel.fromEntity(datas);
       } else {
         throw CreateException(
           message: ApiHelper.getErrorMessage(response.body),
@@ -46,111 +44,96 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
   }
 
   @override
-  Future<List<PreparationModel>> findAllPreparation() async {
-    final token = await _tokenHelper.getToken();
-
-    if (token == null) {
-      throw NotFoundException(message: 'Token expired');
-    } else {
-      final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/preparation'),
-        headers: ApiHelper.headersToken(token),
-      );
-
-      if (response.statusCode == 200) {
-        final bodyResponse = jsonDecode(response.body);
-        List datas = bodyResponse['data'];
-
-        return datas.map((e) => PreparationModel.fromJSON(e)).toList();
-      } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw NotFoundException(message: message);
-      }
-    }
-  }
-
-  @override
-  Future<PreparationModel> findPreparationById({required int id}) async {
-    final token = await _tokenHelper.getToken();
-
-    if (token == null) {
-      throw NotFoundException(message: 'Token expired');
-    } else {
-      final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/preparation?id=$id'),
-        headers: ApiHelper.headersToken(token),
-      );
-
-      if (response.statusCode == 200) {
-        final bodyResponse = jsonDecode(response.body);
-        final data = bodyResponse['data'];
-
-        return PreparationModel.fromJSON(data);
-      } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw NotFoundException(message: message);
-      }
-    }
-  }
-
-  @override
-  Future<List<PreparationModel>> findPreparationByCodeOrDestination({
-    required String params,
+  Future<PreparationPaginationModel> findPreparationByPagination({
+    required int page,
+    required int limit,
+    String? query,
   }) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
+      String path = 'limit=$limit&page=$page';
+      if (query.isFilled()) {
+        path = '$path&query=$query';
+      }
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/preparation?query=$params'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation?$path'),
         headers: ApiHelper.headersToken(token),
       );
 
       if (response.statusCode == 200) {
-        final bodyResponse = jsonDecode(response.body);
-        List data = bodyResponse['data'];
+        final body = jsonDecode(response.body);
 
-        return data.map((e) => PreparationModel.fromJSON(e)).toList();
+        return PreparationPaginationModel.fromJson(body);
       } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw NotFoundException(message: message);
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
       }
     }
   }
 
   @override
-  Future<PreparationModel> updateStatusPreparation({
+  Future<List<String>> getPreparationTypes() async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/preparation?query=TYPES'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        return body;
+      } else {
+        throw NotFoundException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<PreparationModel> updatePreparationStatus({
     required int id,
-    required String status,
+    required String params,
     int? totalBox,
-    int? locationId,
-    String? remarks,
+    int? temporaryLocationId,
   }) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
+      Map<String, dynamic> paramsJson = {'status': params};
+
+      if (totalBox != null) {
+        paramsJson.addAll({'total_box': totalBox});
+      } else if (temporaryLocationId != null) {
+        if (totalBox != null) {
+          paramsJson.addAll({'temporary_location_id': temporaryLocationId});
+        }
+      }
       final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/preparation?id=$id'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation/$id/'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode({
-          'status': status,
-          'location_id': locationId,
-          'remarks': remarks,
-          'total_box': totalBox,
-        }),
+        body: jsonEncode(paramsJson),
       );
 
       if (response.statusCode == 200) {
-        final bodyResponse = jsonDecode(response.body);
-        final data = bodyResponse['data'];
+        final body = jsonDecode(response.body);
 
-        return PreparationModel.fromJSON(data);
+        return body;
       } else {
-        final message = ApiHelper.getErrorMessage(response.body);
-        throw UpdateException(message: message);
+        throw UpdateException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
       }
     }
   }

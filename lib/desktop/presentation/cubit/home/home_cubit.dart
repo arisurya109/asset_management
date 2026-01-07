@@ -15,12 +15,12 @@ class HomeCubit extends Cubit<int> {
           'path': '/asset',
           'permission': 'assets_view',
         },
-        // {
-        //   'value': 2,
-        //   'title': 'Preparation',
-        //   'path': '/preparation',
-        //   'permission': 'preparation_view',
-        // },
+        {
+          'value': 2,
+          'title': 'Preparation',
+          'path': '/preparation',
+          'permission': 'preparation_view',
+        },
         // {
         //   'value': 3,
         //   'title': 'User Management',

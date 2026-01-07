@@ -1,7 +1,8 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_dynam
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:equatable/equatable.dart';
 
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class PreparationModel extends Equatable {
@@ -11,17 +12,17 @@ class PreparationModel extends Equatable {
   String? status;
   int? destinationId;
   String? destination;
+  int? temporaryLocationId;
+  String? temporaryLocation;
   int? createdId;
-  String? createdBy;
+  String? created;
   int? workerId;
-  String? workerBy;
+  String? worker;
   int? approvedId;
-  String? approvedBy;
-  int? locationId;
-  String? location;
+  String? approved;
   int? totalBox;
   String? notes;
-  String? createdAt;
+  DateTime? createdAt;
 
   PreparationModel({
     this.id,
@@ -30,96 +31,38 @@ class PreparationModel extends Equatable {
     this.status,
     this.destinationId,
     this.destination,
+    this.temporaryLocationId,
+    this.temporaryLocation,
     this.createdId,
-    this.createdBy,
+    this.created,
     this.workerId,
-    this.workerBy,
+    this.worker,
     this.approvedId,
-    this.approvedBy,
-    this.locationId,
-    this.location,
+    this.approved,
     this.totalBox,
     this.notes,
     this.createdAt,
   });
 
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'code': code,
-      'destination_id': destinationId,
-      'worker_id': workerId,
-      'location_id': locationId,
-      'total_box': totalBox,
-      'status': status,
-      'notes': notes,
-      'type': type,
-      'created_id': createdId,
-      'approved_id': approvedId,
-    };
-  }
-
-  factory PreparationModel.fromJSON(Map<String, dynamic> map) {
-    return PreparationModel(
-      id: map['id'] != null ? map['id'] as int : null,
-      code: map['code'] != null ? map['code'] as String : null,
-      status: map['status'] != null ? map['status'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
-      destinationId: map['destination']['id'] != null
-          ? map['destination']['id'] as int
-          : null,
-      destination: map['destination']['name'] != null
-          ? map['destination']['name'] as String
-          : null,
-      createdId: map['created']['id'] != null
-          ? map['created']['id'] as int
-          : null,
-      createdBy: map['created']['name'] != null
-          ? map['created']['name'] as String
-          : null,
-      workerId: map['worker']['name'] != null
-          ? map['worker']['name'] as int
-          : null,
-      workerBy: map['worker']['name'] != null
-          ? map['worker']['name'] as String
-          : null,
-      approvedId: map['approved']['id'] != null
-          ? map['approved']['id'] as int
-          : null,
-      approvedBy: map['approved']['name'] != null
-          ? map['approved']['name'] as String
-          : null,
-      locationId: map['location']['id'] != null
-          ? map['location']['id'] as int
-          : null,
-      location: map['location']['name'] != null
-          ? map['location']['name'] as String
-          : null,
-      totalBox: map['total_box'] != null ? map['total_box'] as int : null,
-      notes: map['notes'] != null ? map['notes'] as String : null,
-      createdAt: map['created_at'] != null ? map['created_at'] as String : null,
-    );
-  }
-
   factory PreparationModel.fromEntity(Preparation params) {
     return PreparationModel(
       id: params.id,
       code: params.code,
-      status: params.status,
       type: params.type,
-      createdId: params.createdId,
-      createdBy: params.createdBy,
-      workerId: params.workerId,
-      workerBy: params.workerBy,
-      approvedId: params.approvedId,
-      approvedBy: params.approvedBy,
-      destinationId: params.destinationId,
+      status: params.status,
       destination: params.destination,
-      locationId: params.locationId,
-      location: params.location,
+      destinationId: params.destinationId,
+      temporaryLocation: params.temporaryLocation,
+      temporaryLocationId: params.temporaryLocationId,
+      createdId: params.createdId,
+      created: params.created,
+      worker: params.worker,
+      workerId: params.workerId,
+      approved: params.approved,
+      approvedId: params.approvedId,
+      createdAt: params.createdAt,
       notes: params.notes,
       totalBox: params.totalBox,
-      createdAt: params.createdAt,
     );
   }
 
@@ -127,21 +70,21 @@ class PreparationModel extends Equatable {
     return Preparation(
       id: id,
       code: code,
-      status: status,
       type: type,
-      createdId: createdId,
-      createdBy: createdAt,
-      workerBy: workerBy,
-      workerId: workerId,
-      approvedBy: approvedBy,
-      approvedId: approvedId,
+      status: status,
       destination: destination,
       destinationId: destinationId,
-      location: location,
-      locationId: locationId,
-      notes: notes,
+      temporaryLocation: temporaryLocation,
+      temporaryLocationId: temporaryLocationId,
+      created: created,
+      createdId: createdId,
       createdAt: createdAt,
+      approved: approved,
+      approvedId: approvedId,
+      notes: notes,
       totalBox: totalBox,
+      worker: worker,
+      workerId: workerId,
     );
   }
 
@@ -154,17 +97,69 @@ class PreparationModel extends Equatable {
       status,
       destinationId,
       destination,
+      temporaryLocationId,
+      temporaryLocation,
       createdId,
-      createdBy,
+      created,
       workerId,
-      workerBy,
+      worker,
       approvedId,
-      approvedBy,
-      locationId,
-      location,
+      approved,
       totalBox,
       notes,
       createdAt,
     ];
+  }
+
+  Map<String, dynamic> createToJson() {
+    return <String, dynamic>{
+      'type': type,
+      'destination_id': destinationId,
+      'worker_id': workerId,
+      'approved_id': approvedId,
+      'notes': notes,
+    };
+  }
+
+  factory PreparationModel.fromJson(Map<String, dynamic> map) {
+    return PreparationModel(
+      id: map['id'] != null ? map['id'] as int : null,
+      code: map['code'] != null ? map['code'] as String : null,
+      type: map['type'] != null ? map['type'] as String : null,
+      status: map['status'] != null ? map['status'] as String : null,
+      destinationId: map['destination']['id'] != null
+          ? map['destination']['id'] as int
+          : null,
+      destination: map['destination']['name'] != null
+          ? map['destination']['name'] as String
+          : null,
+      temporaryLocationId: map['temporary_location']['id'] != null
+          ? map['temporary_location']['id'] as int
+          : null,
+      temporaryLocation: map['temporary_location']['name'] != null
+          ? map['temporary_location']['name'] as String
+          : null,
+      createdId: map['created']['id'] != null
+          ? map['created']['id'] as int
+          : null,
+      created: map['created']['name'] != null
+          ? map['created']['name'] as String
+          : null,
+      workerId: map['worker']['id'] != null ? map['worker']['id'] as int : null,
+      worker: map['worker']['name'] != null
+          ? map['worker']['name'] as String
+          : null,
+      approvedId: map['approved']['id'] != null
+          ? map['approved']['id'] as int
+          : null,
+      approved: map['approved']['name'] != null
+          ? map['approved']['name'] as String
+          : null,
+      totalBox: map['total_box'] != null ? map['total_box'] as int : null,
+      notes: map['notes'] != null ? map['notes'] as String : null,
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'] as String)
+          : null,
+    );
   }
 }

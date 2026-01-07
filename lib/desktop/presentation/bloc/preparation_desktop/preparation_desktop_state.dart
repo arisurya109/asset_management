@@ -6,26 +6,26 @@ enum StatusPreparationDesktop { initial, loading, failure, loaded, addSuccess }
 // ignore: must_be_immutable
 class PreparationDesktopState extends Equatable {
   StatusPreparationDesktop? status;
-  List<Preparation>? preparations;
+  PreparationPagination? datas;
   String? message;
 
   PreparationDesktopState({
     this.status = StatusPreparationDesktop.initial,
-    this.preparations,
+    this.datas,
     this.message,
   });
 
   @override
-  List<Object?> get props => [status, preparations, message];
+  List<Object?> get props => [status, datas, message];
 
   PreparationDesktopState copyWith({
     StatusPreparationDesktop? status,
-    List<Preparation>? preparations,
+    PreparationPagination? datas,
     String? message,
   }) {
     return PreparationDesktopState(
       status: status ?? this.status,
-      preparations: preparations ?? this.preparations,
+      datas: datas ?? this.datas,
       message: message ?? this.message,
     );
   }

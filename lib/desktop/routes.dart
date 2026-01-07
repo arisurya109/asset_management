@@ -1,5 +1,6 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_detail_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/home/home_desktop_view.dart';
@@ -10,6 +11,8 @@ import 'package:asset_management/desktop/presentation/view/preparation/add_new_p
 import 'package:asset_management/desktop/presentation/view/preparation/preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation_update/preparation_update_view.dart';
 import 'package:asset_management/desktop/presentation/view/return/return_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/user_management/add_new_user_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/user_management/user_management_desktop_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -134,7 +137,7 @@ class Routes {
             path: '/preparation',
             pageBuilder: (context, state) {
               context.read<PreparationDesktopBloc>().add(
-                OnFindAllPreparation(),
+                OnFindPreparationPaginationEvent(limit: 10, page: 1),
               );
               return _buildDesktopTransition(
                 state: state,
@@ -153,31 +156,30 @@ class Routes {
               ),
             ],
           ),
-
-          // GoRoute(
-          //   path: '/user-management',
-          //   routes: [
-          //     GoRoute(
-          //       path: 'add',
-          //       pageBuilder: (context, state) {
-          //         context.read<UserManagementBloc>().add(
-          //           OnFindAllPermissions(),
-          //         );
-          //         return _buildDesktopTransition(
-          //           state: state,
-          //           child: AddNewUserDesktopView(),
-          //         );
-          //       },
-          //     ),
-          //   ],
-          //   pageBuilder: (context, state) {
-          //     context.read<UserManagementBloc>().add(OnFindAllUsers());
-          //     return _buildDesktopTransition(
-          //       state: state,
-          //       child: UserManagementDesktopView(),
-          //     );
-          //   },
-          // ),
+          GoRoute(
+            path: '/user-management',
+            pageBuilder: (context, state) {
+              context.read<UserManagementBloc>().add(OnFindAllUsers());
+              return _buildDesktopTransition(
+                state: state,
+                child: UserManagementDesktopView(),
+              );
+            },
+            routes: [
+              GoRoute(
+                path: 'add',
+                pageBuilder: (context, state) {
+                  context.read<UserManagementBloc>().add(
+                    OnFindAllPermissions(),
+                  );
+                  return _buildDesktopTransition(
+                    state: state,
+                    child: AddNewUserDesktopView(),
+                  );
+                },
+              ),
+            ],
+          ),
         ],
       ),
     ],

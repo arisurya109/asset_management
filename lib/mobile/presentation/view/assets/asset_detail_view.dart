@@ -123,7 +123,7 @@ class AssetDetailView extends StatelessWidget {
             AppSpace.vertical(18),
             _descriptionItem(
               'Location',
-              params.location ?? '',
+              params.locationDetail ?? '',
               fontSize: isLarge ? 14 : 12,
             ),
             AppSpace.vertical(18),

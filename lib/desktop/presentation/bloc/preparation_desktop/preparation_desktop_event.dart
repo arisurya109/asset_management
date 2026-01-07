@@ -7,10 +7,14 @@ class PreparationDesktopEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class OnFindAllPreparation extends PreparationDesktopEvent {}
+class OnFindPreparationPaginationEvent extends PreparationDesktopEvent {
+  final int page;
+  final int limit;
+  final String? query;
 
-class OnCreatePreparation extends PreparationDesktopEvent {
-  final Preparation params;
-
-  const OnCreatePreparation(this.params);
+  const OnFindPreparationPaginationEvent({
+    required this.page,
+    required this.limit,
+    this.query,
+  });
 }

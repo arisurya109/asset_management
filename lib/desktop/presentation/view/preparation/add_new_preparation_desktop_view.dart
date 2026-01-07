@@ -1,10 +1,14 @@
 import 'package:asset_management/core/core.dart';
+import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
+import 'package:asset_management/desktop/presentation/components/app_segmented_desktop.dart';
+import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/preparation_detail/preparation_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../domain/entities/user/user.dart';
@@ -57,8 +61,52 @@ class _AddNewPreparationDesktopViewState
           withBackButton: true,
         ),
         AppBodyDesktop(
-          body: Row(children: [
-              
+          body: Row(
+            children: [
+              Expanded(
+                flex: 5,
+                child: BlocBuilder<DatasDesktopCubit, void>(
+                  builder: (context, state) {
+                    return Column(
+                      children: [
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            vertical: 16,
+                            horizontal: 24,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.kWhite,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              AppDropDownSearch<Location>(
+                                title: 'Destination',
+                                hintText: 'Selected Destination',
+                                onFind: (String filter) async => await context
+                                    .read<DatasDesktopCubit>()
+                                    .getLocations(),
+                                borderRadius: 5,
+                                compareFn: (value, value1) =>
+                                    value.name == value1.name,
+                                itemAsString: (value) => value.name!,
+                                fontSize: 10,
+                                enabled: true,
+                                onChanged: (value) => setState(() {
+                                  selectedDestination = value;
+                                }),
+                                showSearchBox: true,
+                                selectedItem: selectedDestination,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
             ],
           ),
           // Row(

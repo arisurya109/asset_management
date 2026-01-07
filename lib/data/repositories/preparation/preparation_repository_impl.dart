@@ -5,6 +5,7 @@ import 'package:asset_management/core/error/failure.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_pagination.dart';
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -28,21 +29,17 @@ class PreparationRepositoryImpl implements PreparationRepository {
   }
 
   @override
-  Future<Either<Failure, List<Preparation>>> findAllPreparation() async {
-    try {
-      final response = await _source.findAllPreparation();
-      return Right(response.map((e) => e.toEntity()).toList());
-    } on NotFoundException catch (e) {
-      return Left(NotFoundFailure(e.message));
-    }
-  }
-
-  @override
-  Future<Either<Failure, Preparation>> findPreparationById({
-    required int id,
+  Future<Either<Failure, PreparationPagination>> findPreparationByPagination({
+    required int page,
+    required int limit,
+    String? query,
   }) async {
     try {
-      final response = await _source.findPreparationById(id: id);
+      final response = await _source.findPreparationByPagination(
+        limit: limit,
+        page: page,
+        query: query,
+      );
       return Right(response.toEntity());
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
@@ -50,33 +47,28 @@ class PreparationRepositoryImpl implements PreparationRepository {
   }
 
   @override
-  Future<Either<Failure, List<Preparation>>>
-  findPreparationByCodeOrDestination({required String params}) async {
+  Future<Either<Failure, List<String>>> getPreparationTypes() async {
     try {
-      final response = await _source.findPreparationByCodeOrDestination(
-        params: params,
-      );
-      return Right(response.map((e) => e.toEntity()).toList());
+      final response = await _source.getPreparationTypes();
+      return Right(response);
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
     }
   }
 
   @override
-  Future<Either<Failure, Preparation>> updateStatusPreparation({
+  Future<Either<Failure, Preparation>> updatePreparationStatus({
     required int id,
-    required String status,
+    required String params,
     int? totalBox,
-    int? locationId,
-    String? remarks,
+    int? temporaryLocationId,
   }) async {
     try {
-      final response = await _source.updateStatusPreparation(
+      final response = await _source.updatePreparationStatus(
         id: id,
-        status: status,
+        params: params,
         totalBox: totalBox,
-        locationId: locationId,
-        remarks: remarks,
+        temporaryLocationId: temporaryLocationId,
       );
       return Right(response.toEntity());
     } on UpdateException catch (e) {
