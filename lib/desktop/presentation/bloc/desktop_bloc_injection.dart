@@ -22,7 +22,14 @@ desktopBlocInjection() {
   locator.registerFactory(() => PreparationDesktopBloc(locator()));
   locator.registerFactory(() => HomeCubit());
   locator.registerFactory(
-    () => DatasDesktopCubit(locator(), locator(), locator(), locator()),
+    () => DatasDesktopCubit(
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+      locator(),
+    ),
   );
   locator.registerFactory(() => LocationDesktopBloc(locator(), locator()));
   locator.registerFactory(() => PreparationUpdateBloc(locator()));

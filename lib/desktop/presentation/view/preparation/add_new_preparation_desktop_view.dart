@@ -3,6 +3,7 @@ import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_segmented_desktop.dart';
+import 'package:asset_management/desktop/presentation/components/app_text_field_desktop.dart';
 import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
@@ -24,36 +25,48 @@ class AddNewPreparationDesktopView extends StatefulWidget {
 
 class _AddNewPreparationDesktopViewState
     extends State<AddNewPreparationDesktopView> {
-  late TextEditingController notes;
-  String selectedAfterShipped = 'USE';
-  Location? selectedDestination;
-  User? selectedApproved;
-  User? selectedWorker;
+  // late TextEditingController notes;
+  // String selectedAfterShipped = 'USE';
+  // User? selectedApproved;
+  // User? selectedWorker;
 
-  String? selectedType;
-  String? selectedCategory;
-  AssetModel? selectedModel;
-
-  late FocusNode quantityFn;
-  late TextEditingController quantityC;
-  late ScrollController scrollController;
-
-  List<PreparationDetail> preparationDetails = [];
-
-  List<String> types = ['STORE', 'USER', 'VENDOR'];
+  String? _selectedPreparationTypes;
+  Location? _selectedDestination;
+  User? _selectedApproved;
+  User? _selectedWorker;
+  late TextEditingController _notesC;
 
   @override
   void initState() {
-    scrollController = ScrollController();
-    notes = TextEditingController();
-    quantityC = TextEditingController();
-    quantityFn = FocusNode();
+    _notesC = TextEditingController();
     super.initState();
   }
+
+  // String? selectedType;
+  // String? selectedCategory;
+  // AssetModel? selectedModel;
+
+  // late FocusNode quantityFn;
+  // late TextEditingController quantityC;
+  // late ScrollController scrollController;
+
+  // List<PreparationDetail> preparationDetails = [];
+
+  // List<String> types = ['STORE', 'USER', 'VENDOR'];
+
+  // @override
+  // void initState() {
+  //   scrollController = ScrollController();
+  //   notes = TextEditingController();
+  //   quantityC = TextEditingController();
+  //   quantityFn = FocusNode();
+  //   super.initState();
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppHeaderDesktop(
           title: 'Create Preparation',
@@ -61,53 +74,121 @@ class _AddNewPreparationDesktopViewState
           withBackButton: true,
         ),
         AppBodyDesktop(
-          body: Row(
-            children: [
-              Expanded(
-                flex: 5,
-                child: BlocBuilder<DatasDesktopCubit, void>(
-                  builder: (context, state) {
-                    return Column(
-                      children: [
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 16,
-                            horizontal: 24,
-                          ),
-                          decoration: BoxDecoration(
-                            color: AppColors.kWhite,
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              AppDropDownSearch<Location>(
-                                title: 'Destination',
-                                hintText: 'Selected Destination',
-                                onFind: (String filter) async => await context
-                                    .read<DatasDesktopCubit>()
-                                    .getLocations(),
-                                borderRadius: 5,
-                                compareFn: (value, value1) =>
-                                    value.name == value1.name,
-                                itemAsString: (value) => value.name!,
-                                fontSize: 10,
-                                enabled: true,
-                                onChanged: (value) => setState(() {
-                                  selectedDestination = value;
-                                }),
-                                showSearchBox: true,
-                                selectedItem: selectedDestination,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+          body: BlocBuilder<DatasDesktopCubit, void>(
+            builder: (context, state) {
+              return Container(
+                width: 350,
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.kWhite,
+                  borderRadius: BorderRadius.circular(5),
                 ),
-              ),
-            ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppDropDownSearch<String>(
+                      title: 'Types',
+                      hintText: 'Selected Type',
+                      onFind: (String filter) async => await context
+                          .read<DatasDesktopCubit>()
+                          .getPreparationTypes(),
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value == value1,
+                      itemAsString: (value) => value,
+                      fontSize: 11,
+                      enabled: true,
+                      onChanged: (value) {
+                        if (_selectedPreparationTypes != value) {
+                          setState(() {
+                            _selectedPreparationTypes = value;
+                            _selectedDestination = null;
+                          });
+                        }
+                      },
+                      showSearchBox: true,
+                      selectedItem: _selectedPreparationTypes,
+                    ),
+                    AppSpace.vertical(12),
+                    AppDropDownSearch<Location>(
+                      title: 'Destination',
+                      hintText: 'Selected Destination',
+                      onFind: (String filter) async => await context
+                          .read<DatasDesktopCubit>()
+                          .findLocationPreparationByTypes(
+                            _selectedPreparationTypes,
+                          ),
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value.name == value1.name,
+                      itemAsString: (value) => value.name!,
+                      fontSize: 11,
+                      enabled: true,
+                      onChanged: (value) => setState(() {
+                        _selectedDestination = value;
+                      }),
+                      showSearchBox: true,
+                      selectedItem: _selectedDestination,
+                    ),
+                    AppSpace.vertical(12),
+                    AppDropDownSearch<User>(
+                      title: 'Approved',
+                      hintText: 'Selected Approved',
+                      onFind: (String filter) async => await context
+                          .read<DatasDesktopCubit>()
+                          .findAllUser(null),
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value.name == value1.name,
+                      itemAsString: (value) => value.name!,
+                      fontSize: 11,
+                      enabled: true,
+                      onChanged: (value) {
+                        if (_selectedApproved != value) {
+                          setState(() {
+                            _selectedApproved = value;
+                            _selectedWorker = null;
+                          });
+                        }
+                      },
+                      showSearchBox: true,
+                      selectedItem: _selectedApproved,
+                    ),
+                    AppSpace.vertical(12),
+                    AppDropDownSearch<User>(
+                      title: 'Worker',
+                      hintText: 'Selected Worker',
+                      onFind: _selectedApproved == null
+                          ? null
+                          : (String filter) async => await context
+                                .read<DatasDesktopCubit>()
+                                .findAllUser(_selectedApproved?.username),
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value.name == value1.name,
+                      itemAsString: (value) => value.name!,
+                      fontSize: 11,
+                      enabled: true,
+                      onChanged: (value) => setState(() {
+                        _selectedWorker = value;
+                      }),
+                      showSearchBox: true,
+                      selectedItem: _selectedWorker,
+                    ),
+                    AppSpace.vertical(12),
+                    AppTextFieldDesktop(
+                      controller: _notesC,
+                      title: 'Notes',
+                      fontSize: 11,
+                      hintText: 'Example : New Store / Request By',
+                    ),
+                    AppSpace.vertical(24),
+                    AppButton(
+                      title: 'Create',
+                      height: 35,
+                      width: context.deviceWidth,
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
           // Row(
           //   children: [
@@ -561,56 +642,56 @@ class _AddNewPreparationDesktopViewState
     );
   }
 
-  _addPreparation() {
-    final afterShipped = selectedAfterShipped;
-    final destination = selectedDestination;
-    final approved = selectedApproved;
-    final worker = selectedWorker;
-    final desc = notes.value.text;
-    final prepDetails = preparationDetails;
+  // _addPreparation() {
+  //   final afterShipped = selectedAfterShipped;
+  //   final destination = selectedDestination;
+  //   final approved = selectedApproved;
+  //   final worker = selectedWorker;
+  //   final desc = notes.value.text;
+  //   final prepDetails = preparationDetails;
 
-    if (destination == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Destination cannot be empty',
-      );
-    } else if (approved == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Approved cannot be empty',
-      );
-    } else if (worker == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Destination cannot be empty',
-      );
-    } else if (prepDetails.isEmpty) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Asset cannot be empty',
-      );
-    } else {
-      final totalAsset = prepDetails.length;
-      final totalQuantity = prepDetails
-          .map((e) => e.quantityTarget ?? 0)
-          .fold(0, (a, b) => a + b);
+  //   if (destination == null) {
+  //     AppToast.show(
+  //       context: context,
+  //       type: ToastType.error,
+  //       message: 'Destination cannot be empty',
+  //     );
+  //   } else if (approved == null) {
+  //     AppToast.show(
+  //       context: context,
+  //       type: ToastType.error,
+  //       message: 'Approved cannot be empty',
+  //     );
+  //   } else if (worker == null) {
+  //     AppToast.show(
+  //       context: context,
+  //       type: ToastType.error,
+  //       message: 'Destination cannot be empty',
+  //     );
+  //   } else if (prepDetails.isEmpty) {
+  //     AppToast.show(
+  //       context: context,
+  //       type: ToastType.error,
+  //       message: 'Asset cannot be empty',
+  //     );
+  //   } else {
+  //     final totalAsset = prepDetails.length;
+  //     final totalQuantity = prepDetails
+  //         .map((e) => e.quantityTarget ?? 0)
+  //         .fold(0, (a, b) => a + b);
 
-      context.showDialogConfirm(
-        title: 'Add Preparation ?',
-        content:
-            'Destination : ${destination.name}\nAfter Shipped : $afterShipped\nApproved : ${approved.name}\nWorker : ${worker.name}\nNotes : $desc\nTotal Asset : $totalAsset\nTotal Quantity : $totalQuantity',
-        onCancel: () => context.pop(),
-        fontSize: 12,
-        onCancelText: 'No',
-        onConfirmText: 'Add',
-        onConfirm: () {},
-      );
-    }
-  }
+  //     context.showDialogConfirm(
+  //       title: 'Add Preparation ?',
+  //       content:
+  //           'Destination : ${destination.name}\nAfter Shipped : $afterShipped\nApproved : ${approved.name}\nWorker : ${worker.name}\nNotes : $desc\nTotal Asset : $totalAsset\nTotal Quantity : $totalQuantity',
+  //       onCancel: () => context.pop(),
+  //       fontSize: 12,
+  //       onCancelText: 'No',
+  //       onConfirmText: 'Add',
+  //       onConfirm: () {},
+  //     );
+  //   }
+  // }
 
   // _add() {
   //   final model = selectedModel;

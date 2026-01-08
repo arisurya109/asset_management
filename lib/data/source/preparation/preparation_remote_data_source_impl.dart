@@ -90,7 +90,9 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
-        return body;
+        final datas = (body['data'] as List).map((e) => e.toString()).toList();
+
+        return datas;
       } else {
         throw NotFoundException(
           message: ApiHelper.getErrorMessage(response.body),
