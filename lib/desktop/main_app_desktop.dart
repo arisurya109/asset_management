@@ -1,5 +1,6 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/authentication_desktop/authentication_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/preparation_detail_desktop/preparation_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/return/return_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/preparation_desktop_bloc.dart';
@@ -35,6 +36,9 @@ class MainAppDesktop extends StatelessWidget {
           BlocProvider(create: (context) => locator<LocationDesktopBloc>()),
           BlocProvider(create: (context) => locator<PreparationUpdateBloc>()),
           BlocProvider(create: (context) => locator<ReturnBloc>()),
+          BlocProvider(
+            create: (context) => locator<PreparationDetailDesktopBloc>(),
+          ),
         ],
         child: MaterialApp.router(
           scrollBehavior: MyCustomScrollBehavior(),

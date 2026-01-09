@@ -1,7 +1,13 @@
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
+import 'package:asset_management/domain/entities/master/asset_category.dart';
+import 'package:asset_management/domain/entities/master/asset_model.dart';
+import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
 import 'package:asset_management/domain/usecases/asset/find_asset_by_query_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_all_asset_category_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_all_asset_model_use_case.dart';
+import 'package:asset_management/domain/usecases/master/find_all_asset_type_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_location_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_location_by_storage_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_location_type_use_case.dart';
@@ -17,6 +23,10 @@ class DatasDesktopCubit extends Cubit<void> {
   final GetPreparationTypesUseCase _getPreparationTypesUseCase;
   final FindAllUserUseCase _findAllUserUseCase;
 
+  final FindAllAssetTypeUseCase _findAllAssetTypeUseCase;
+  final FindAllAssetCategoryUseCase _findAllAssetCategoryUseCase;
+  final FindAllAssetModelUseCase _findAllAssetModelUseCase;
+
   DatasDesktopCubit(
     this._findLocationByStorageUseCase,
     this._findAssetByQueryUseCase,
@@ -24,7 +34,52 @@ class DatasDesktopCubit extends Cubit<void> {
     this._findAllLocationUseCase,
     this._getPreparationTypesUseCase,
     this._findAllUserUseCase,
+    this._findAllAssetTypeUseCase,
+    this._findAllAssetModelUseCase,
+    this._findAllAssetCategoryUseCase,
   ) : super('');
+
+  Future<List<AssetType>> getAssetType() async {
+    final failureOrTypes = await _findAllAssetTypeUseCase();
+
+    return failureOrTypes.fold((_) => [], (types) => types);
+  }
+
+  Future<List<AssetCategory>> getAssetCategory(String params) async {
+    final failureOrModels = await _findAllAssetModelUseCase();
+
+    return failureOrModels.fold((_) => [], (models) async {
+      final failureOrCategories = await _findAllAssetCategoryUseCase();
+
+      final modelsByType = models
+          .where((element) => element.typeName == params)
+          .toList();
+
+      final availableCategoryIds = modelsByType
+          .map((m) => m.categoryId)
+          .toSet();
+
+      return failureOrCategories.fold((_) => [], (categories) {
+        return categories
+            .where((cat) => availableCategoryIds.contains(cat.id))
+            .toList();
+      });
+    });
+  }
+
+  Future<List<AssetModel>> getAssetModels(String type, String category) async {
+    final failureOrModels = await _findAllAssetModelUseCase();
+
+    return failureOrModels.fold(
+      (_) => [],
+      (models) => models
+          .where(
+            (element) =>
+                element.typeName == type && element.categoryName == category,
+          )
+          .toList(),
+    );
+  }
 
   Future<List<User>> findAllUser(String? username) async {
     if (username != null) {

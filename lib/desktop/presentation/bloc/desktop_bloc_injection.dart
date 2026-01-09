@@ -1,5 +1,6 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/authentication_desktop/authentication_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/preparation_detail_desktop/preparation_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/return/return_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/preparation_desktop_bloc.dart';
@@ -19,10 +20,13 @@ desktopBlocInjection() {
     () => UserManagementBloc(locator(), locator(), locator()),
   );
   locator.registerFactory(() => AssetDesktopBloc(locator()));
-  locator.registerFactory(() => PreparationDesktopBloc(locator()));
+  locator.registerFactory(() => PreparationDesktopBloc(locator(), locator()));
   locator.registerFactory(() => HomeCubit());
   locator.registerFactory(
     () => DatasDesktopCubit(
+      locator(),
+      locator(),
+      locator(),
       locator(),
       locator(),
       locator(),
@@ -34,4 +38,7 @@ desktopBlocInjection() {
   locator.registerFactory(() => LocationDesktopBloc(locator(), locator()));
   locator.registerFactory(() => PreparationUpdateBloc(locator()));
   locator.registerFactory(() => ReturnBloc(locator()));
+  locator.registerFactory(
+    () => PreparationDetailDesktopBloc(locator(), locator()),
+  );
 }

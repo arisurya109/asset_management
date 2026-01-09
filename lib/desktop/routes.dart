@@ -1,5 +1,6 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/preparation_detail_desktop/preparation_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/asset/asset_detail_desktop_view.dart';
@@ -9,6 +10,7 @@ import 'package:asset_management/desktop/presentation/view/location/location_des
 import 'package:asset_management/desktop/presentation/view/login/login_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/add_new_preparation_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation/preparation_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/preparation/preparation_detail_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/preparation_update/preparation_update_view.dart';
 import 'package:asset_management/desktop/presentation/view/return/return_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/user_management/add_new_user_desktop_view.dart';
@@ -151,6 +153,19 @@ class Routes {
                   return _buildDesktopTransition(
                     state: state,
                     child: AddNewPreparationDesktopView(),
+                  );
+                },
+              ),
+              GoRoute(
+                path: 'detail/:id',
+                pageBuilder: (context, state) {
+                  final id = state.pathParameters['id'];
+                  context.read<PreparationDetailDesktopBloc>().add(
+                    OnGetPreparationDetails(int.parse(id!)),
+                  );
+                  return _buildDesktopTransition(
+                    state: state,
+                    child: PreparationDetailDesktopView(),
                   );
                 },
               ),

@@ -18,3 +18,9 @@ class OnFindPreparationPaginationEvent extends PreparationDesktopEvent {
     this.query,
   });
 }
+
+class OnCreatePreparationEvent extends PreparationDesktopEvent {
+  final Preparation params;
+
+  const OnCreatePreparationEvent({required this.params});
+}

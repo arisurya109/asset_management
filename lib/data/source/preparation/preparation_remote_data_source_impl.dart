@@ -34,7 +34,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
 
         final datas = body['data'];
 
-        return PreparationModel.fromEntity(datas);
+        return PreparationModel.fromJson(datas);
       } else {
         throw CreateException(
           message: ApiHelper.getErrorMessage(response.body),
@@ -58,6 +58,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
       if (query.isFilled()) {
         path = '$path&query=$query';
       }
+
       final response = await _client.get(
         Uri.parse('${ApiHelper.baseUrl}/preparation?$path'),
         headers: ApiHelper.headersToken(token),

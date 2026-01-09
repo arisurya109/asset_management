@@ -19,27 +19,23 @@ class PreparationPaginationModel extends Equatable {
   int? limit;
   List<PreparationModel>? preparations;
 
-  factory PreparationPaginationModel.fromJson(Map<String, dynamic> datas) {
+  factory PreparationPaginationModel.fromJson(Map<String, dynamic> json) {
+    final Map<String, dynamic>? baseData =
+        json['data'] as Map<String, dynamic>?;
+
+    final metadata = baseData?['metadata'] as Map<String, dynamic>?;
+
     return PreparationPaginationModel(
-      totalData: datas['metadata']['total_data'] != null
-          ? datas['metadata']['total_data'] as int
-          : null,
-      currentPage: datas['metadata']['current_page'] != null
-          ? datas['metadata']['current_page'] as int
-          : null,
-      lastPage: datas['metadata']['last_page'] != null
-          ? datas['metadata']['last_page'] as int
-          : null,
-      limit: datas['metadata']['limit'] != null
-          ? datas['metadata']['limit'] as int
-          : null,
-      preparations: datas['data'] != null
-          ? (datas['data'] as List)
-                .map(
-                  (e) => PreparationModel.fromJson(e as Map<String, dynamic>),
-                )
-                .toList()
-          : [],
+      totalData: metadata?['total_data'] as int? ?? 0,
+      currentPage: metadata?['current_page'] as int? ?? 1,
+      lastPage: metadata?['last_page'] as int? ?? 1,
+      limit: metadata?['limit'] as int? ?? 10,
+      // List data juga diambil dari baseData?['data']
+      preparations:
+          (baseData?['data'] as List?)
+              ?.map((e) => PreparationModel.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
     );
   }
 

@@ -43,7 +43,7 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
         false;
     return Column(
       children: [
-        AppHeaderDesktop(title: 'Location', hasPermission: hasPermission),
+        AppHeaderDesktop(title: 'Preparation', hasPermission: hasPermission),
         AppBodyDesktop(
           body: BlocBuilder<PreparationDesktopBloc, PreparationDesktopState>(
             builder: (context, state) {
@@ -59,8 +59,8 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                       'no': noUrut.toString(),
                       'code': e.code ?? '',
                       'type': e.type ?? '',
-                      'destination': e.destination ?? '',
                       'status': e.status ?? '',
+                      'destination': e.destination ?? '',
                     };
                   }).toList() ??
                   [];
@@ -70,6 +70,8 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                 horizontalScrollController: _horizontalScroll,
                 totalData: state.datas?.totalData ?? 0,
                 availableRowsPerPage: _availableRowsPerPage,
+                onTap: (data) =>
+                    context.push('/preparation/detail/${data['id']}'),
                 rowsPerPage: _rowsPerPage,
                 onAdd: hasPermission
                     ? () => context.push('/preparation/add')
@@ -125,16 +127,12 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                 },
                 columns: [
                   AppDataTableColumn(label: 'NO', key: 'no', width: 50),
-                  AppDataTableColumn(
-                    label: 'CODE',
-                    key: 'code',
-                    isExpanded: true,
-                  ),
+                  AppDataTableColumn(label: 'CODE', key: 'code'),
                   AppDataTableColumn(label: 'TYPE', key: 'type'),
-                  AppDataTableColumn(label: 'DESTINATION', key: 'destination'),
+                  AppDataTableColumn(label: 'STATUS', key: 'status'),
                   AppDataTableColumn(
-                    label: 'STATUS',
-                    key: 'status',
+                    label: 'DESTINATION',
+                    key: 'destination',
                     isExpanded: true,
                   ),
                 ],
