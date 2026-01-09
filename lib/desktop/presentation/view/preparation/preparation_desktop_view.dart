@@ -58,9 +58,9 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                       'id': e.id.toString(),
                       'no': noUrut.toString(),
                       'code': e.code ?? '',
-                      'type': e.type ?? '',
-                      'status': e.status ?? '',
                       'destination': e.destination ?? '',
+                      'status': e.status ?? '',
+                      'notes': e.notes ?? '',
                     };
                   }).toList() ??
                   [];
@@ -128,11 +128,11 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                 columns: [
                   AppDataTableColumn(label: 'NO', key: 'no', width: 50),
                   AppDataTableColumn(label: 'CODE', key: 'code'),
-                  AppDataTableColumn(label: 'TYPE', key: 'type'),
+                  AppDataTableColumn(label: 'DESTINATION', key: 'destination'),
                   AppDataTableColumn(label: 'STATUS', key: 'status'),
                   AppDataTableColumn(
-                    label: 'DESTINATION',
-                    key: 'destination',
+                    label: 'NOTES',
+                    key: 'notes',
                     isExpanded: true,
                   ),
                 ],

@@ -1,7 +1,13 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'preparation_detail_desktop_bloc.dart';
 
-enum StatusPreparationDetailDesktop { initial, loading, failure, loaded }
+enum StatusPreparationDetailDesktop {
+  initial,
+  loading,
+  failure,
+  loaded,
+  addSuccess,
+}
 
 // ignore: must_be_immutable
 class PreparationDetailDesktopState extends Equatable {

@@ -63,7 +63,7 @@ class PreparationDetailDesktopBloc
             (_) {},
             (preps) => emit(
               state.copyWith(
-                status: StatusPreparationDetailDesktop.loaded,
+                status: StatusPreparationDetailDesktop.addSuccess,
                 preparationDetails: preps,
                 message: response,
               ),

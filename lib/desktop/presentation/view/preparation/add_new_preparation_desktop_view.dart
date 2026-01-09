@@ -24,7 +24,7 @@ class AddNewPreparationDesktopView extends StatefulWidget {
 
 class _AddNewPreparationDesktopViewState
     extends State<AddNewPreparationDesktopView> {
-  String? _selectedPreparationTypes;
+  final String _selectedPreparationTypes = 'INTERNAL';
   Location? _selectedDestination;
   User? _selectedApproved;
   User? _selectedWorker;
@@ -59,29 +59,6 @@ class _AddNewPreparationDesktopViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    AppDropDownSearch<String>(
-                      title: 'Type',
-                      hintText: 'Selected Type',
-                      onFind: (String filter) async => await context
-                          .read<DatasDesktopCubit>()
-                          .getPreparationTypes(),
-                      borderRadius: 4,
-                      compareFn: (value, value1) => value == value1,
-                      itemAsString: (value) => value,
-                      fontSize: 11,
-                      enabled: true,
-                      onChanged: (value) {
-                        if (_selectedPreparationTypes != value) {
-                          setState(() {
-                            _selectedPreparationTypes = value;
-                            _selectedDestination = null;
-                          });
-                        }
-                      },
-                      showSearchBox: true,
-                      selectedItem: _selectedPreparationTypes,
-                    ),
-                    AppSpace.vertical(12),
                     AppDropDownSearch<Location>(
                       title: 'Destination',
                       hintText: 'Selected Destination',
@@ -213,13 +190,7 @@ class _AddNewPreparationDesktopViewState
     final worker = _selectedWorker;
     final desc = _notesC.value.text;
 
-    if (type == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Type cannot be empty',
-      );
-    } else if (destination == null) {
+    if (destination == null) {
       AppToast.show(
         context: context,
         type: ToastType.error,
