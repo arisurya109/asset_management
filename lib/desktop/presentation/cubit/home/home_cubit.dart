@@ -11,7 +11,7 @@ class HomeCubit extends Cubit<int> {
         {'value': 0, 'title': 'Dashboard', 'path': '/'},
         {
           'value': 1,
-          'title': 'Assets',
+          'title': 'Asset',
           'path': '/asset',
           'permission': 'assets_view',
         },
@@ -31,8 +31,14 @@ class HomeCubit extends Cubit<int> {
           'value': 4,
           'title': 'Preparation Update',
           'path': '/preparation-update',
+          'permission': 'preparation_add',
         },
-        {'value': 5, 'title': 'Return', 'path': '/return'},
+        {
+          'value': 5,
+          'title': 'Return',
+          'path': '/return',
+          'permission': 'preparation_add',
+        },
       ],
     },
     {

@@ -1,4 +1,5 @@
 import 'package:asset_management/desktop/presentation/bloc/asset_desktop/asset_desktop_bloc.dart';
+import 'package:asset_management/desktop/presentation/bloc/asset_detail_desktop/asset_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/location_desktop/location_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_detail_desktop/preparation_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
@@ -75,8 +76,12 @@ class Routes {
             path: '/asset',
             routes: [
               GoRoute(
-                path: 'detail',
+                path: 'detail/:id',
                 pageBuilder: (context, state) {
+                  final id = state.pathParameters['id'];
+                  context.read<AssetDetailDesktopBloc>().add(
+                    OnGetAssetDetailEvent(int.parse(id!)),
+                  );
                   return _buildDesktopTransition(
                     state: state,
                     child: AssetDetailDesktopView(),
@@ -175,10 +180,7 @@ class Routes {
             path: '/user-management',
             pageBuilder: (context, state) {
               context.read<UserManagementBloc>().add(OnFindAllUsers());
-              return _buildDesktopTransition(
-                state: state,
-                child: UserManagementDesktopView(),
-              );
+              return _buildDesktopTransition(state: state, child: SizedBox());
             },
             routes: [
               GoRoute(

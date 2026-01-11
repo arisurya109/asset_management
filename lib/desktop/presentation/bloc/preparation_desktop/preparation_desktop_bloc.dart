@@ -2,6 +2,7 @@ import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_pagination.dart';
 import 'package:asset_management/domain/usecases/preparation/create_preparation_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/find_preparation_by_pagination_use_case.dart';
+import 'package:asset_management/domain/usecases/preparation/update_preparation_status_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -12,10 +13,12 @@ class PreparationDesktopBloc
     extends Bloc<PreparationDesktopEvent, PreparationDesktopState> {
   final FindPreparationByPaginationUseCase _findPreparationPaginationUseCase;
   final CreatePreparationUseCase _createPreparationUseCase;
+  final UpdatePreparationStatusUseCase _updatePreparationStatusUseCase;
 
   PreparationDesktopBloc(
     this._findPreparationPaginationUseCase,
     this._createPreparationUseCase,
+    this._updatePreparationStatusUseCase,
   ) : super(PreparationDesktopState()) {
     on<OnFindPreparationPaginationEvent>((event, emit) async {
       emit(state.copyWith(status: StatusPreparationDesktop.loading));
@@ -62,6 +65,40 @@ class PreparationDesktopBloc
             message: 'Successfully create ${preparation.code}',
           ),
         ),
+      );
+    });
+
+    on<OnUpdatePreparationStatus>((event, emit) async {
+      emit(state.copyWith(status: StatusPreparationDesktop.loading));
+
+      final failureOrPreparationDetails = await _updatePreparationStatusUseCase(
+        id: event.id,
+        params: event.status,
+      );
+
+      return failureOrPreparationDetails.fold(
+        (failure) => emit(
+          state.copyWith(
+            status: StatusPreparationDesktop.failure,
+            message: failure.message,
+          ),
+        ),
+        (response) async {
+          final failureOrPreparations = await _findPreparationPaginationUseCase(
+            limit: 10,
+            page: 1,
+          );
+
+          return failureOrPreparations.fold(
+            (_) {},
+            (_) => emit(
+              state.copyWith(
+                status: StatusPreparationDesktop.loaded,
+                message: 'Successfully ${response.status} ${response.code}',
+              ),
+            ),
+          );
+        },
       );
     });
   }

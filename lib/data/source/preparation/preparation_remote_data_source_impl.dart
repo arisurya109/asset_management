@@ -124,7 +124,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
         }
       }
       final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/$id/'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation/$id'),
         headers: ApiHelper.headersToken(token),
         body: jsonEncode(paramsJson),
       );
@@ -132,7 +132,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
-        return body;
+        return PreparationModel.fromJson(body['data']);
       } else {
         throw UpdateException(
           message: ApiHelper.getErrorMessage(response.body),

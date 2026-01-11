@@ -24,3 +24,10 @@ class OnCreatePreparationEvent extends PreparationDesktopEvent {
 
   const OnCreatePreparationEvent({required this.params});
 }
+
+class OnUpdatePreparationStatus extends PreparationDesktopEvent {
+  final int id;
+  final String status;
+
+  const OnUpdatePreparationStatus(this.id, this.status);
+}

@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:asset_management/core/core.dart';
+import 'package:asset_management/core/widgets/app_toast.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_excel_windows.dart';
 import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_new_table.dart';
+import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../bloc/asset_desktop/asset_desktop_bloc.dart';
 import '../../bloc/authentication_desktop/authentication_desktop_bloc.dart';
@@ -79,7 +85,6 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
                   [];
 
               return AppNewTable(
-                // onAdd: () {},
                 totalData: state.response?.totalData ?? 0,
                 titleAdd: 'Add Asset',
                 datas: datas,
@@ -87,7 +92,9 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
                 rowsPerPage: _rowsPerPage,
                 horizontalScrollController: _horizontalScroll,
                 hintTextField: 'Search...',
-                // onTap: (data) => context.push('/asset/detail'),
+                minWidth: 1300,
+                onExport: () async => await _exportExcel(_searchQuery),
+                onTap: (data) => context.push('/asset/detail/${data['id']}'),
                 onRowsPerPageChanged: (rowsPerPage) {
                   if (rowsPerPage != null) {
                     _rowsPerPage = rowsPerPage;
@@ -135,8 +142,7 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
                     ),
                   );
                 },
-                minWidth: 1300,
-                onExport: () => _exportExcel(datas),
+
                 columns: [
                   AppDataTableColumn(label: 'NO', key: 'no', width: 45),
                   AppDataTableColumn(
@@ -198,38 +204,85 @@ class _AssetDesktopViewState extends State<AssetDesktopView> {
     );
   }
 
-  _exportExcel(List<Map<String, String>> datas) {
-    final dataForExport = datas.map((item) {
-      final newItem = Map<String, String>.from(item);
-      newItem.remove('id');
-      return newItem;
-    }).toList();
+  Future<void> _exportExcel(String? query) async {
+    try {
+      final assets = await context.read<DatasDesktopCubit>().getAssetsExported(
+        query,
+      );
 
-    final now = DateTime.now();
-    final timestamp =
-        "${now.year}${now.month}${now.day}_${now.hour}${now.minute}${now.second}";
+      if (assets == null || assets.isEmpty) {
+        AppToast.show(
+          context: context,
+          type: ToastType.warning,
+          message: "Tidak ada data untuk diekspor",
+        );
+        return;
+      }
 
-    AppExcelWindows.exportAssetData(
-      columnLabels: [
-        'NO',
-        'ASSET CODE',
-        'SERIAL NUMBER',
-        'TYPE',
-        'CATEGORY',
-        'BRAND',
-        'MODEL',
-        'UOM',
-        'QUANTITY',
-        'LOCATION',
-        'LOCATION_DETAIL',
-        'STATUS',
-        'CONDITION',
-        'COLOR',
-        'PURCHASE ORDER',
-        'REMARKS',
-      ],
-      tableData: dataForExport,
-      fileName: 'asset_$timestamp',
-    );
+      final datas = assets.asMap().entries.map((entry) {
+        int index = entry.key;
+        var e = entry.value;
+
+        return {
+          'no': (index + 1).toString(),
+          'asset_code': e.assetCode ?? '',
+          'serial_number': e.serialNumber ?? '',
+          'type': e.types ?? '',
+          'category': e.category ?? '',
+          'brand': e.brand ?? '',
+          'model': e.model ?? '',
+          'uom': e.uom == 1 ? 'UNIT' : 'PCS',
+          'quantity': e.quantity.toString(),
+          'location': e.location ?? '',
+          'location_detail': e.locationDetail ?? '',
+          'status': e.status ?? '',
+          'condition': e.conditions ?? '',
+          'color': e.color ?? '',
+          'purchase_order': e.purchaseOrder ?? '',
+          'remarks': e.remarks ?? '',
+        };
+      }).toList();
+
+      final now = DateTime.now();
+      final timestamp = DateFormat('yyyyMMdd_HHmmss').format(now);
+
+      final File exportedFile = await AppExcelWindows.exportAssetData(
+        columnLabels: [
+          'NO',
+          'ASSET CODE',
+          'SERIAL NUMBER',
+          'TYPE',
+          'CATEGORY',
+          'BRAND',
+          'MODEL',
+          'UOM',
+          'QUANTITY',
+          'LOCATION',
+          'LOCATION_DETAIL',
+          'STATUS',
+          'CONDITION',
+          'COLOR',
+          'PURCHASE ORDER',
+          'REMARKS',
+        ],
+        tableData: datas,
+        fileName: 'asset_$timestamp',
+      );
+
+      AppToast.show(
+        context: context,
+        type: ToastType.success,
+        message:
+            "Asset successfully exported: ${exportedFile.path.split('\\').last}",
+      );
+    } catch (e) {
+      if (e.toString() != 'An error occurred, please try again') {
+        AppToast.show(
+          context: context,
+          type: ToastType.error,
+          message: e.toString(),
+        );
+      }
+    }
   }
 }

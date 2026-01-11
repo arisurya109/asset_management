@@ -1,9 +1,11 @@
+import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/master/asset_category.dart';
 import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
 import 'package:asset_management/domain/entities/user/user.dart';
+import 'package:asset_management/domain/usecases/asset/find_all_asset_use_case.dart';
 import 'package:asset_management/domain/usecases/asset/find_asset_by_query_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_asset_category_use_case.dart';
 import 'package:asset_management/domain/usecases/master/find_all_asset_model_use_case.dart';
@@ -18,6 +20,7 @@ import 'package:bloc/bloc.dart';
 class DatasDesktopCubit extends Cubit<void> {
   final FindLocationByStorageUseCase _findLocationByStorageUseCase;
   final FindAssetByQueryUseCase _findAssetByQueryUseCase;
+  final FindAllAssetUseCase _findAllAssetUseCase;
   final FindLocationTypeUseCase _findLocationTypeUseCase;
   final FindAllLocationUseCase _findAllLocationUseCase;
   final GetPreparationTypesUseCase _getPreparationTypesUseCase;
@@ -37,6 +40,7 @@ class DatasDesktopCubit extends Cubit<void> {
     this._findAllAssetTypeUseCase,
     this._findAllAssetModelUseCase,
     this._findAllAssetCategoryUseCase,
+    this._findAllAssetUseCase,
   ) : super('');
 
   Future<List<AssetType>> getAssetType() async {
@@ -149,5 +153,17 @@ class DatasDesktopCubit extends Cubit<void> {
       (assets) =>
           assets.where((element) => element.assetCode == params).firstOrNull,
     );
+  }
+
+  Future<List<AssetEntity>>? getAssetsExported(String? params) async {
+    if (params.isFilled()) {
+      final failureOrAssets = await _findAssetByQueryUseCase(params: params!);
+
+      return failureOrAssets.fold((_) => [], (assets) => assets);
+    } else {
+      final failureOrAssets = await _findAllAssetUseCase();
+
+      return failureOrAssets.fold((_) => [], (assets) => assets);
+    }
   }
 }

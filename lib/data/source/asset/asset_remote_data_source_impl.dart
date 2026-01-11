@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/data/model/asset/asset_detail_model.dart';
+import 'package:asset_management/data/model/asset/asset_detail_response_model.dart';
 import 'package:asset_management/data/model/asset/asset_model.dart';
 import 'package:asset_management/data/model/asset/asset_model_pagination.dart';
 import 'package:asset_management/data/source/asset/asset_remote_data_source.dart';
@@ -42,23 +42,23 @@ class AssetRemoteDataSourceImpl implements AssetRemoteDataSource {
   }
 
   @override
-  Future<List<AssetDetailModel>> findAssetDetailById(int params) async {
+  Future<AssetDetailResponseModel> findAssetDetailById(int params) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/asset/$params'),
+        Uri.parse('${ApiHelper.baseUrl}/asset?id=$params'),
         headers: ApiHelper.headersToken(token),
       );
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
-        List datas = body['data'];
+        Map<String, dynamic> datas = body['data'];
 
-        return datas.map((e) => AssetDetailModel.fromJson(e)).toList();
+        return AssetDetailResponseModel.fromMap(datas);
       } else {
         throw NotFoundException(
           message: ApiHelper.getErrorMessage(response.body),

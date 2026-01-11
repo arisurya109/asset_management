@@ -31,7 +31,7 @@ class AppNewTable extends StatefulWidget {
   final Function(String query) onSearchSubmit;
   final Function() onClear;
   final String? hintTextField;
-  final Function()? onExport;
+  final Future Function()? onExport;
   final Function()? onAdd;
   final String? titleAdd;
   final void Function(Map<String, String> data)? onTap;

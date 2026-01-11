@@ -1,7 +1,7 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/data/model/asset/asset_model.dart';
 import 'package:asset_management/data/source/asset/asset_remote_data_source.dart';
-import 'package:asset_management/domain/entities/asset/asset_detail.dart';
+import 'package:asset_management/domain/entities/asset/asset_detail_response.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity.dart';
 import 'package:asset_management/domain/entities/asset/asset_entity_pagination.dart';
 import 'package:asset_management/domain/repositories/asset/asset_repository.dart';
@@ -23,12 +23,12 @@ class AssetRepositoryImpl implements AssetRepository {
   }
 
   @override
-  Future<Either<Failure, List<AssetDetail>>> findAssetDetailById(
+  Future<Either<Failure, AssetDetailResponse>> findAssetDetailById(
     int params,
   ) async {
     try {
       final response = await _source.findAssetDetailById(params);
-      return Right(response.map((e) => e.toEntity()).toList());
+      return Right(response.toEntity());
     } on NotFoundException catch (e) {
       return Left(NotFoundFailure(e.message));
     }
