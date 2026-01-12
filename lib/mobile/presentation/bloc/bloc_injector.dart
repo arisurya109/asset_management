@@ -1,5 +1,7 @@
 import 'package:asset_management/mobile/presentation/bloc/asset/asset_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/authentication/authentication_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/picking_detail/picking_detail_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/transfer/transfer_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/brand/brand_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/category/category_bloc.dart';
@@ -47,4 +49,6 @@ mobileBlocInjection() {
     () => MigrationCubit(locator(), locator(), locator(), locator()),
   );
   locator.registerFactory(() => TransferBloc(locator(), locator()));
+  locator.registerFactory(() => PickingBloc(locator(), locator()));
+  locator.registerFactory(() => PickingDetailBloc(locator(), locator()));
 }

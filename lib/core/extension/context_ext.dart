@@ -159,6 +159,7 @@ extension ContextExt on BuildContext {
       context: this,
       builder: (context) {
         return SimpleDialog(
+          backgroundColor: AppColors.kWhite,
           alignment: Alignment.center,
           title: Center(
             child: Text(

@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
+import 'package:asset_management/mobile/presentation/view/picking/picking_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asset_management/core/core.dart';
@@ -8,6 +10,7 @@ import 'package:asset_management/mobile/presentation/view/migration/migration_vi
 import 'package:asset_management/mobile/presentation/view/registration/registration_view.dart';
 import 'package:asset_management/mobile/presentation/view/transfer/asset_transfer_view.dart';
 import 'package:asset_management/mobile/responsive_layout.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -34,7 +37,7 @@ class _HomeViewState extends State<HomeView> {
       'icon': Assets.iAssetManagement,
     },
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
-    // {'title': 'Counting', 'view': Scaffold(), 'icon': Assets.iCount},
+    {'title': 'Picking', 'view': PickingView(), 'icon': Assets.iPicking},
     // {'title': 'Receive', 'view': Scaffold(), 'icon': Assets.iCount},
     // {'title': 'Return', 'view': Scaffold(), 'icon': Assets.iCount},
   ];
@@ -67,6 +70,9 @@ class _HomeViewState extends State<HomeView> {
             borderRadius: BorderRadius.circular(5),
             child: InkWell(
               onTap: () {
+                if (operation['title'] == 'Picking') {
+                  context.read<PickingBloc>().add(OnFindAllPickingTaskEvent());
+                }
                 context.pushExt(operation['view']);
               },
               borderRadius: BorderRadius.circular(5),

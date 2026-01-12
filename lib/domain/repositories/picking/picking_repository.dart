@@ -10,7 +10,6 @@ abstract class PickingRepository {
     required int id,
   });
   Future<Either<Failure, String>> pickedAsset({
-    required int isConsumable,
     required PickingDetailItem params,
   });
   Future<Either<Failure, String>> updateStatusPicking({

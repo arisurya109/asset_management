@@ -7,6 +7,8 @@ import 'package:asset_management/mobile/presentation/bloc/inventory/inventory_bl
 import 'package:asset_management/mobile/presentation/bloc/location/location_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/migration/migration_cubit.dart';
 import 'package:asset_management/mobile/presentation/bloc/model/model_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
+import 'package:asset_management/mobile/presentation/bloc/picking_detail/picking_detail_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/printer/printer_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/registration/registration_cubit.dart';
 import 'package:asset_management/mobile/presentation/bloc/transfer/transfer_bloc.dart';
@@ -38,6 +40,8 @@ class MainAppMobile extends StatelessWidget {
         BlocProvider(create: (context) => locator<RegistrationCubit>()),
         BlocProvider(create: (context) => locator<MigrationCubit>()),
         BlocProvider(create: (context) => locator<TransferBloc>()),
+        BlocProvider(create: (context) => locator<PickingBloc>()),
+        BlocProvider(create: (context) => locator<PickingDetailBloc>()),
       ],
       child: MaterialApp(
         scrollBehavior: MyCustomScrollBehavior(),

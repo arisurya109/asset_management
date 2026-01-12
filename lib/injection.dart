@@ -1,6 +1,7 @@
 import 'package:asset_management/injection/asset_injection.dart';
 import 'package:asset_management/injection/inventory_injection.dart';
 import 'package:asset_management/injection/movement_injection.dart';
+import 'package:asset_management/injection/picking_injection.dart';
 import 'package:asset_management/injection/preparation_injection.dart';
 import 'package:asset_management/injection/printer_injection.dart';
 import 'package:asset_management/injection/purchase_order_injection.dart';
@@ -31,6 +32,7 @@ Future<void> injection() async {
   preparationInjection(locator);
   inventoryInjection(locator);
   movementInjection(locator);
+  pickingInjection(locator);
 
   // Services
   locator.registerLazySingleton(() => pref);
