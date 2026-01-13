@@ -15,7 +15,7 @@ class OnGetPickingDetailEvent extends PickingDetailEvent {
 
 class OnPickAssetEvent extends PickingDetailEvent {
   final int preparationId;
-  final PickingDetailItem params;
+  final PickingDetail params;
 
   const OnPickAssetEvent(this.params, this.preparationId);
 }

@@ -11,11 +11,13 @@ class UpdateStatusPickingUseCase {
     required int id,
     required String params,
     int? temporaryLocationId,
+    int? totalBox,
   }) async {
     return _repository.updateStatusPicking(
       id: id,
       params: params,
       temporaryLocationId: temporaryLocationId,
+      totalBox: totalBox,
     );
   }
 }

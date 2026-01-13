@@ -37,6 +37,7 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
         id: event.id,
         params: event.params,
         temporaryLocationId: event.locationId,
+        totalBox: event.totalBox,
       );
 
       return failureOrMessage.fold(
@@ -46,16 +47,21 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
             message: failure.message,
           ),
         ),
-        (messaeg) async {
+        (message) async {
           final failureOrPicking = await _findAllPickingTaskUseCase();
 
           return failureOrPicking.fold(
-            (_) {},
+            (_) => emit(
+              state.copyWith(
+                status: StatusPicking.completedSuccess,
+                message: message,
+              ),
+            ),
             (picking) => emit(
               state.copyWith(
-                status: StatusPicking.updateSuccess,
+                status: StatusPicking.completedSuccess,
                 picking: picking,
-                message: messaeg,
+                message: message,
               ),
             ),
           );

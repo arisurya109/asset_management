@@ -1,5 +1,4 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/core/utils/colors.dart';
 import 'package:asset_management/domain/entities/picking/picking.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking_detail/picking_detail_bloc.dart';
@@ -25,10 +24,10 @@ class PickingView extends StatelessWidget {
       appBar: AppBar(title: Text('Picking')),
       body: BlocBuilder<PickingBloc, PickingState>(
         builder: (context, state) {
-          if (state.picking == null) {
+          if (state.picking == null || state.picking!.isEmpty) {
             return Center(
               child: Text(
-                state.message ?? '',
+                'There is no task to picking assets',
                 style: TextStyle(
                   fontSize: isLarge ? 14 : 12,
                   color: AppColors.kGrey,

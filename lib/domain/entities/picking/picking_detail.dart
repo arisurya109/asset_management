@@ -1,6 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
-import 'package:asset_management/domain/entities/picking/picking_detail_item.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
@@ -12,7 +11,13 @@ class PickingDetail extends Equatable {
   String? model;
   String? types;
   String? category;
-  List<PickingDetailItem>? allocatedItems;
+  int? assetId;
+  String? status;
+  String? assetCode;
+  String? serialNumber;
+  int? locationId;
+  String? purchaseOrder;
+  String? location;
 
   PickingDetail({
     this.id,
@@ -22,11 +27,32 @@ class PickingDetail extends Equatable {
     this.model,
     this.types,
     this.category,
-    this.allocatedItems,
+    this.assetId,
+    this.status,
+    this.assetCode,
+    this.serialNumber,
+    this.locationId,
+    this.purchaseOrder,
+    this.location,
   });
 
   @override
   List<Object?> get props {
-    return [id, modelId, quantity, isConsumable, model, types, category];
+    return [
+      id,
+      modelId,
+      quantity,
+      isConsumable,
+      model,
+      types,
+      category,
+      assetId,
+      status,
+      assetCode,
+      serialNumber,
+      locationId,
+      location,
+      purchaseOrder,
+    ];
   }
 }

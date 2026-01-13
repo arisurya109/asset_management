@@ -1,9 +1,9 @@
 import 'package:asset_management/core/error/exception.dart';
 import 'package:asset_management/core/error/failure.dart';
-import 'package:asset_management/data/model/picking/picking_detail_item_model.dart';
+import 'package:asset_management/data/model/picking/picking_detail_model.dart';
 import 'package:asset_management/data/source/picking/picking_remote_data_source.dart';
 import 'package:asset_management/domain/entities/picking/picking.dart';
-import 'package:asset_management/domain/entities/picking/picking_detail_item.dart';
+import 'package:asset_management/domain/entities/picking/picking_detail.dart';
 import 'package:asset_management/domain/entities/picking/picking_detail_response.dart';
 import 'package:asset_management/domain/repositories/picking/picking_repository.dart';
 import 'package:dartz/dartz.dart';
@@ -41,11 +41,11 @@ class PickingRepositoryImpl implements PickingRepository {
 
   @override
   Future<Either<Failure, String>> pickedAsset({
-    required PickingDetailItem params,
+    required PickingDetail params,
   }) async {
     try {
       final response = await _source.pickedAsset(
-        params: PickingDetailItemModel.fromEntity(params),
+        params: PickingDetailModel.fromEntity(params),
       );
       return Right(response);
     } on CreateException catch (e) {
@@ -60,12 +60,14 @@ class PickingRepositoryImpl implements PickingRepository {
     required int id,
     required String params,
     int? temporaryLocationId,
+    int? totalBox,
   }) async {
     try {
       final response = await _source.updateStatusPicking(
         id: id,
         params: params,
         temporaryLocationId: temporaryLocationId,
+        totalBox: totalBox,
       );
       return Right(response);
     } on CreateException catch (e) {

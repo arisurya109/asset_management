@@ -1,4 +1,4 @@
-import 'package:asset_management/domain/entities/picking/picking_detail_item.dart';
+import 'package:asset_management/domain/entities/picking/picking_detail.dart';
 import 'package:asset_management/domain/entities/picking/picking_detail_response.dart';
 import 'package:asset_management/domain/usecases/picking/find_picking_detail_use_case.dart';
 import 'package:asset_management/domain/usecases/picking/picked_asset_use_case.dart';

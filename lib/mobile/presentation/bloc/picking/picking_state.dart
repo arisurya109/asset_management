@@ -1,7 +1,14 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 part of 'picking_bloc.dart';
 
-enum StatusPicking { initial, loading, failure, loaded, updateSuccess }
+enum StatusPicking {
+  initial,
+  loading,
+  failure,
+  loaded,
+  updateSuccess,
+  completedSuccess,
+}
 
 // ignore: must_be_immutable
 class PickingState extends Equatable {

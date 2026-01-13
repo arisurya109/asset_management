@@ -13,10 +13,12 @@ class OnUpdateStatusPickingEvent extends PickingEvent {
   final int id;
   final String params;
   final int? locationId;
+  final int? totalBox;
 
   const OnUpdateStatusPickingEvent({
     required this.id,
     required this.params,
     this.locationId,
+    this.totalBox,
   });
 }

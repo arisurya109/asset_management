@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
 import 'package:asset_management/core/error/exception.dart';
-import 'package:asset_management/data/model/picking/picking_detail_item_model.dart';
+import 'package:asset_management/data/model/picking/picking_detail_model.dart';
 import 'package:asset_management/data/model/picking/picking_detail_response_model.dart';
 import 'package:asset_management/data/model/picking/picking_model.dart';
 import 'package:asset_management/data/source/picking/picking_remote_data_source.dart';
@@ -68,7 +68,7 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
   }
 
   @override
-  Future<String> pickedAsset({required PickingDetailItemModel params}) async {
+  Future<String> pickedAsset({required PickingDetailModel params}) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
@@ -77,7 +77,7 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
       final response = await _client.patch(
         Uri.parse('${ApiHelper.baseUrl}/picking'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode(params.toJson()),
+        body: jsonEncode(params.toJsonPickAsset()),
       );
 
       if (response.statusCode == 200) {
@@ -97,6 +97,7 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
     required int id,
     required String params,
     int? temporaryLocationId,
+    int? totalBox,
   }) async {
     final token = await _tokenHelper.getToken();
 
@@ -106,7 +107,10 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
       Map<String, dynamic> json = {'status': params};
 
       if (temporaryLocationId != null) {
-        json.addAll({'temporary_location_id': temporaryLocationId});
+        json.addAll({
+          'temporary_location_id': temporaryLocationId,
+          'total_box': totalBox,
+        });
       }
 
       final response = await _client.patch(

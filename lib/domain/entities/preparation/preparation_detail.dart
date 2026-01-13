@@ -1,32 +1,53 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, must_be_immutable
-import 'package:asset_management/domain/entities/preparation/preparation_detail_item.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
 import 'package:equatable/equatable.dart';
 
+// ignore: must_be_immutable
 class PreparationDetail extends Equatable {
   int? id;
   int? preparationId;
-  int? modelId;
-  int? isConsumable;
-  String? purchaseOrder;
+  int? assetId;
   int? quantity;
+  String? status;
+  String? assetCode;
+  int? locationId;
+  String? purchaseOrder;
+  String? location;
+  int? modelId;
   String? model;
-  String? type;
+  int? isConsumable;
   String? category;
-  String? brand;
-  List<PreparationDetailItem>? items;
+
+  String getIndex(int index) {
+    switch (index) {
+      case 0:
+        return category!;
+      case 1:
+        return model!;
+      case 2:
+        return assetCode ?? '';
+      case 3:
+        return quantity.toString();
+      case 4:
+        return '';
+    }
+    return '';
+  }
 
   PreparationDetail({
     this.id,
     this.preparationId,
-    this.modelId,
-    this.isConsumable,
-    this.purchaseOrder,
+    this.assetId,
     this.quantity,
+    this.status,
+    this.assetCode,
+    this.locationId,
+    this.purchaseOrder,
+    this.location,
+    this.modelId,
     this.model,
-    this.type,
+    this.isConsumable,
     this.category,
-    this.brand,
-    this.items,
   });
 
   @override
@@ -34,14 +55,17 @@ class PreparationDetail extends Equatable {
     return [
       id,
       preparationId,
+      assetId,
       modelId,
-      purchaseOrder,
       quantity,
+      status,
+      assetCode,
+      locationId,
+      purchaseOrder,
+      location,
       model,
-      type,
+      isConsumable,
       category,
-      brand,
-      items,
     ];
   }
 }

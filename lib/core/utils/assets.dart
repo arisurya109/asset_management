@@ -32,4 +32,5 @@ class Assets {
   static const iLogout = 'assets/icons/logout.png';
   static const iVendor = 'assets/icons/vendor.png';
   static const iPicking = 'assets/icons/icons_picking.png';
+  static const logoPdf = 'assets/icons/logo-pdf.png';
 }
