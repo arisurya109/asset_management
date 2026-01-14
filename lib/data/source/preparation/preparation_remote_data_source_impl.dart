@@ -6,6 +6,7 @@ import 'package:asset_management/core/core.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_pagination_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:http/http.dart' as http;
 
 class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
@@ -16,7 +17,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
 
   @override
   Future<PreparationModel> createPreparation({
-    required PreparationModel params,
+    required PreparationRequest params,
   }) async {
     final token = await _tokenHelper.getToken();
 
@@ -26,7 +27,7 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
       final response = await _client.post(
         Uri.parse('${ApiHelper.baseUrl}/preparation/'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode(params.createToJson()),
+        body: jsonEncode(params.toJsonCreate()),
       );
 
       if (response.statusCode == 201) {
@@ -104,29 +105,17 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
 
   @override
   Future<PreparationModel> updatePreparationStatus({
-    required int id,
-    required String params,
-    int? totalBox,
-    int? temporaryLocationId,
+    required PreparationRequest params,
   }) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
-      Map<String, dynamic> paramsJson = {'status': params};
-
-      if (totalBox != null) {
-        paramsJson.addAll({'total_box': totalBox});
-      } else if (temporaryLocationId != null) {
-        if (totalBox != null) {
-          paramsJson.addAll({'temporary_location_id': temporaryLocationId});
-        }
-      }
       final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/$id'),
+        Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode(paramsJson),
+        body: jsonEncode(params.toJsonUpdate()),
       );
 
       if (response.statusCode == 200) {

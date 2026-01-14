@@ -2,10 +2,10 @@
 
 import 'package:asset_management/core/error/exception.dart';
 import 'package:asset_management/core/error/failure.dart';
-import 'package:asset_management/data/model/preparation/preparation_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_pagination.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -16,12 +16,10 @@ class PreparationRepositoryImpl implements PreparationRepository {
 
   @override
   Future<Either<Failure, Preparation>> createPreparation({
-    required Preparation params,
+    required PreparationRequest params,
   }) async {
     try {
-      final response = await _source.createPreparation(
-        params: PreparationModel.fromEntity(params),
-      );
+      final response = await _source.createPreparation(params: params);
       return Right(response.toEntity());
     } on CreateException catch (e) {
       return Left(CreateFailure(e.message));
@@ -58,18 +56,10 @@ class PreparationRepositoryImpl implements PreparationRepository {
 
   @override
   Future<Either<Failure, Preparation>> updatePreparationStatus({
-    required int id,
-    required String params,
-    int? totalBox,
-    int? temporaryLocationId,
+    required PreparationRequest params,
   }) async {
     try {
-      final response = await _source.updatePreparationStatus(
-        id: id,
-        params: params,
-        totalBox: totalBox,
-        temporaryLocationId: temporaryLocationId,
-      );
+      final response = await _source.updatePreparationStatus(params: params);
       return Right(response.toEntity());
     } on UpdateException catch (e) {
       return Left(UpdateFailure(e.message));

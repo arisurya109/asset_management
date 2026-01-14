@@ -107,16 +107,16 @@ class DatasDesktopCubit extends Cubit<void> {
     );
 
     return failureOrLocations.fold((_) => [], (locations) {
-      final locationInternal = locations
+      final locationStore = locations
+          .where((e) => e.locationType != 'VENDOR' && e.locationType == 'STORE')
+          .toList();
+      final locationAdditional = locations
           .where((e) => e.locationType != 'VENDOR')
           .toList();
-      final locationExternal = locations
-          .where((e) => e.locationType == 'VENDOR')
-          .toList();
-      if (types == 'INTERNAL') {
-        return locationInternal;
+      if (types == 'NEWSTORE') {
+        return locationStore;
       } else {
-        return locationExternal;
+        return locationAdditional;
       }
     });
   }

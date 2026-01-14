@@ -17,6 +17,7 @@ import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:asset_management/domain/entities/master/asset_type.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/mobile/main_export.dart';
 import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
 import 'package:go_router/go_router.dart';
@@ -109,10 +110,10 @@ class _PreparationDetailDesktopViewState
                   _statusC = TextEditingController(text: preparation?.status);
                   _notesC = TextEditingController(text: preparation?.notes);
                   _locationC = TextEditingController(
-                    text: preparation?.temporaryLocation,
+                    text: preparation?.location ?? '-',
                   );
                   _totalBoxC = TextEditingController(
-                    text: preparation?.totalBox.toString(),
+                    text: preparation?.totalBox?.toString() ?? '-',
                   );
                   _workerC = TextEditingController(text: preparation?.worker);
                   _createdC = TextEditingController(text: preparation?.created);
@@ -403,8 +404,11 @@ class _PreparationDetailDesktopViewState
                                                   >()
                                                   .add(
                                                     OnUpdatePreparationStatus(
-                                                      preparation!.id!,
-                                                      'READY TO DELIVERY',
+                                                      params: PreparationRequest(
+                                                        id: preparation?.id,
+                                                        status:
+                                                            'READY TO DELIVERY',
+                                                      ),
                                                     ),
                                                   );
                                               context.pop();
@@ -779,7 +783,12 @@ class _PreparationDetailDesktopViewState
         onConfirm: () {
           context.pop();
           context.read<PreparationDesktopBloc>().add(
-            OnUpdatePreparationStatus(preparation.id!, 'ASSIGNED'),
+            OnUpdatePreparationStatus(
+              params: PreparationRequest(
+                id: preparation.id,
+                status: 'ASSIGNED',
+              ),
+            ),
           );
           context.dialogLoadingDesktop();
         },

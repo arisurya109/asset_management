@@ -6,7 +6,7 @@ import 'package:asset_management/desktop/presentation/components/app_body_deskto
 import 'package:asset_management/desktop/presentation/components/app_text_field_desktop.dart';
 import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
 import 'package:asset_management/domain/entities/master/location.dart';
-import 'package:asset_management/domain/entities/preparation/preparation.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -24,7 +24,7 @@ class AddNewPreparationDesktopView extends StatefulWidget {
 
 class _AddNewPreparationDesktopViewState
     extends State<AddNewPreparationDesktopView> {
-  final String _selectedPreparationTypes = 'INTERNAL';
+  String? _selectedPreparationTypes;
   Location? _selectedDestination;
   User? _selectedApproved;
   User? _selectedWorker;
@@ -59,14 +59,39 @@ class _AddNewPreparationDesktopViewState
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    AppDropDownSearch<String>(
+                      title: 'Type',
+                      hintText: 'Selected Type',
+                      onFind: (String filter) async => await context
+                          .read<DatasDesktopCubit>()
+                          .getPreparationTypes(),
+                      borderRadius: 4,
+                      compareFn: (value, value1) => value == value1,
+                      itemAsString: (value) => value,
+                      fontSize: 11,
+                      enabled: true,
+                      onChanged: (value) {
+                        if (_selectedPreparationTypes != value) {
+                          setState(() {
+                            _selectedPreparationTypes = value;
+                            _selectedDestination = null;
+                          });
+                        }
+                      },
+                      showSearchBox: true,
+                      selectedItem: _selectedPreparationTypes,
+                    ),
+                    AppSpace.vertical(12),
                     AppDropDownSearch<Location>(
                       title: 'Destination',
                       hintText: 'Selected Destination',
-                      onFind: (String filter) async => await context
-                          .read<DatasDesktopCubit>()
-                          .findLocationPreparationByTypes(
-                            _selectedPreparationTypes,
-                          ),
+                      onFind: _selectedPreparationTypes == null
+                          ? null
+                          : (String filter) async => await context
+                                .read<DatasDesktopCubit>()
+                                .findLocationPreparationByTypes(
+                                  _selectedPreparationTypes,
+                                ),
                       borderRadius: 4,
                       compareFn: (value, value1) => value.name == value1.name,
                       itemAsString: (value) => value.name!,
@@ -184,50 +209,34 @@ class _AddNewPreparationDesktopViewState
   }
 
   _addPreparation() {
-    final type = _selectedPreparationTypes;
-    final destination = _selectedDestination;
-    final approved = _selectedApproved;
-    final worker = _selectedWorker;
-    final desc = _notesC.value.text;
+    final params = PreparationRequest(
+      type: _selectedPreparationTypes,
+      destination: _selectedDestination?.id,
+      approved: _selectedApproved?.id,
+      worker: _selectedWorker?.id,
+      notes: _notesC.value.text.trim(),
+    );
 
-    if (destination == null) {
+    final paramsIsValid = params.validateCreateRequest();
+
+    if (paramsIsValid != null) {
       AppToast.show(
         context: context,
         type: ToastType.error,
-        message: 'Destination cannot be empty',
-      );
-    } else if (approved == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Approved cannot be empty',
-      );
-    } else if (worker == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Worker cannot be empty',
+        message: paramsIsValid,
       );
     } else {
       context.showDialogConfirm(
         title: 'Add Preparation ?',
         content:
-            'Type : $type\nDestination : ${destination.name}\nApproved : ${approved.name}\nWorker : ${worker.name}\nNotes : $desc',
+            'Type : ${params.type}\nDestination : ${_selectedDestination?.name}\nApproved : ${_selectedApproved?.name}\nWorker : ${_selectedWorker?.name}\nNotes : ${params.notes}',
         onCancel: () => context.pop(),
         fontSize: 12,
         onCancelText: 'No',
         onConfirmText: 'Add',
         onConfirm: () {
           context.read<PreparationDesktopBloc>().add(
-            OnCreatePreparationEvent(
-              params: Preparation(
-                type: type,
-                destinationId: destination.id,
-                approvedId: approved.id,
-                workerId: worker.id,
-                notes: desc,
-              ),
-            ),
+            OnCreatePreparationEvent(params: params),
           );
           context.pop();
           context.dialogLoadingDesktop();

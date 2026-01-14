@@ -1,5 +1,5 @@
-import 'package:asset_management/domain/entities/preparation/preparation.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_pagination.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/domain/usecases/preparation/create_preparation_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/find_preparation_by_pagination_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/update_preparation_status_use_case.dart';
@@ -72,8 +72,7 @@ class PreparationDesktopBloc
       emit(state.copyWith(status: StatusPreparationDesktop.loading));
 
       final failureOrPreparationDetails = await _updatePreparationStatusUseCase(
-        id: event.id,
-        params: event.status,
+        params: event.params,
       );
 
       return failureOrPreparationDetails.fold(

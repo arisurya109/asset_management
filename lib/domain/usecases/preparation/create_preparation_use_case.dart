@@ -1,5 +1,6 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
 import 'package:dartz/dartz.dart';
 
@@ -9,7 +10,7 @@ class CreatePreparationUseCase {
   CreatePreparationUseCase(this._repository);
 
   Future<Either<Failure, Preparation>> call({
-    required Preparation params,
+    required PreparationRequest params,
   }) async {
     return _repository.createPreparation(params: params);
   }

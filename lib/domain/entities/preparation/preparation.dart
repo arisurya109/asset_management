@@ -9,8 +9,10 @@ class Preparation extends Equatable {
   String? status;
   int? destinationId;
   String? destination;
-  int? temporaryLocationId;
-  String? temporaryLocation;
+  int? destinationCode;
+  String? destinationInit;
+  int? locationId;
+  String? location;
   int? createdId;
   String? created;
   int? workerId;
@@ -28,8 +30,10 @@ class Preparation extends Equatable {
     this.status,
     this.destinationId,
     this.destination,
-    this.temporaryLocationId,
-    this.temporaryLocation,
+    this.destinationCode,
+    this.destinationInit,
+    this.locationId,
+    this.location,
     this.createdId,
     this.created,
     this.workerId,
@@ -50,8 +54,10 @@ class Preparation extends Equatable {
       status,
       destinationId,
       destination,
-      temporaryLocationId,
-      temporaryLocation,
+      destinationCode,
+      destinationInit,
+      location,
+      locationId,
       createdId,
       created,
       workerId,

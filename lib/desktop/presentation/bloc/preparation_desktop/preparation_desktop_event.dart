@@ -20,14 +20,13 @@ class OnFindPreparationPaginationEvent extends PreparationDesktopEvent {
 }
 
 class OnCreatePreparationEvent extends PreparationDesktopEvent {
-  final Preparation params;
+  final PreparationRequest params;
 
   const OnCreatePreparationEvent({required this.params});
 }
 
 class OnUpdatePreparationStatus extends PreparationDesktopEvent {
-  final int id;
-  final String status;
+  final PreparationRequest params;
 
-  const OnUpdatePreparationStatus(this.id, this.status);
+  const OnUpdatePreparationStatus({required this.params});
 }
