@@ -8,9 +8,16 @@ class PreparationDetailDesktopEvent extends Equatable {
 }
 
 class OnAddPreparationDetailEvent extends PreparationDetailDesktopEvent {
-  final PreparationDetail params;
+  final PreparationDetailRequest params;
 
   const OnAddPreparationDetailEvent(this.params);
+}
+
+class OnDeletePreparationDetailEvent extends PreparationDetailDesktopEvent {
+  final int id;
+  final int preparationId;
+
+  const OnDeletePreparationDetailEvent(this.id, this.preparationId);
 }
 
 class OnGetPreparationDetails extends PreparationDetailDesktopEvent {

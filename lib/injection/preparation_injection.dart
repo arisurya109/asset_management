@@ -8,6 +8,8 @@ import 'package:asset_management/domain/repositories/preparation/preparation_det
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
 import 'package:asset_management/domain/usecases/preparation/add_preparation_detail_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/create_preparation_use_case.dart';
+import 'package:asset_management/domain/usecases/preparation/data_export_preparation_use_case.dart';
+import 'package:asset_management/domain/usecases/preparation/delete_preparation_detail_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/find_preparation_by_pagination_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/get_preparation_details_use_case.dart';
 import 'package:asset_management/domain/usecases/preparation/get_preparation_types_use_case.dart';
@@ -15,6 +17,10 @@ import 'package:asset_management/domain/usecases/preparation/update_preparation_
 import 'package:get_it/get_it.dart';
 
 preparationInjection(GetIt locator) {
+  locator.registerLazySingleton(() => DataExportPreparationUseCase(locator()));
+  locator.registerLazySingleton(
+    () => DeletePreparationDetailUseCase(locator()),
+  );
   locator.registerLazySingleton(() => AddPreparationDetailUseCase(locator()));
   locator.registerLazySingleton(() => GetPreparationDetailsUseCase(locator()));
   locator.registerLazySingleton(() => CreatePreparationUseCase(locator()));

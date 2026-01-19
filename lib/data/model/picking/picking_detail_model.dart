@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:asset_management/data/model/picking/picking_suggestion_model.dart';
 import 'package:asset_management/domain/entities/picking/picking_detail.dart';
 import 'package:equatable/equatable.dart';
 
@@ -7,106 +8,100 @@ import 'package:equatable/equatable.dart';
 class PickingDetailModel extends Equatable {
   int? id;
   int? modelId;
-  int? quantity;
-  int? isConsumable;
   String? model;
-  String? types;
+  int? typeId;
+  String? type;
+  int? categoryId;
   String? category;
-  int? assetId;
+  int? brandId;
+  String? brand;
+  int? isConsumable;
   String? status;
-  String? assetCode;
-  String? serialNumber;
-  int? locationId;
   String? purchaseOrder;
-  String? location;
+  int? quantity;
+  List<PickingSuggestionModel>? suggestion;
 
   PickingDetailModel({
     this.id,
     this.modelId,
-    this.quantity,
-    this.isConsumable,
     this.model,
-    this.types,
+    this.typeId,
+    this.type,
+    this.categoryId,
     this.category,
-    this.assetId,
+    this.brandId,
+    this.brand,
+    this.isConsumable,
     this.status,
-    this.assetCode,
-    this.serialNumber,
-    this.locationId,
     this.purchaseOrder,
-    this.location,
+    this.quantity,
+    this.suggestion,
   });
-
-  Map<String, dynamic> toJsonPickAsset() {
-    return {
-      'id': id,
-      'asset_id': assetId,
-      'quantity': quantity,
-      'status': status,
-      'location_id': locationId,
-    };
-  }
 
   factory PickingDetailModel.fromJson(Map<String, dynamic> map) {
     return PickingDetailModel(
       id: map['id'] != null ? map['id'] as int : null,
-      modelId: map['model_id'] != null ? map['model_id'] as int : null,
-      quantity: map['quantity'] != null ? map['quantity'] as int : null,
+      modelId: map['asset']['model']['id'] != null
+          ? map['asset']['model']['id'] as int
+          : null,
+      model: map['asset']['model']['name'] != null
+          ? map['asset']['model']['name'] as String
+          : null,
+      typeId: map['asset']['type']['id'] != null
+          ? map['asset']['type']['id'] as int
+          : null,
+      type: map['asset']['type']['name'] != null
+          ? map['asset']['type']['name'] as String
+          : null,
+      categoryId: map['asset']['category']['id'] != null
+          ? map['asset']['category']['id'] as int
+          : null,
+      category: map['asset']['category']['name'] != null
+          ? map['asset']['category']['name'] as String
+          : null,
+      brandId: map['asset']['brand']['id'] != null
+          ? map['asset']['brand']['id'] as int
+          : null,
+      brand: map['asset']['brand']['name'] != null
+          ? map['asset']['brand']['name'] as String
+          : null,
       isConsumable: map['is_consumable'] != null
           ? map['is_consumable'] as int
           : null,
-      model: map['model'] != null ? map['model'] as String : null,
-      types: map['types'] != null ? map['types'] as String : null,
-      category: map['category'] != null ? map['category'] as String : null,
-      assetCode: map['asset_code'] != null ? map['asset_code'] as String : null,
-      assetId: map['asset_id'] != null ? map['asset_id'] as int : null,
-      location: map['location'] != null ? map['location'] as String : null,
-      locationId: map['location_id'] != null ? map['location_id'] as int : null,
+      status: map['status'] != null ? map['status'] as String : null,
       purchaseOrder: map['purchase_order'] != null
           ? map['purchase_order'] as String
           : null,
-      serialNumber: map['serial_number'] != null
-          ? map['serial_number'] as String
+      quantity: map['quantity'] != null ? map['quantity'] as int : null,
+      suggestion: map['suggestion'] != null
+          ? (map['suggestion'] as List?)
+                    ?.map(
+                      (e) => PickingSuggestionModel.fromJson(
+                        e as Map<String, dynamic>,
+                      ),
+                    )
+                    .toList() ??
+                []
           : null,
-      status: map['status'] != null ? map['status'] as String : null,
-    );
-  }
-
-  factory PickingDetailModel.fromEntity(PickingDetail params) {
-    return PickingDetailModel(
-      id: params.id,
-      assetCode: params.assetCode,
-      assetId: params.assetId,
-      category: params.category,
-      isConsumable: params.isConsumable,
-      location: params.location,
-      locationId: params.locationId,
-      model: params.model,
-      modelId: params.modelId,
-      purchaseOrder: params.purchaseOrder,
-      quantity: params.quantity,
-      serialNumber: params.serialNumber,
-      status: params.status,
-      types: params.types,
     );
   }
 
   PickingDetail toEntity() {
     return PickingDetail(
       id: id,
-      category: category,
-      isConsumable: isConsumable,
       model: model,
       modelId: modelId,
-      quantity: quantity,
-      types: types,
-      assetCode: assetCode,
-      assetId: assetId,
-      location: location,
-      locationId: locationId,
-      purchaseOrder: purchaseOrder,
-      serialNumber: serialNumber,
+      type: type,
+      typeId: typeId,
+      category: category,
+      categoryId: categoryId,
+      brand: brand,
+      brandId: brandId,
+      isConsumable: isConsumable,
       status: status,
+      purchaseOrder: purchaseOrder,
+      quantity: quantity,
+      suggestion: suggestion?.map((e) => e.toEntity()).toList() ?? [],
     );
   }
 
@@ -115,18 +110,18 @@ class PickingDetailModel extends Equatable {
     return [
       id,
       modelId,
-      quantity,
-      isConsumable,
       model,
-      types,
+      typeId,
+      type,
+      categoryId,
       category,
-      assetId,
+      brandId,
+      brand,
+      isConsumable,
       status,
-      assetCode,
-      serialNumber,
-      locationId,
-      location,
       purchaseOrder,
+      quantity,
+      suggestion,
     ];
   }
 }

@@ -3,10 +3,10 @@ import 'dart:convert';
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
 import 'package:asset_management/core/error/exception.dart';
-import 'package:asset_management/data/model/picking/picking_detail_model.dart';
 import 'package:asset_management/data/model/picking/picking_detail_response_model.dart';
 import 'package:asset_management/data/model/picking/picking_model.dart';
 import 'package:asset_management/data/source/picking/picking_remote_data_source.dart';
+import 'package:asset_management/domain/entities/picking/picking_request.dart';
 import 'package:http/http.dart' as http;
 
 class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
@@ -14,6 +14,35 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
   final TokenHelper _tokenHelper;
 
   PickingRemoteDataSourceImpl(this._client, this._tokenHelper);
+
+  @override
+  Future<String> addPickAssetPicking({required PickingRequest params}) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.post(
+        Uri.parse(
+          '${ApiHelper.baseUrl}/picking/pick/detail/${params.preparationDetailId}',
+        ),
+        headers: ApiHelper.headersToken(token),
+        body: jsonEncode(params.toJsonAdd()),
+      );
+
+      if (response.statusCode == 201) {
+        final body = jsonDecode(response.body);
+
+        Map<String, dynamic> datas = body;
+
+        return datas['status'];
+      } else {
+        throw CreateException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
 
   @override
   Future<List<PickingModel>> findAllPickingTask() async {
@@ -42,8 +71,8 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
   }
 
   @override
-  Future<PickingDetailResponseModel> findPickingDetail({
-    required int id,
+  Future<PickingDetailResponseModel> pickingDetailById({
+    required int params,
   }) async {
     final token = await _tokenHelper.getToken();
 
@@ -51,14 +80,16 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
       throw NotFoundException(message: 'Token expired');
     } else {
       final response = await _client.get(
-        Uri.parse('${ApiHelper.baseUrl}/picking/$id'),
+        Uri.parse('${ApiHelper.baseUrl}/picking/$params'),
         headers: ApiHelper.headersToken(token),
       );
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
-        return PickingDetailResponseModel.fromMap(body['data']);
+        Map<String, dynamic> datas = body['data'];
+
+        return PickingDetailResponseModel.fromJson(datas);
       } else {
         throw CreateException(
           message: ApiHelper.getErrorMessage(response.body),
@@ -68,61 +99,28 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
   }
 
   @override
-  Future<String> pickedAsset({required PickingDetailModel params}) async {
+  Future<String> updateStatusPicking({required PickingRequest params}) async {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
     } else {
+      final paramsJson = params.status == 'PICKING'
+          ? params.toJsonStatusPicking()
+          : params.toJsonStatusReady();
+
       final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/picking'),
+        Uri.parse('${ApiHelper.baseUrl}/picking/${params.preparationId}'),
         headers: ApiHelper.headersToken(token),
-        body: jsonEncode(params.toJsonPickAsset()),
+        body: jsonEncode(paramsJson),
       );
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
 
-        return body['status'];
-      } else {
-        throw CreateException(
-          message: ApiHelper.getErrorMessage(response.body),
-        );
-      }
-    }
-  }
+        Map<String, dynamic> datas = body;
 
-  @override
-  Future<String> updateStatusPicking({
-    required int id,
-    required String params,
-    int? temporaryLocationId,
-    int? totalBox,
-  }) async {
-    final token = await _tokenHelper.getToken();
-
-    if (token == null) {
-      throw NotFoundException(message: 'Token expired');
-    } else {
-      Map<String, dynamic> json = {'status': params};
-
-      if (temporaryLocationId != null) {
-        json.addAll({
-          'temporary_location_id': temporaryLocationId,
-          'total_box': totalBox,
-        });
-      }
-
-      final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/picking/$id'),
-        headers: ApiHelper.headersToken(token),
-        body: jsonEncode(json),
-      );
-
-      if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-
-        return body['status'];
+        return datas['status'];
       } else {
         throw CreateException(
           message: ApiHelper.getErrorMessage(response.body),

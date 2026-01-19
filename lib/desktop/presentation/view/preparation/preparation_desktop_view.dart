@@ -1,3 +1,4 @@
+import 'package:asset_management/core/core.dart';
 import 'package:asset_management/desktop/presentation/bloc/authentication_desktop/authentication_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/preparation_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
@@ -58,6 +59,7 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                       'id': e.id.toString(),
                       'no': noUrut.toString(),
                       'code': e.code ?? '',
+                      'type': e.type ?? '',
                       'destination': e.destination ?? '',
                       'status': e.status ?? '',
                       'notes': e.notes ?? '',
@@ -128,8 +130,18 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                 columns: [
                   AppDataTableColumn(label: 'NO', key: 'no', width: 50),
                   AppDataTableColumn(label: 'CODE', key: 'code'),
+                  AppDataTableColumn(label: 'TYPE', key: 'type'),
                   AppDataTableColumn(label: 'DESTINATION', key: 'destination'),
-                  AppDataTableColumn(label: 'STATUS', key: 'status'),
+                  AppDataTableColumn(
+                    label: 'STATUS',
+                    key: 'status',
+                    badgeConfig: {
+                      'draft': AppColors.kGrey,
+                      'picking': AppColors.kYellow,
+                      'assigned': AppColors.kBlue,
+                      'cancelled': AppColors.kRed,
+                    },
+                  ),
                   AppDataTableColumn(
                     label: 'NOTES',
                     key: 'notes',

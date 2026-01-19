@@ -7,6 +7,7 @@ enum StatusPreparationDetailDesktop {
   failure,
   loaded,
   addSuccess,
+  deleteSuccess,
 }
 
 // ignore: must_be_immutable

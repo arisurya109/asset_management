@@ -4,6 +4,7 @@ import 'package:asset_management/core/error/exception.dart';
 import 'package:asset_management/core/error/failure.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
 import 'package:asset_management/domain/entities/preparation/preparation.dart';
+import 'package:asset_management/domain/entities/preparation/preparation_document.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_pagination.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/domain/repositories/preparation/preparation_repository.dart';
@@ -63,6 +64,20 @@ class PreparationRepositoryImpl implements PreparationRepository {
       return Right(response.toEntity());
     } on UpdateException catch (e) {
       return Left(UpdateFailure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, PreparationDocument>> dataExportPreparation({
+    required int preparationId,
+  }) async {
+    try {
+      final response = await _source.dataExportPreparation(
+        preparationId: preparationId,
+      );
+      return Right(response.toEntity());
+    } on CreateException catch (e) {
+      return Left(CreateFailure(e.message));
     }
   }
 }

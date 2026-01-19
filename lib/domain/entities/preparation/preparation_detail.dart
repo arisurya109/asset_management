@@ -1,22 +1,43 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 
+import 'package:asset_management/domain/entities/preparation/preparation_detail_item.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class PreparationDetail extends Equatable {
   int? id;
   int? preparationId;
-  int? assetId;
   int? quantity;
   String? status;
-  String? assetCode;
-  int? locationId;
   String? purchaseOrder;
-  String? location;
   int? modelId;
   String? model;
   int? isConsumable;
+  int? categoryId;
   String? category;
+  String? brand;
+  int? brandId;
+  String? type;
+  int? typeId;
+  List<PreparationDetailItem>? allocatedItems;
+
+  PreparationDetail({
+    this.id,
+    this.preparationId,
+    this.quantity,
+    this.status,
+    this.purchaseOrder,
+    this.modelId,
+    this.model,
+    this.isConsumable,
+    this.categoryId,
+    this.category,
+    this.brand,
+    this.brandId,
+    this.type,
+    this.typeId,
+    this.allocatedItems,
+  });
 
   String getIndex(int index) {
     switch (index) {
@@ -25,7 +46,7 @@ class PreparationDetail extends Equatable {
       case 1:
         return model!;
       case 2:
-        return assetCode ?? '';
+        return type ?? '';
       case 3:
         return quantity.toString();
       case 4:
@@ -34,38 +55,25 @@ class PreparationDetail extends Equatable {
     return '';
   }
 
-  PreparationDetail({
-    this.id,
-    this.preparationId,
-    this.assetId,
-    this.quantity,
-    this.status,
-    this.assetCode,
-    this.locationId,
-    this.purchaseOrder,
-    this.location,
-    this.modelId,
-    this.model,
-    this.isConsumable,
-    this.category,
-  });
-
   @override
   List<Object?> get props {
     return [
       id,
       preparationId,
-      assetId,
       modelId,
       quantity,
       status,
-      assetCode,
-      locationId,
       purchaseOrder,
-      location,
       model,
+      modelId,
       isConsumable,
       category,
+      categoryId,
+      brand,
+      brandId,
+      category,
+      categoryId,
+      allocatedItems,
     ];
   }
 }

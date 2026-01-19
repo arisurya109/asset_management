@@ -1,7 +1,7 @@
-import 'package:asset_management/domain/entities/picking/picking_detail.dart';
 import 'package:asset_management/domain/entities/picking/picking_detail_response.dart';
-import 'package:asset_management/domain/usecases/picking/find_picking_detail_use_case.dart';
-import 'package:asset_management/domain/usecases/picking/picked_asset_use_case.dart';
+import 'package:asset_management/domain/entities/picking/picking_request.dart';
+import 'package:asset_management/domain/usecases/picking/add_pick_asset_picking_use_case.dart';
+import 'package:asset_management/domain/usecases/picking/picking_detail_by_id_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -9,8 +9,8 @@ part 'picking_detail_event.dart';
 part 'picking_detail_state.dart';
 
 class PickingDetailBloc extends Bloc<PickingDetailEvent, PickingDetailState> {
-  final PickedAssetUseCase _pickedAssetUseCase;
-  final FindPickingDetailUseCase _findPickingDetailUseCase;
+  final AddPickAssetPickingUseCase _pickedAssetUseCase;
+  final PickingDetailByIdUseCase _findPickingDetailUseCase;
 
   PickingDetailBloc(this._pickedAssetUseCase, this._findPickingDetailUseCase)
     : super(PickingDetailState()) {
@@ -18,7 +18,7 @@ class PickingDetailBloc extends Bloc<PickingDetailEvent, PickingDetailState> {
       emit(state.copyWith(status: StatusPickingDetail.loading));
 
       final failureOrResponse = await _findPickingDetailUseCase(
-        id: event.params,
+        params: event.params,
       );
 
       return failureOrResponse.fold(
@@ -50,19 +50,26 @@ class PickingDetailBloc extends Bloc<PickingDetailEvent, PickingDetailState> {
         ),
         (message) async {
           final failureOrResponse = await _findPickingDetailUseCase(
-            id: event.preparationId,
+            params: event.params.preparationId!,
           );
 
-          return failureOrResponse.fold(
-            (_) {},
-            (response) => emit(
+          return failureOrResponse.fold((_) {}, (response) {
+            final preparationDetail = response.items
+                ?.where(
+                  (element) => element.id == event.params.preparationDetailId,
+                )
+                .firstOrNull;
+
+            emit(
               state.copyWith(
-                status: StatusPickingDetail.addSuccess,
+                status: preparationDetail == null
+                    ? StatusPickingDetail.completedSuccess
+                    : StatusPickingDetail.addSuccess,
                 response: response,
                 message: message,
               ),
-            ),
-          );
+            );
+          });
         },
       );
     });

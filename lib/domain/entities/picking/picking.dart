@@ -5,30 +5,22 @@ import 'package:equatable/equatable.dart';
 class Picking extends Equatable {
   int? id;
   String? code;
-  String? type;
   String? status;
   int? destinationId;
   String? destination;
-  int? temporaryLocationId;
-  String? temporaryLocation;
-  int? totalBox;
+  int? destinationCode;
+  String? destinationInit;
   String? notes;
-  int? totalItems;
-  int? totalQuantiy;
 
   Picking({
     this.id,
     this.code,
-    this.type,
     this.status,
     this.destinationId,
     this.destination,
-    this.temporaryLocationId,
-    this.temporaryLocation,
-    this.totalBox,
+    this.destinationCode,
+    this.destinationInit,
     this.notes,
-    this.totalItems,
-    this.totalQuantiy,
   });
 
   @override
@@ -36,13 +28,11 @@ class Picking extends Equatable {
     return [
       id,
       code,
-      type,
+      destinationCode,
+      destinationInit,
       status,
       destinationId,
       destination,
-      temporaryLocationId,
-      temporaryLocation,
-      totalBox,
       notes,
     ];
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
 import 'package:asset_management/core/core.dart';
+import 'package:asset_management/data/model/preparation/preparation_document_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_model.dart';
 import 'package:asset_management/data/model/preparation/preparation_pagination_model.dart';
 import 'package:asset_management/data/source/preparation/preparation_remote_data_source.dart';
@@ -124,6 +125,32 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
         return PreparationModel.fromJson(body['data']);
       } else {
         throw UpdateException(
+          message: ApiHelper.getErrorMessage(response.body),
+        );
+      }
+    }
+  }
+
+  @override
+  Future<PreparationDocumentModel> dataExportPreparation({
+    required int preparationId,
+  }) async {
+    final token = await _tokenHelper.getToken();
+
+    if (token == null) {
+      throw NotFoundException(message: 'Token expired');
+    } else {
+      final response = await _client.get(
+        Uri.parse('${ApiHelper.baseUrl}/preparation/$preparationId/document'),
+        headers: ApiHelper.headersToken(token),
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+
+        return PreparationDocumentModel.fromJson(body['data']);
+      } else {
+        throw CreateException(
           message: ApiHelper.getErrorMessage(response.body),
         );
       }

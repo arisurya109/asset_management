@@ -216,7 +216,7 @@ class LocalDataTableSource extends DataTableSource {
       cells: columns.map((col) {
         final String value = data[col.key] ?? "";
 
-        if (col.badgeConfig != null) {
+        if (col.badgeConfig != null && value.isFilled()) {
           final color =
               col.badgeConfig![value.toLowerCase()] ?? AppColors.kBase;
           return DataCell(_buildBadge(value, color));

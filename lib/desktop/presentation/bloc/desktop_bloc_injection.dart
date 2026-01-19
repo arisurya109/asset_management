@@ -8,6 +8,7 @@ import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/p
 import 'package:asset_management/desktop/presentation/bloc/preparation_update/preparation_update_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/user_management/user_management_bloc.dart';
 import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
+import 'package:asset_management/desktop/presentation/cubit/export_document_preparation/export_document_preparation_cubit.dart';
 import 'package:asset_management/desktop/presentation/cubit/home/home_cubit.dart';
 import 'package:get_it/get_it.dart';
 
@@ -25,6 +26,7 @@ desktopBlocInjection() {
     () => PreparationDesktopBloc(locator(), locator(), locator()),
   );
   locator.registerFactory(() => HomeCubit());
+  locator.registerFactory(() => ExportDocumentPreparationCubit(locator()));
   locator.registerFactory(
     () => DatasDesktopCubit(
       locator(),
@@ -43,7 +45,7 @@ desktopBlocInjection() {
   locator.registerFactory(() => PreparationUpdateBloc(locator()));
   locator.registerFactory(() => ReturnBloc(locator()));
   locator.registerFactory(
-    () => PreparationDetailDesktopBloc(locator(), locator()),
+    () => PreparationDetailDesktopBloc(locator(), locator(), locator()),
   );
   locator.registerFactory(() => AssetDetailDesktopBloc(locator()));
 }

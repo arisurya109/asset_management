@@ -1,26 +1,21 @@
 import 'package:asset_management/core/core.dart';
-import 'package:asset_management/core/widgets/app_dropdown_search.dart';
 import 'package:asset_management/core/widgets/app_toast.dart';
 import 'package:asset_management/desktop/presentation/bloc/authentication_desktop/authentication_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_desktop/preparation_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/bloc/preparation_detail_desktop/preparation_detail_desktop_bloc.dart';
 import 'package:asset_management/desktop/presentation/components/app_body_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_button_header_table.dart';
-import 'package:asset_management/desktop/presentation/components/app_pdf.dart';
-import 'package:asset_management/desktop/presentation/components/app_table_fixed.dart';
-import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
 import 'package:asset_management/desktop/presentation/components/app_new_table.dart';
+import 'package:asset_management/desktop/presentation/components/app_header_desktop.dart';
+import 'package:asset_management/desktop/presentation/components/app_table_fixed.dart';
 import 'package:asset_management/desktop/presentation/components/app_text_field_search_desktop.dart';
-import 'package:asset_management/desktop/presentation/cubit/datas/datas_desktop_cubit.dart';
-import 'package:asset_management/domain/entities/master/asset_category.dart';
-import 'package:asset_management/domain/entities/master/asset_model.dart';
-import 'package:asset_management/domain/entities/master/asset_type.dart';
-import 'package:asset_management/domain/entities/preparation/preparation.dart';
-import 'package:asset_management/domain/entities/preparation/preparation_detail.dart';
+import 'package:asset_management/desktop/presentation/cubit/export_document_preparation/export_document_preparation_cubit.dart';
+import 'package:asset_management/desktop/presentation/view/preparation/preparation_detail_content_assigned_desktop_view.dart';
+import 'package:asset_management/desktop/presentation/view/preparation/preparation_detail_content_draft_desktop_view.dart';
 import 'package:asset_management/domain/entities/preparation/preparation_request.dart';
 import 'package:asset_management/mobile/main_export.dart';
-import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
 import 'package:go_router/go_router.dart';
+import 'package:open_file/open_file.dart';
 
 class PreparationDetailDesktopView extends StatefulWidget {
   const PreparationDetailDesktopView({super.key});
@@ -39,15 +34,7 @@ class _PreparationDetailDesktopViewState
   late TextEditingController _locationC;
   late TextEditingController _totalBoxC;
   late TextEditingController _workerC;
-  late TextEditingController _createdC;
-
-  AssetType? _selectedType;
-  AssetCategory? _selectedCategory;
-  AssetModel? _selectedModel;
-  late TextEditingController _purchaseOrderC;
-  late TextEditingController _quantityC;
-  late FocusNode _purchaseOrderFn;
-  late FocusNode _quantityFn;
+  late TextEditingController _typeC;
 
   @override
   void initState() {
@@ -58,11 +45,8 @@ class _PreparationDetailDesktopViewState
     _locationC = TextEditingController();
     _totalBoxC = TextEditingController();
     _workerC = TextEditingController();
-    _createdC = TextEditingController();
-    _purchaseOrderC = TextEditingController();
-    _quantityC = TextEditingController();
-    _purchaseOrderFn = FocusNode();
-    _quantityFn = FocusNode();
+    _typeC = TextEditingController();
+
     super.initState();
   }
 
@@ -75,11 +59,8 @@ class _PreparationDetailDesktopViewState
     _locationC.dispose();
     _totalBoxC.dispose();
     _workerC.dispose();
-    _createdC.dispose();
-    _purchaseOrderC.dispose();
-    _quantityC.dispose();
-    _purchaseOrderFn.dispose();
-    _quantityFn.dispose();
+    _typeC.dispose();
+
     super.dispose();
   }
 
@@ -94,248 +75,239 @@ class _PreparationDetailDesktopViewState
           withBackButton: true,
         ),
         AppBodyDesktop(
-          body:
-              BlocBuilder<
+          body: MultiBlocListener(
+            listeners: [
+              BlocListener<PreparationDesktopBloc, PreparationDesktopState>(
+                listener: (context, state) {
+                  if (state.status == StatusPreparationDesktop.failure) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.error,
+                      message: state.message!,
+                    );
+                  }
+
+                  if (state.status == StatusPreparationDesktop.updateSuccess) {
+                    context.pop();
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.success,
+                      message: state.message!,
+                    );
+                  }
+                },
+              ),
+              BlocListener<
                 PreparationDetailDesktopBloc,
                 PreparationDetailDesktopState
               >(
-                builder: (context, state) {
-                  final preparation = state.preparationDetails?.preparation;
-                  final preparationDetails =
-                      state.preparationDetails?.preparationDetail;
-                  _codeC = TextEditingController(text: preparation?.code);
-                  _destinationC = TextEditingController(
-                    text: preparation?.destination,
-                  );
-                  _statusC = TextEditingController(text: preparation?.status);
-                  _notesC = TextEditingController(text: preparation?.notes);
-                  _locationC = TextEditingController(
-                    text: preparation?.location ?? '-',
-                  );
-                  _totalBoxC = TextEditingController(
-                    text: preparation?.totalBox?.toString() ?? '-',
-                  );
-                  _workerC = TextEditingController(text: preparation?.worker);
-                  _createdC = TextEditingController(text: preparation?.created);
+                listener: (context, state) {
+                  if (state.status == StatusPreparationDetailDesktop.failure) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.error,
+                      message: state.message!,
+                    );
+                  }
 
-                  final datasTable =
-                      state.preparationDetails?.preparationDetail
-                          ?.asMap()
-                          .entries
-                          .map((entry) {
-                            int index = entry.key;
-                            var e = entry.value;
+                  if (state.status ==
+                      StatusPreparationDetailDesktop.deleteSuccess) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.success,
+                      message: state.message ?? '',
+                    );
+                  }
 
-                            return {
-                              'id': e.id.toString(),
-                              'no': (index + 1).toString(),
-                              'asset_code': e.assetCode ?? '',
-                              'category': e.category ?? '',
-                              'model': e.model ?? '',
-                              'quantity': e.quantity.toString(),
-                              'location': e.location ?? '',
-                              'status': e.status ?? '',
-                              'purchase_order': e.purchaseOrder ?? '',
-                            };
-                          })
-                          .toList() ??
-                      [];
+                  if (state.status ==
+                      StatusPreparationDetailDesktop.addSuccess) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.success,
+                      message: state.message ?? '',
+                    );
+                  }
+                },
+              ),
+            ],
+            child: BlocBuilder<PreparationDetailDesktopBloc, PreparationDetailDesktopState>(
+              builder: (context, state) {
+                final preparation = state.preparationDetails?.preparation;
+                final preparationDetails =
+                    state.preparationDetails?.preparationDetail;
+                _codeC = TextEditingController(text: preparation?.code);
+                _destinationC = TextEditingController(
+                  text: preparation?.destination,
+                );
+                _statusC = TextEditingController(text: preparation?.status);
+                _notesC = TextEditingController(text: preparation?.notes);
+                _locationC = TextEditingController(
+                  text: preparation?.location ?? '-',
+                );
+                _totalBoxC = TextEditingController(
+                  text: preparation?.totalBox?.toString() ?? '-',
+                );
+                _workerC = TextEditingController(text: preparation?.worker);
+                _typeC = TextEditingController(text: preparation?.type);
 
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.all(12),
-                        width: context.deviceWidth,
-                        decoration: BoxDecoration(
-                          color: AppColors.kWhite,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Code',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
+                final datasTable =
+                    state.preparationDetails?.preparationDetail
+                        ?.asMap()
+                        .entries
+                        .map((entry) {
+                          int index = entry.key;
+                          var e = entry.value;
+
+                          return {
+                            'id': e.id.toString(),
+                            'no': (index + 1).toString(),
+                            'type': e.type ?? '',
+                            'category': e.category ?? '',
+                            'model': e.model ?? '',
+                            'quantity': e.quantity.toString(),
+                            'status': e.status ?? '',
+                            'purchase_order': e.purchaseOrder ?? '',
+                          };
+                        })
+                        .toList() ??
+                    [];
+                final details =
+                    state.preparationDetails?.preparationDetail ?? [];
+
+                details.sort((a, b) {
+                  int cmp = (a.isConsumable ?? 0).compareTo(
+                    b.isConsumable ?? 0,
+                  );
+                  if (cmp != 0) return cmp;
+
+                  cmp = (a.category ?? '').compareTo(b.category ?? '');
+                  if (cmp != 0) return cmp;
+
+                  return (a.type ?? '').compareTo(b.type ?? '');
+                });
+
+                int counter = 0;
+
+                final List<Map<String, String>> datasTableReady = details
+                    .expand((item) {
+                      final allocated = item.allocatedItems ?? [];
+
+                      return allocated.map((e) {
+                        counter++;
+                        return {
+                          'id': e.id.toString(),
+                          'no': counter.toString(),
+                          'asset_code': e.assetCode ?? '',
+                          'category': item.category ?? '',
+                          'model': item.model ?? '',
+                          'status': item.status ?? '',
+                          'conditions': e.conditions ?? '',
+                          'purchase_order': e.purchaseOrder ?? '',
+                          'quantity': e.quantity.toString(),
+                        };
+                      });
+                    })
+                    .toList();
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    _headerPreparationDetail(context),
+                    AppSpace.vertical(12),
+                    if (preparation?.status == 'DRAFT')
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AppButtonHeaderTable(
+                            title: 'Cancelled',
+                            icons: Icons.cancel_outlined,
+                            onPressed: () {
+                              context.showDialogConfirm(
+                                title: 'Cancelled Preparation',
+                                content:
+                                    'Are your sure cancelled preparation ?\nCode : ${preparation?.code}\nDestination : ${preparation?.destination}',
+                                onCancelText: 'Cancel',
+                                onConfirmText: 'Ya',
+                                fontSize: 12,
+                                onCancel: () => context.pop(),
+                                onConfirm: () {
+                                  context.read<PreparationDesktopBloc>().add(
+                                    OnUpdatePreparationStatus(
+                                      params: PreparationRequest(
+                                        id: preparation?.id,
+                                        status: 'CANCELLED',
                                       ),
                                     ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 5,
-                                      controller: _codeC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Destination',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 4.5,
-                                      controller: _destinationC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Status',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 5,
-                                      controller: _statusC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Notes',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 3,
-                                      controller: _notesC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            AppSpace.vertical(16),
-                            Row(
-                              children: [
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Location',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 5,
-                                      controller: _locationC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Total Box',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 4.5,
-                                      controller: _totalBoxC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Worker',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 5,
-                                      controller: _workerC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                                AppSpace.horizontal(12),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      'Created',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                    AppSpace.vertical(5),
-                                    AppTextFieldSearchDesktop(
-                                      width: (context.deviceWidth - 272) / 3,
-                                      controller: _createdC,
-                                      enabled: false,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                                  );
+                                  context.pop();
+                                  context.dialogLoadingDesktop();
+                                },
+                              );
+                            },
+                            borderColor: AppColors.kRed,
+                            iconColors: AppColors.kRed,
+                            titleColor: AppColors.kRed,
+                          ),
+                        ],
                       ),
-                      AppSpace.vertical(12),
-                      if (preparation?.status == 'DRAFT')
-                        _statusPreparationDraft(
-                          context,
-                          preparation,
-                          preparationDetails,
-                        ),
-                      if (preparation?.status == 'READY TO DELIVERY' &&
-                          preparation?.createdId == user?.id)
-                        Row(
+                    if (preparation?.status == 'DRAFT') AppSpace.vertical(8),
+                    if (preparation?.status == 'DRAFT')
+                      PreparationDetailContentDraftDesktopView(
+                        preparation: preparation,
+                        preparationDetails: preparationDetails,
+                      ),
+                    if (preparation?.status == 'READY TO DELIVERY' &&
+                        preparation?.createdId == user?.id)
+                      BlocListener<
+                        ExportDocumentPreparationCubit,
+                        ExportDocumentPreparationState
+                      >(
+                        listener: (context, state) async {
+                          if (state.status == StatusExport.loading) {
+                            context.dialogLoadingDesktop();
+                          }
+
+                          if (state.status == StatusExport.failure) {
+                            context.pop();
+                            AppToast.show(
+                              context: context,
+                              type: ToastType.error,
+                              message: state.message ?? '',
+                            );
+                            context
+                                .read<ExportDocumentPreparationCubit>()
+                                .setInitialState();
+                          }
+
+                          if (state.status == StatusExport.success) {
+                            context.pop();
+                            AppToast.show(
+                              context: context,
+                              type: ToastType.success,
+                              message:
+                                  "Documents successfully exported: ${state.path!.split('\\').last}",
+                            );
+                            context
+                                .read<ExportDocumentPreparationCubit>()
+                                .setInitialState();
+                            await OpenFile.open(state.path);
+                          }
+                        },
+                        child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             AppButtonHeaderTable(
-                              title: 'Outgoing',
-                              icons: Icons.print_rounded,
-                              onPressed: () => AppPdf.showPdfPreviewDialog(
-                                context,
-                                preparation!,
-                                preparationDetails!,
-                              ),
+                              title: 'Document',
+                              icons: Icons.file_download,
+                              onPressed: () => context
+                                  .read<ExportDocumentPreparationCubit>()
+                                  .exportDocument(preparation!.id!),
                               borderColor: AppColors.kBase,
                               iconColors: AppColors.kBase,
                               titleColor: AppColors.kBase,
@@ -349,505 +321,267 @@ class _PreparationDetailDesktopViewState
                               iconColors: AppColors.kBase,
                               titleColor: AppColors.kBase,
                             ),
-                            AppSpace.horizontal(16),
                           ],
                         ),
-                      if (preparation?.status == 'READY' &&
-                          preparation?.approvedId == user?.id)
-                        BlocConsumer<
-                          PreparationDesktopBloc,
-                          PreparationDesktopState
-                        >(
-                          listener: (context, state) {
-                            if (state.status ==
-                                StatusPreparationDesktop.failure) {
-                              context.pop();
-                              AppToast.show(
-                                context: context,
-                                type: ToastType.error,
-                                message: state.message!,
+                      ),
+                    if (preparation?.status == 'READY' &&
+                        preparation?.approvedId == user?.id)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AppButtonHeaderTable(
+                            title: 'Approved',
+                            icons: Icons.approval_outlined,
+                            onPressed: () {
+                              context.showDialogConfirm(
+                                title: 'Approved',
+                                content:
+                                    'Are your sure approved ${preparation?.code}\nTo ${preparation?.destination} ?',
+                                onCancel: () => context.pop(),
+                                onConfirm: () {
+                                  context.read<PreparationDesktopBloc>().add(
+                                    OnUpdatePreparationStatus(
+                                      params: PreparationRequest(
+                                        id: preparation?.id,
+                                        status: 'READY TO DELIVERY',
+                                      ),
+                                    ),
+                                  );
+                                  context.pop();
+                                  context.dialogLoadingDesktop();
+                                },
                               );
-                            }
-
-                            if (state.status ==
-                                StatusPreparationDesktop.updateSuccess) {
-                              context.pop();
-                              AppToast.show(
-                                context: context,
-                                type: ToastType.success,
-                                message: state.message!,
-                              );
-                              context.pop();
-                            }
-                          },
-                          builder: (context, state) {
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                AppButtonHeaderTable(
-                                  title: 'Approved',
-                                  icons: Icons.approval_outlined,
-                                  onPressed:
-                                      state.status ==
-                                          StatusPreparationDesktop.loading
-                                      ? null
-                                      : () {
-                                          context.showDialogConfirm(
-                                            title: 'Approved',
-                                            content:
-                                                'Are your sure approved ${preparation?.code}\nTo ${preparation?.destination} ?',
-                                            onCancel: () => context.pop(),
-                                            onConfirm: () {
-                                              context
-                                                  .read<
-                                                    PreparationDesktopBloc
-                                                  >()
-                                                  .add(
-                                                    OnUpdatePreparationStatus(
-                                                      params: PreparationRequest(
-                                                        id: preparation?.id,
-                                                        status:
-                                                            'READY TO DELIVERY',
-                                                      ),
-                                                    ),
-                                                  );
-                                              context.pop();
-                                              context.dialogLoadingDesktop();
-                                            },
-                                          );
-                                        },
-                                  iconColors: AppColors.kBase,
-                                  borderColor: AppColors.kBase,
-                                  titleColor: AppColors.kBase,
-                                ),
-                                AppSpace.horizontal(16),
-                              ],
-                            );
-                          },
-                        ),
-                      if (preparation?.status != 'DRAFT')
-                        Expanded(
-                          child: AppTableFixed(
-                            datas: datasTable,
-                            // minWidth: 1100,
-                            columns: [
-                              AppDataTableColumn(
-                                label: 'NO',
-                                key: 'no',
-                                width: 50,
-                              ),
-                              AppDataTableColumn(
-                                label: 'ASSET CODE',
-                                key: 'asset_code',
-                                isExpanded: true,
-                              ),
-                              AppDataTableColumn(
-                                label: 'CATEGORY',
-                                key: 'category',
-                                isExpanded: true,
-                              ),
-                              AppDataTableColumn(
-                                label: 'MODEL',
-                                key: 'model',
-                                isExpanded: true,
-                              ),
-                              AppDataTableColumn(
-                                label: 'PO NUMBER',
-                                key: 'purchase_order',
-                              ),
-                              AppDataTableColumn(
-                                label: 'STATUS',
-                                key: 'status',
-                              ),
-                              AppDataTableColumn(
-                                label: 'LOCATION',
-                                key: 'location',
-                              ),
-                              AppDataTableColumn(
-                                label: 'QUANTITY',
-                                key: 'quantity',
-                              ),
-                            ],
+                            },
+                            iconColors: AppColors.kBase,
+                            borderColor: AppColors.kBase,
+                            titleColor: AppColors.kBase,
                           ),
+                          AppSpace.horizontal(16),
+                          AppButtonHeaderTable(
+                            title: 'Reject',
+                            icons: Icons.cancel_outlined,
+                            onPressed: () {
+                              context.showDialogConfirm(
+                                title: 'Reject',
+                                content:
+                                    'Are your sure reject ${preparation?.code}\nTo ${preparation?.destination} ?',
+                                onCancel: () => context.pop(),
+                                onConfirm: () {
+                                  context.read<PreparationDesktopBloc>().add(
+                                    OnUpdatePreparationStatus(
+                                      params: PreparationRequest(
+                                        id: preparation?.id,
+                                        status: 'REJECTED',
+                                      ),
+                                    ),
+                                  );
+                                  context.pop();
+                                  context.dialogLoadingDesktop();
+                                },
+                              );
+                            },
+                            iconColors: AppColors.kRed,
+                            borderColor: AppColors.kRed,
+                            titleColor: AppColors.kRed,
+                          ),
+                        ],
+                      ),
+                    if (preparation?.status == 'ASSIGNED' ||
+                        preparation?.status == 'PICKING')
+                      PreparationDetailContentAssignedDesktopView(
+                        datasTable: datasTable,
+                      ),
+                    if (preparation?.status == 'READY' ||
+                        preparation?.status == 'READY TO DELIVERY')
+                      Expanded(
+                        child: AppTableFixed(
+                          datas: datasTableReady,
+                          columns: [
+                            AppDataTableColumn(
+                              label: 'NO',
+                              key: 'no',
+                              width: 50,
+                            ),
+                            AppDataTableColumn(
+                              label: 'ASSET CODE',
+                              key: 'asset_code',
+                              width: 180,
+                            ),
+                            AppDataTableColumn(
+                              label: 'CATEGORY',
+                              key: 'category',
+                            ),
+                            AppDataTableColumn(label: 'MODEL', key: 'model'),
+                            AppDataTableColumn(label: 'STATUS', key: 'status'),
+                            AppDataTableColumn(
+                              label: 'CONDITION',
+                              key: 'conditions',
+                            ),
+                            AppDataTableColumn(
+                              label: 'PURCHASE ORDER',
+                              key: 'purchase_order',
+                            ),
+                            AppDataTableColumn(label: 'QTY', key: 'quantity'),
+                          ],
                         ),
-                    ],
-                  );
-                },
-              ),
+                      ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ],
     );
   }
 
-  Widget _statusPreparationDraft(
-    BuildContext context,
-    Preparation? preparation,
-    List<PreparationDetail>? preparationDetails,
-  ) {
-    return Expanded(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _headerPreparationDetail(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(12),
+      width: context.deviceWidth,
+      decoration: BoxDecoration(
+        color: AppColors.kWhite,
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Column(
         children: [
-          Column(
+          Row(
             children: [
-              Container(
-                width: 400,
-                padding: EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.kWhite,
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Selected Asset',
-                      style: TextStyle(fontWeight: FontWeight.w500),
-                    ),
-                    AppSpace.vertical(12),
-                    AppDropDownSearch<AssetType>(
-                      title: '',
-                      hintText: 'Selected Type',
-                      onFind: (String filter) async => await context
-                          .read<DatasDesktopCubit>()
-                          .getAssetType(),
-                      borderRadius: 4,
-                      compareFn: (value, value1) => value.name == value1.name,
-                      itemAsString: (value) => value.name!,
-                      fontSize: 12,
-                      enabled: true,
-                      onChanged: (value) {
-                        if (_selectedType != value) {
-                          setState(() {
-                            _selectedType = value;
-                            _selectedCategory = null;
-                            _selectedModel = null;
-                          });
-                        }
-                      },
-                      showSearchBox: true,
-                      selectedItem: _selectedType,
-                    ),
-                    AppSpace.vertical(16),
-                    AppDropDownSearch<AssetCategory>(
-                      title: '',
-                      hintText: 'Selected Category',
-                      onFind: _selectedType == null
-                          ? null
-                          : (String filter) async => await context
-                                .read<DatasDesktopCubit>()
-                                .getAssetCategory(_selectedType!.name!),
-                      borderRadius: 4,
-                      compareFn: (value, value1) => value.name == value1.name,
-                      itemAsString: (value) => value.name!,
-                      fontSize: 12,
-                      enabled: true,
-                      onChanged: (value) {
-                        if (_selectedCategory != value) {
-                          setState(() {
-                            _selectedCategory = value;
-                            _selectedModel = null;
-                          });
-                        }
-                      },
-                      showSearchBox: true,
-                      selectedItem: _selectedCategory,
-                    ),
-                    AppSpace.vertical(16),
-                    AppDropDownSearch<AssetModel>(
-                      title: '',
-                      hintText: 'Selected Model',
-                      onFind: _selectedType != null && _selectedCategory != null
-                          ? (String filter) async => await context
-                                .read<DatasDesktopCubit>()
-                                .getAssetModels(
-                                  _selectedType!.name!,
-                                  _selectedCategory!.name!,
-                                )
-                          : null,
-                      borderRadius: 4,
-                      compareFn: (value, value1) => value.name == value1.name,
-                      itemAsString: (value) => value.name!,
-                      fontSize: 12,
-                      enabled: true,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedModel = value;
-                        });
-
-                        if (_selectedModel != null) {
-                          setState(() {
-                            _purchaseOrderFn.requestFocus();
-                          });
-                        }
-                      },
-                      showSearchBox: true,
-                      selectedItem: _selectedModel,
-                    ),
-                    AppSpace.vertical(16),
-                    AppTextFieldSearchDesktop(
-                      width: 400,
-                      height: 35,
-                      hintText: 'Purchase Order',
-                      focusNode: _purchaseOrderFn,
-                      controller: _purchaseOrderC,
-                      suffixIcon: _purchaseOrderC.value.text.isFilled()
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  _purchaseOrderC.clear();
-                                });
-                              },
-                            )
-                          : Icon(Icons.minimize, color: Colors.transparent),
-                      onChanged: (value) {
-                        if (value.isEmpty) {
-                          setState(() {
-                            _purchaseOrderC.clear();
-                          });
-                        }
-                      },
-                      onSubmitted: (p0) => setState(() {
-                        _quantityFn.requestFocus();
-                      }),
-                    ),
-                    AppSpace.vertical(16),
-                    AppTextFieldSearchDesktop(
-                      width: 400,
-                      height: 35,
-                      hintText: 'Quantity',
-                      focusNode: _quantityFn,
-                      controller: _quantityC,
-                      suffixIcon: _quantityC.value.text.isFilled()
-                          ? IconButton(
-                              icon: const Icon(Icons.clear, size: 16),
-                              onPressed: () {
-                                setState(() {
-                                  _quantityC.clear();
-                                });
-                              },
-                            )
-                          : Icon(Icons.minimize, color: Colors.transparent),
-                      onChanged: (value) {
-                        if (value.isEmpty) {
-                          setState(() {
-                            _quantityC.clear();
-                          });
-                        }
-                      },
-                      onSubmitted: (_) => _add(preparation!.id!),
-                    ),
-                    AppSpace.vertical(24),
-                    BlocConsumer<
-                      PreparationDetailDesktopBloc,
-                      PreparationDetailDesktopState
-                    >(
-                      listener: (context, state) {
-                        if (state.status ==
-                            StatusPreparationDetailDesktop.failure) {
-                          context.pop();
-                          AppToast.show(
-                            context: context,
-                            type: ToastType.error,
-                            message: state.message!,
-                          );
-                          setState(() => _quantityC.clear());
-                        }
-
-                        if (state.status ==
-                            StatusPreparationDetailDesktop.addSuccess) {
-                          context.pop();
-                          AppToast.show(
-                            context: context,
-                            type: ToastType.success,
-                            message: state.message ?? '',
-                          );
-                          setState(() => _quantityC.clear());
-                        }
-                      },
-                      builder: (context, state) {
-                        return AppButton(
-                          height: 35,
-                          onPressed:
-                              state.status ==
-                                  StatusPreparationDetailDesktop.loading
-                              ? null
-                              : () => _add(preparation!.id!),
-                          fontSize: 11,
-                          title:
-                              state.status ==
-                                  StatusPreparationDetailDesktop.loading
-                              ? 'Loading...'
-                              : 'Add',
-                          width: context.deviceWidth,
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Spacer(),
-              if (preparationDetails!.isNotEmpty)
-                BlocListener<PreparationDesktopBloc, PreparationDesktopState>(
-                  listener: (context, state) {
-                    if (state.status == StatusPreparationDesktop.failure) {
-                      context.pop();
-                      AppToast.show(
-                        context: context,
-                        type: ToastType.error,
-                        message: state.message!,
-                      );
-                    }
-
-                    if (state.status ==
-                        StatusPreparationDesktop.updateSuccess) {
-                      context.pop();
-                      AppToast.show(
-                        context: context,
-                        type: ToastType.success,
-                        message: state.message!,
-                      );
-                      context.read<PreparationDetailDesktopBloc>().add(
-                        OnGetPreparationDetails(preparation!.id!),
-                      );
-                    }
-                  },
-                  child: AppButton(
-                    height: 33,
-                    width: 346,
-                    fontSize: 12,
-                    title: 'Assigned',
-                    onPressed: () =>
-                        _assigned(preparation!, preparationDetails),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Code',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
                   ),
-                ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 5,
+                    controller: _codeC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Destination',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 4.5,
+                    controller: _destinationC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'TYPE',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 5,
+                    controller: _typeC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'STATUS',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 3,
+                    controller: _statusC,
+                    enabled: false,
+                  ),
+                ],
+              ),
             ],
           ),
-          AppSpace.horizontal(24),
-          if (preparationDetails.isNotEmpty)
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColors.kWhite,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: ListView.builder(
-                  padding: EdgeInsets.all(12),
-                  itemCount: preparationDetails.length,
-                  itemBuilder: (context, index) {
-                    final prepDetail = preparationDetails[index];
-                    return prepDetail.isConsumable == 1
-                        ? AppCardItem(
-                            title:
-                                '${prepDetail.model} | ${prepDetail.quantity} PCS',
-                            leading: prepDetail.category,
-                            subtitle: prepDetail.location,
-                            noDescription: true,
-                          )
-                        : AppCardItem(
-                            title: prepDetail.assetCode,
-                            leading: prepDetail.purchaseOrder ?? '-',
-                            subtitle: prepDetail.location,
-                            noDescription: true,
-                          );
-                  },
-                ),
+          AppSpace.vertical(16),
+          Row(
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Location',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 5,
+                    controller: _locationC,
+                    enabled: false,
+                  ),
+                ],
               ),
-            ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Total Box',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 4.5,
+                    controller: _totalBoxC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Worker',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 5,
+                    controller: _workerC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+              AppSpace.horizontal(12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Notes',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                  ),
+                  AppSpace.vertical(5),
+                  AppTextFieldSearchDesktop(
+                    width: (context.deviceWidth - 272) / 3,
+                    controller: _notesC,
+                    enabled: false,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
       ),
     );
-  }
-
-  _assigned(
-    Preparation preparation,
-    List<PreparationDetail>? preparationDetails,
-  ) {
-    if (preparationDetails == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.warning,
-        message: 'No assets have been selected yet',
-      );
-    } else {
-      context.showDialogConfirm(
-        title: 'Assigned Preparation',
-        content:
-            'Are your sure assigned preparation ?\nCode : ${preparation.code}\nDestination : ${preparation.destination}',
-        onCancelText: 'Cancel',
-        onConfirmText: 'Ya',
-        fontSize: 12,
-        onCancel: () => context.pop(),
-        onConfirm: () {
-          context.pop();
-          context.read<PreparationDesktopBloc>().add(
-            OnUpdatePreparationStatus(
-              params: PreparationRequest(
-                id: preparation.id,
-                status: 'ASSIGNED',
-              ),
-            ),
-          );
-          context.dialogLoadingDesktop();
-        },
-      );
-    }
-  }
-
-  _add(int preparationId) {
-    final quantity = _quantityC.value.text;
-    final purchaseOrder = _purchaseOrderC.value.text;
-    final po = purchaseOrder.isFilled() ? purchaseOrder : '-';
-    if (_selectedType == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Type cannot be empty',
-      );
-    } else if (_selectedCategory == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Category cannot be empty',
-      );
-    } else if (_selectedModel == null) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Model cannot be empty',
-      );
-    } else if (!quantity.isNumber()) {
-      AppToast.show(
-        context: context,
-        type: ToastType.error,
-        message: 'Quantity not valid',
-      );
-    } else {
-      context.showDialogConfirm(
-        title: 'Add Asset Preparation ?',
-        content:
-            'Type : ${_selectedType?.name}\nCategory : ${_selectedCategory?.name}\nModel : ${_selectedModel?.name}\nPurchase Order : $po\nQuantity : $quantity',
-        onCancelText: 'Cancel',
-        onConfirmText: 'Yes',
-        onCancel: () => context.pop(),
-        onConfirm: () {
-          context.read<PreparationDetailDesktopBloc>().add(
-            OnAddPreparationDetailEvent(
-              PreparationDetail(
-                modelId: _selectedModel!.id,
-                isConsumable: _selectedModel!.isConsumable,
-                preparationId: preparationId,
-                quantity: int.parse(quantity),
-                purchaseOrder: po == '-' ? null : po,
-              ),
-            ),
-          );
-          context.pop();
-          context.dialogLoadingDesktop();
-        },
-      );
-    }
   }
 }

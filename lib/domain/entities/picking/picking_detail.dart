@@ -1,39 +1,39 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-
+import 'package:asset_management/domain/entities/picking/picking_suggestion.dart';
 import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class PickingDetail extends Equatable {
   int? id;
   int? modelId;
-  int? quantity;
-  int? isConsumable;
   String? model;
-  String? types;
+  int? typeId;
+  String? type;
+  int? categoryId;
   String? category;
-  int? assetId;
+  int? brandId;
+  String? brand;
+  int? isConsumable;
   String? status;
-  String? assetCode;
-  String? serialNumber;
-  int? locationId;
   String? purchaseOrder;
-  String? location;
+  int? quantity;
+  List<PickingSuggestion>? suggestion;
 
   PickingDetail({
     this.id,
     this.modelId,
-    this.quantity,
-    this.isConsumable,
     this.model,
-    this.types,
+    this.typeId,
+    this.type,
+    this.categoryId,
     this.category,
-    this.assetId,
+    this.brandId,
+    this.brand,
+    this.isConsumable,
     this.status,
-    this.assetCode,
-    this.serialNumber,
-    this.locationId,
     this.purchaseOrder,
-    this.location,
+    this.quantity,
+    this.suggestion,
   });
 
   @override
@@ -41,18 +41,18 @@ class PickingDetail extends Equatable {
     return [
       id,
       modelId,
-      quantity,
-      isConsumable,
       model,
-      types,
+      typeId,
+      type,
+      categoryId,
       category,
-      assetId,
+      brandId,
+      brand,
+      isConsumable,
       status,
-      assetCode,
-      serialNumber,
-      locationId,
-      location,
       purchaseOrder,
+      quantity,
+      suggestion,
     ];
   }
 }

@@ -1,5 +1,6 @@
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/domain/entities/picking/picking.dart';
+import 'package:asset_management/domain/entities/picking/picking_request.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/mobile/presentation/bloc/picking_detail/picking_detail_bloc.dart';
 import 'package:asset_management/mobile/presentation/components/app_card_item.dart';
@@ -44,6 +45,9 @@ class PickingView extends StatelessWidget {
 
               return BlocListener<PickingBloc, PickingState>(
                 listener: (context, state) {
+                  if (state.status == StatusPicking.loading) {
+                    context.dialogLoading();
+                  }
                   if (state.status == StatusPicking.failure) {
                     context.popExt();
                     context.showSnackbar(state.message!);
@@ -57,8 +61,7 @@ class PickingView extends StatelessWidget {
                   title: picking?.code,
                   leading: picking?.status,
                   subtitle: picking?.destination,
-                  descriptionLeft: 'Total Item : ${picking?.totalItems}',
-                  descriptionRight: 'Total Quantity : ${picking?.totalQuantiy}',
+                  noDescription: true,
                   fontSize: isLarge ? 14 : 12,
                   onTap: picking?.status == 'ASSIGNED'
                       ? () => _updateStatusConfirm(
@@ -92,11 +95,12 @@ class PickingView extends StatelessWidget {
       content: 'Are your sure start picking ?',
       onCancel: () => context.popExt(),
       onConfirm: () {
-        context.popExt();
         context.read<PickingBloc>().add(
-          OnUpdateStatusPickingEvent(id: params.id!, params: 'PICKING'),
+          OnUpdateStatusPickingEvent(
+            params: PickingRequest(preparationId: params.id, status: 'PICKING'),
+          ),
         );
-        context.dialogLoading();
+        context.popExt();
       },
     );
   }

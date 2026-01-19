@@ -6,37 +6,28 @@ import 'package:equatable/equatable.dart';
 class PickingModel extends Equatable {
   int? id;
   String? code;
-  String? type;
   String? status;
   int? destinationId;
   String? destination;
-  int? temporaryLocationId;
-  String? temporaryLocation;
-  int? totalBox;
+  int? destinationCode;
+  String? destinationInit;
   String? notes;
-  int? totalItems;
-  int? totalQuantiy;
 
   PickingModel({
     this.id,
     this.code,
-    this.type,
     this.status,
     this.destinationId,
     this.destination,
-    this.temporaryLocationId,
-    this.temporaryLocation,
-    this.totalBox,
+    this.destinationCode,
+    this.destinationInit,
     this.notes,
-    this.totalItems,
-    this.totalQuantiy,
   });
 
   factory PickingModel.fromJson(Map<String, dynamic> map) {
     return PickingModel(
       id: map['id'] != null ? map['id'] as int : null,
       code: map['code'] != null ? map['code'] as String : null,
-      type: map['type'] != null ? map['type'] as String : null,
       status: map['status'] != null ? map['status'] as String : null,
       destinationId: map['destination']['id'] != null
           ? map['destination']['id'] as int
@@ -44,18 +35,13 @@ class PickingModel extends Equatable {
       destination: map['destination']['name'] != null
           ? map['destination']['name'] as String
           : null,
-      temporaryLocationId: map['temporary_location']['id'] != null
-          ? map['temporary_location']['id'] as int
+      destinationCode: map['destination']['code'] != null
+          ? map['destination']['code'] as int
           : null,
-      temporaryLocation: map['temporary_location']['name'] != null
-          ? map['temporary_location']['name'] as String
+      destinationInit: map['destination']['init'] != null
+          ? map['destination']['init'] as String
           : null,
-      totalBox: map['total_box'] != null ? map['total_box'] as int : null,
       notes: map['notes'] != null ? map['notes'] as String : null,
-      totalItems: map['total_items'] != null ? map['total_items'] as int : null,
-      totalQuantiy: map['total_quantity'] != null
-          ? map['total_quantity'] as int
-          : null,
     );
   }
 
@@ -64,15 +50,11 @@ class PickingModel extends Equatable {
       id: id,
       code: code,
       destination: destination,
+      destinationCode: destinationCode,
       destinationId: destinationId,
+      destinationInit: destinationInit,
       notes: notes,
       status: status,
-      temporaryLocation: temporaryLocation,
-      temporaryLocationId: temporaryLocationId,
-      totalBox: totalBox,
-      totalItems: totalItems,
-      totalQuantiy: totalQuantiy,
-      type: type,
     );
   }
 
@@ -81,16 +63,12 @@ class PickingModel extends Equatable {
     return [
       id,
       code,
-      type,
+      destinationCode,
+      destinationInit,
       status,
       destinationId,
       destination,
-      temporaryLocationId,
-      temporaryLocation,
-      totalBox,
       notes,
-      totalItems,
-      totalQuantiy,
     ];
   }
 }

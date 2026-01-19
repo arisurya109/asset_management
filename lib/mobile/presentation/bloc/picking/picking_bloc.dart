@@ -1,4 +1,5 @@
 import 'package:asset_management/domain/entities/picking/picking.dart';
+import 'package:asset_management/domain/entities/picking/picking_request.dart';
 import 'package:asset_management/domain/usecases/picking/find_all_picking_task_use_case.dart';
 import 'package:asset_management/domain/usecases/picking/update_status_picking_use_case.dart';
 import 'package:bloc/bloc.dart';
@@ -34,10 +35,7 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
       emit(state.copyWith(status: StatusPicking.loading));
 
       final failureOrMessage = await _updateStatusPickingUseCase(
-        id: event.id,
         params: event.params,
-        temporaryLocationId: event.locationId,
-        totalBox: event.totalBox,
       );
 
       return failureOrMessage.fold(
@@ -50,16 +48,22 @@ class PickingBloc extends Bloc<PickingEvent, PickingState> {
         (message) async {
           final failureOrPicking = await _findAllPickingTaskUseCase();
 
+          final isUpdate = event.params.status == 'PICKING' ? true : false;
+
           return failureOrPicking.fold(
             (_) => emit(
               state.copyWith(
-                status: StatusPicking.completedSuccess,
+                status: isUpdate
+                    ? StatusPicking.updateSuccess
+                    : StatusPicking.completedSuccess,
                 message: message,
               ),
             ),
             (picking) => emit(
               state.copyWith(
-                status: StatusPicking.completedSuccess,
+                status: isUpdate
+                    ? StatusPicking.updateSuccess
+                    : StatusPicking.completedSuccess,
                 picking: picking,
                 message: message,
               ),

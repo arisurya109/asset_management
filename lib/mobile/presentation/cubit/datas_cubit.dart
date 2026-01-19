@@ -34,12 +34,37 @@ class DatasCubit extends Cubit<void> {
     this._findAssetByQueryUseCase,
   ) : super([]);
 
+  Future<List<Location>> getLocationsPicking() async {
+    final failureOrTypes = await _findAllLocationUseCase();
+
+    return failureOrTypes.fold(
+      (_) => [],
+      (locations) => locations
+          .where(
+            (element) =>
+                element.locationType == 'RACK' || element.locationType == 'BOX',
+          )
+          .toList(),
+    );
+  }
+
+  Future<List<AssetEntity>> getAssetByLocation(String params) async {
+    final failureOrAsset = await _findAssetByQueryUseCase(params: params);
+
+    return failureOrAsset.fold(
+      (_) => [],
+      (assets) =>
+          assets.where((element) => element.locationDetail == params).toList(),
+    );
+  }
+
   Future<AssetEntity?> getAssetByQuery(String params) async {
     final failureOrAsset = await _findAssetByQueryUseCase(params: params);
 
     return failureOrAsset.fold(
       (_) => null,
-      (assets) => assets.firstWhere((element) => element.assetCode == params),
+      (assets) =>
+          assets.where((element) => element.assetCode == params).firstOrNull,
     );
   }
 

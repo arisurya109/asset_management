@@ -10,15 +10,7 @@ class PickingEvent extends Equatable {
 class OnFindAllPickingTaskEvent extends PickingEvent {}
 
 class OnUpdateStatusPickingEvent extends PickingEvent {
-  final int id;
-  final String params;
-  final int? locationId;
-  final int? totalBox;
+  final PickingRequest params;
 
-  const OnUpdateStatusPickingEvent({
-    required this.id,
-    required this.params,
-    this.locationId,
-    this.totalBox,
-  });
+  const OnUpdateStatusPickingEvent({required this.params});
 }
