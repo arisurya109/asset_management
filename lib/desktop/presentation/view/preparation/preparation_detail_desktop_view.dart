@@ -134,6 +134,43 @@ class _PreparationDetailDesktopViewState
                   }
                 },
               ),
+
+              BlocListener<
+                ExportDocumentPreparationCubit,
+                ExportDocumentPreparationState
+              >(
+                listener: (context, state) async {
+                  if (state.status == StatusExport.loading) {
+                    context.dialogLoadingDesktop();
+                  }
+
+                  if (state.status == StatusExport.failure) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.error,
+                      message: state.message ?? '',
+                    );
+                    context
+                        .read<ExportDocumentPreparationCubit>()
+                        .setInitialState();
+                  }
+
+                  if (state.status == StatusExport.success) {
+                    context.pop();
+                    AppToast.show(
+                      context: context,
+                      type: ToastType.success,
+                      message:
+                          "Documents successfully exported: ${state.path!.split('\\').last}",
+                    );
+                    context
+                        .read<ExportDocumentPreparationCubit>()
+                        .setInitialState();
+                    await OpenFile.open(state.path);
+                  }
+                },
+              ),
             ],
             child: BlocBuilder<PreparationDetailDesktopBloc, PreparationDetailDesktopState>(
               builder: (context, state) {
@@ -264,65 +301,48 @@ class _PreparationDetailDesktopViewState
                       ),
                     if (preparation?.status == 'READY TO DELIVERY' &&
                         preparation?.createdId == user?.id)
-                      BlocListener<
-                        ExportDocumentPreparationCubit,
-                        ExportDocumentPreparationState
-                      >(
-                        listener: (context, state) async {
-                          if (state.status == StatusExport.loading) {
-                            context.dialogLoadingDesktop();
-                          }
-
-                          if (state.status == StatusExport.failure) {
-                            context.pop();
-                            AppToast.show(
-                              context: context,
-                              type: ToastType.error,
-                              message: state.message ?? '',
-                            );
-                            context
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AppButtonHeaderTable(
+                            title: 'Document',
+                            icons: Icons.file_download,
+                            onPressed: () => context
                                 .read<ExportDocumentPreparationCubit>()
-                                .setInitialState();
-                          }
-
-                          if (state.status == StatusExport.success) {
-                            context.pop();
-                            AppToast.show(
-                              context: context,
-                              type: ToastType.success,
-                              message:
-                                  "Documents successfully exported: ${state.path!.split('\\').last}",
-                            );
-                            context
-                                .read<ExportDocumentPreparationCubit>()
-                                .setInitialState();
-                            await OpenFile.open(state.path);
-                          }
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            AppButtonHeaderTable(
-                              title: 'Document',
-                              icons: Icons.file_download,
-                              onPressed: () => context
-                                  .read<ExportDocumentPreparationCubit>()
-                                  .exportDocument(preparation!.id!),
-                              borderColor: AppColors.kBase,
-                              iconColors: AppColors.kBase,
-                              titleColor: AppColors.kBase,
-                            ),
-                            AppSpace.horizontal(16),
-                            AppButtonHeaderTable(
-                              title: 'Completed',
-                              icons: Icons.done,
-                              onPressed: () {},
-                              borderColor: AppColors.kBase,
-                              iconColors: AppColors.kBase,
-                              titleColor: AppColors.kBase,
-                            ),
-                          ],
-                        ),
+                                .exportDocument(preparation!.id!),
+                            borderColor: AppColors.kBase,
+                            iconColors: AppColors.kBase,
+                            titleColor: AppColors.kBase,
+                          ),
+                          AppSpace.horizontal(16),
+                          AppButtonHeaderTable(
+                            title: 'Completed',
+                            icons: Icons.done,
+                            onPressed: () {
+                              context.showDialogConfirm(
+                                title: 'Completed',
+                                content:
+                                    'Are your sure completed ${preparation?.code}\nTo ${preparation?.destination} ?',
+                                onCancel: () => context.pop(),
+                                onConfirm: () {
+                                  context.read<PreparationDesktopBloc>().add(
+                                    OnUpdatePreparationStatus(
+                                      params: PreparationRequest(
+                                        id: preparation?.id,
+                                        status: 'COMPLETED',
+                                      ),
+                                    ),
+                                  );
+                                  context.pop();
+                                  context.dialogLoadingDesktop();
+                                },
+                              );
+                            },
+                            borderColor: AppColors.kBase,
+                            iconColors: AppColors.kBase,
+                            titleColor: AppColors.kBase,
+                          ),
+                        ],
                       ),
                     if (preparation?.status == 'READY' &&
                         preparation?.approvedId == user?.id)
@@ -387,7 +407,8 @@ class _PreparationDetailDesktopViewState
                         ],
                       ),
                     if (preparation?.status == 'ASSIGNED' ||
-                        preparation?.status == 'PICKING')
+                        preparation?.status == 'PICKING' ||
+                        preparation?.status == 'COMPLETED')
                       PreparationDetailContentAssignedDesktopView(
                         datasTable: datasTable,
                       ),

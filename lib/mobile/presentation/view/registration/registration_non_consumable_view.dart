@@ -216,7 +216,7 @@ class _RegistrationNonConsumableViewState
                         'Asset Code : ${asset.assetCode}\nSerial Number : ${asset.serialNumber}\nLocation : ${asset.locationDetail}',
                     onCancel: () => context.popExt(),
                     onCancelText: 'Done',
-                    fontSize: widget.isLarge ? 12 : 10,
+                    fontSize: widget.isLarge ? 14 : 12,
                     onConfirm: () {
                       context.popExt();
                       context.read<PrinterBloc>().add(

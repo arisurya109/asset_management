@@ -444,7 +444,7 @@ class _PickingDetailItemViewState extends State<PickingDetailItemView> {
         context.showDialogConfirm(
           title: 'Pick Asset ?',
           content:
-              'Asset Code : ${asset.assetCode}\nCondition : ${asset.conditions}\nPO : ${asset.purchaseOrder}\nLocation : ${location.name}',
+              'Asset Code : ${asset.assetCode}\nCondition : ${asset.conditions}\nPO : ${asset.purchaseOrder ?? ''}\nLocation : ${location.name}',
           fontSize: isLarge ? 14 : 12,
           onCancelText: 'No',
           onConfirmText: 'Yes',

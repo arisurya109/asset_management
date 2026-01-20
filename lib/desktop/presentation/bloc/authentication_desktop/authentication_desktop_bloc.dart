@@ -68,7 +68,7 @@ class AuthenticationDesktopBloc
     on<OnLogoutEvent>((event, emit) async {
       emit(state.copyWith(status: StatusAuthenticationDesktop.loading));
 
-      await Future.delayed(Duration(seconds: 5));
+      await Future.delayed(Duration(seconds: 2));
 
       final response = await _logoutUseCase();
 

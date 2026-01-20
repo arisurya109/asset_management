@@ -40,6 +40,7 @@ class AssetDetailDesktopView extends StatelessWidget {
                       'type': e.movementType ?? '',
                       'from': e.fromLocation ?? '',
                       'to': e.toLocation ?? '',
+                      'references': e.referencesNumber ?? '',
                     };
                   }).toList() ??
                   [];
@@ -66,6 +67,10 @@ class AssetDetailDesktopView extends StatelessWidget {
                         AppDataTableColumn(label: 'TYPE', key: 'type'),
                         AppDataTableColumn(label: 'FROM LOCATION', key: 'from'),
                         AppDataTableColumn(label: 'TO LOCATION', key: 'to'),
+                        AppDataTableColumn(
+                          label: 'REFERENCES',
+                          key: 'references',
+                        ),
                       ],
                     ),
                   ),

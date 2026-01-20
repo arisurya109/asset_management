@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
@@ -103,29 +105,44 @@ class PickingRemoteDataSourceImpl implements PickingRemoteDataSource {
     final token = await _tokenHelper.getToken();
 
     if (token == null) {
-      throw NotFoundException(message: 'Token expired');
-    } else {
-      final paramsJson = params.status == 'PICKING'
-          ? params.toJsonStatusPicking()
-          : params.toJsonStatusReady();
+      throw NotFoundException(message: 'Sesi berakhir, silakan login kembali');
+    }
 
-      final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/picking/${params.preparationId}'),
-        headers: ApiHelper.headersToken(token),
-        body: jsonEncode(paramsJson),
-      );
+    final paramsJson = params.status == 'PICKING'
+        ? params.toJsonStatusPicking()
+        : params.toJsonStatusReady();
+
+    try {
+      final response = await _client
+          .patch(
+            Uri.parse('${ApiHelper.baseUrl}/picking/${params.preparationId}'),
+            headers: ApiHelper.headersToken(token),
+            body: jsonEncode(paramsJson),
+          )
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
-        final body = jsonDecode(response.body);
-
-        Map<String, dynamic> datas = body;
-
-        return datas['status'];
+        final Map<String, dynamic> body = jsonDecode(response.body);
+        return body['status'];
       } else {
-        throw CreateException(
-          message: ApiHelper.getErrorMessage(response.body),
-        );
+        final errorMessage = ApiHelper.getErrorMessage(response.body);
+        throw CreateException(message: errorMessage);
       }
+    } on SocketException {
+      throw CreateException(
+        message: 'Gagal terhubung ke server. Periksa koneksi internet Anda.',
+      );
+    } on TimeoutException {
+      throw CreateException(
+        message: 'Server terlalu lama merespon. Silakan coba lagi nanti.',
+      );
+    } on FormatException {
+      throw CreateException(message: 'Format respon dari server tidak sesuai.');
+    } catch (e) {
+      if (e is CreateException) rethrow;
+      throw CreateException(
+        message: 'Terjadi kesalahan sistem: ${e.toString()}',
+      );
     }
   }
 }

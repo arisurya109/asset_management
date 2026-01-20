@@ -140,6 +140,7 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
                       'picking': AppColors.kYellow,
                       'assigned': AppColors.kBlue,
                       'cancelled': AppColors.kRed,
+                      'rejected': AppColors.kRed,
                     },
                   ),
                   AppDataTableColumn(

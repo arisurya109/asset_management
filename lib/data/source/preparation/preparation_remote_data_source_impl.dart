@@ -1,4 +1,6 @@
+import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:asset_management/core/config/api_helper.dart';
 import 'package:asset_management/core/config/token_helper.dart';
@@ -112,15 +114,23 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
 
     if (token == null) {
       throw NotFoundException(message: 'Token expired');
-    } else {
-      final response = await _client.patch(
-        Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}'),
-        headers: ApiHelper.headersToken(token),
-        body: jsonEncode(params.toJsonUpdate()),
-      );
+    }
+
+    try {
+      final response = await _client
+          .patch(
+            Uri.parse('${ApiHelper.baseUrl}/preparation/${params.id}'),
+            headers: ApiHelper.headersToken(token),
+            body: jsonEncode(params.toJsonUpdate()),
+          )
+          .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body);
+
+        if (body['data'] == null) {
+          throw UpdateException(message: 'Data not found in server response');
+        }
 
         return PreparationModel.fromJson(body['data']);
       } else {
@@ -128,6 +138,18 @@ class PreparationRemoteDataSourceImpl implements PreparationRemoteDataSource {
           message: ApiHelper.getErrorMessage(response.body),
         );
       }
+    } on SocketException {
+      throw UpdateException(
+        message: 'Connection lost. Server is taking too long to process.',
+      );
+    } on TimeoutException {
+      throw UpdateException(
+        message:
+            'The waiting time is over. Please check the data status periodically.',
+      );
+    } catch (e) {
+      if (e is UpdateException) rethrow;
+      throw UpdateException(message: 'An error has occurred: ${e.toString()}');
     }
   }
 

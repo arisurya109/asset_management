@@ -156,7 +156,7 @@ class AppPdf {
                 if (noDoc != 'SK') pw.SizedBox(height: 3),
                 if (noDoc != 'SK')
                   pw.Text(
-                    showFullDestination!
+                    showFullDestination! == true
                         ? '${document.destination}\n${document.destinationInit} - ${document.destinationCode}'
                         : '${document.destination}',
                     style: pw.TextStyle(
@@ -474,10 +474,15 @@ class AppPdf {
         margin: const pw.EdgeInsets.fromLTRB(32, 24, 32, 32),
         pageFormat: PdfPageFormat.a4,
         build: (context) => [
-          _buildHeader(logo: logo, document: document, noDoc: 'SJ'),
+          _buildHeader(
+            logo: logo,
+            document: document,
+            noDoc: 'SJ',
+            showFullDestination: true,
+          ),
           pw.SizedBox(height: 24),
           _buildTitle(
-            title: 'RECEIPT\nTANDA TERIMA',
+            title: 'SURAT JALAN\nASSET IT',
             description:
                 'Dengan Hormat,\nHarap dapat diterima barang tersebut dibawah ini :',
           ),

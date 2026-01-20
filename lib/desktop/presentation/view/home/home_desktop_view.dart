@@ -124,8 +124,12 @@ class HomeDesktopView extends StatelessWidget {
                 AuthenticationDesktopState
               >(
                 listener: (context, state) {
+                  if (state.status == StatusAuthenticationDesktop.loading) {
+                    context.dialogLoadingDesktop();
+                  }
                   if (state.status == StatusAuthenticationDesktop.success &&
                       state.user == null) {
+                    context.pop();
                     homeCubit.resetState();
                     context.read<AuthenticationDesktopBloc>().add(
                       OnResetStateEvent(),
