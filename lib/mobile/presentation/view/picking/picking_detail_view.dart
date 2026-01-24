@@ -65,8 +65,8 @@ class _PickingDetailViewState extends State<PickingDetailView> {
           }
           if (state.status == StatusPicking.completedSuccess) {
             context.popExt();
-            context.showSnackbar(state.message ?? '');
             context.popExt();
+            context.showSnackbar(state.message ?? '');
             context.popExt();
           }
         },

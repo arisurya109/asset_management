@@ -114,15 +114,15 @@ class _AppDrawerState extends State<AppDrawer> {
                             ),
                           ],
                         ),
-                      if (permission.contains('assets_view') == true)
-                        AppItemDrawer(
-                          title: 'Assets',
-                          fontSize: widget.isLarge ? 14 : 12,
-                          onTap: () {
-                            context.popExt();
-                            context.pushExt(AssetView());
-                          },
-                        ),
+                      // if (permission.contains('assets_view') == true)
+                      //   AppItemDrawer(
+                      //     title: 'Assets',
+                      //     fontSize: widget.isLarge ? 14 : 12,
+                      //     onTap: () {
+                      //       context.popExt();
+                      //       context.pushExt(AssetView());
+                      //     },
+                      //   ),
                       AppItemDrawer(
                         title: 'Printer',
                         fontSize: widget.isLarge ? 14 : 12,

@@ -62,17 +62,17 @@ class HomeCubit extends Cubit<int> {
         //   'path': '/master',
         //   'permission': 'master_view',
         // },
-        // {
-        //   'value': 9,
-        //   'title': 'Asset Model',
-        //   'path': '/master',
-        //   'permission': 'master_view',
-        // },
+        {
+          'value': 9,
+          'title': 'Asset Model',
+          'path': '/asset-model',
+          'permission': 'master_add',
+        },
         {
           'value': 10,
           'title': 'Location',
           'path': '/location',
-          'permission': 'master_view',
+          'permission': 'master_add',
         },
         // {
         //   'value': 11,

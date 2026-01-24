@@ -16,6 +16,7 @@ import 'package:asset_management/desktop/presentation/view/preparation_update/pr
 import 'package:asset_management/desktop/presentation/view/return/return_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/user_management/add_new_user_desktop_view.dart';
 import 'package:asset_management/desktop/presentation/view/user_management/user_management_desktop_view.dart';
+import 'package:asset_management/domain/entities/master/asset_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -140,6 +141,30 @@ class Routes {
               ),
             ],
           ),
+
+          // GoRoute(
+          //   path: '/asset-model',
+          //   pageBuilder: (context, state) {
+          //     // context.read<LocationDesktopBloc>().add(
+          //     //   OnFindLocationPagination(limit: 10, page: 1),
+          //     // );
+          //     return _buildDesktopTransition(
+          //       state: state,
+          //       child: AssetModelDesktopView(),
+          //     );
+          //   },
+          //   routes: [
+          //     // GoRoute(
+          //     //   path: 'add',
+          //     //   pageBuilder: (context, state) {
+          //     //     return _buildDesktopTransition(
+          //     //       state: state,
+          //     //       child: AddLocationDesktopView(),
+          //     //     );
+          //     //   },
+          //     // ),
+          //   ],
+          // ),
           GoRoute(
             path: '/preparation',
             pageBuilder: (context, state) {

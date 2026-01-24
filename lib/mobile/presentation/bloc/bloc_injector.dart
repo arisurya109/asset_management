@@ -23,7 +23,9 @@ mobileBlocInjection() {
   locator.registerFactory(
     () => AuthenticationBloc(locator(), locator(), locator(), locator()),
   );
-  locator.registerFactory(() => PrinterBloc(locator(), locator(), locator()));
+  locator.registerFactory(
+    () => PrinterBloc(locator(), locator(), locator(), locator()),
+  );
   locator.registerFactory(
     () => UserBloc(locator(), locator(), locator(), locator(), locator()),
   );

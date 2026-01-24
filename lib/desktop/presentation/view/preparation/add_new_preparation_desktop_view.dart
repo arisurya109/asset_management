@@ -112,7 +112,7 @@ class _AddNewPreparationDesktopViewState
                           .findAllUser(null),
                       borderRadius: 4,
                       compareFn: (value, value1) => value.name == value1.name,
-                      itemAsString: (value) => value.name!,
+                      itemAsString: (value) => value.name!.toCapitalize(),
                       fontSize: 11,
                       enabled: true,
                       onChanged: (value) {
@@ -137,7 +137,7 @@ class _AddNewPreparationDesktopViewState
                                 .findAllUser(_selectedApproved?.username),
                       borderRadius: 4,
                       compareFn: (value, value1) => value.name == value1.name,
-                      itemAsString: (value) => value.name!,
+                      itemAsString: (value) => value.name!.toCapitalize(),
                       fontSize: 11,
                       enabled: true,
                       onChanged: (value) => setState(() {
@@ -229,7 +229,7 @@ class _AddNewPreparationDesktopViewState
       context.showDialogConfirm(
         title: 'Add Preparation ?',
         content:
-            'Type : ${params.type}\nDestination : ${_selectedDestination?.name}\nApproved : ${_selectedApproved?.name}\nWorker : ${_selectedWorker?.name}\nNotes : ${params.notes}',
+            'Type : ${params.type}\nDestination : ${_selectedDestination?.name}\nApproved : ${_selectedApproved?.name.toCapitalize()}\nWorker : ${_selectedWorker?.name.toCapitalize()}\nNotes : ${params.notes}',
         onCancel: () => context.pop(),
         fontSize: 12,
         onCancelText: 'No',

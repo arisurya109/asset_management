@@ -39,7 +39,7 @@ class _PreparationDesktopViewState extends State<PreparationDesktopView> {
   Widget build(BuildContext context) {
     final hasPermission =
         context.read<AuthenticationDesktopBloc>().state.user?.modules?.any((e) {
-          return e.containsValue('master_add');
+          return e.containsValue('preparation_add');
         }) ??
         false;
     return Column(

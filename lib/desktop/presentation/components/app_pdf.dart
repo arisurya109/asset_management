@@ -416,17 +416,17 @@ class AppPdf {
     );
 
     pw.MemoryImage? approvedSignature;
-    if (document.approved != null) {
+    if (document.approvedSignature.isFilled()) {
       approvedSignature = await _fetchImage(document.approvedSignature!);
     }
 
     pw.MemoryImage? createdSignature;
-    if (document.created != null) {
+    if (document.createdSignature.isFilled()) {
       createdSignature = await _fetchImage(document.createdSignature!);
     }
 
     pw.MemoryImage? workerSignature;
-    if (document.worker != null) {
+    if (document.workerSignature.isFilled()) {
       workerSignature = await _fetchImage(document.workerSignature!);
     }
 

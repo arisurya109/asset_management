@@ -3,6 +3,7 @@ import 'package:asset_management/domain/entities/printer/printer.dart';
 import 'package:asset_management/domain/usecases/printer/get_connection_printer_use_case.dart';
 import 'package:asset_management/domain/usecases/printer/get_ip_printer_use_case.dart';
 import 'package:asset_management/domain/usecases/printer/set_default_printer_use_case.dart';
+import 'package:asset_management/domain/usecases/reprint/reprint_asset_or_location_use_case.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
@@ -13,11 +14,13 @@ class PrinterBloc extends Bloc<PrinterEvent, PrinterState> {
   final SetDefaultPrinterUseCase _setDefaultPrinterUseCase;
   final GetIpPrinterUseCase _getIpPrinterUseCase;
   final GetConnectionPrinterUseCase _getConnectionPrinterUseCase;
+  final ReprintAssetOrLocationUseCase _useCase;
 
   PrinterBloc(
     this._setDefaultPrinterUseCase,
     this._getIpPrinterUseCase,
     this._getConnectionPrinterUseCase,
+    this._useCase,
   ) : super(PrinterState()) {
     on<OnSetDefaultPrinter>((event, emit) async {
       emit(state.copyWith(status: PrinterStatus.loading));
@@ -59,48 +62,84 @@ class PrinterBloc extends Bloc<PrinterEvent, PrinterState> {
     });
 
     on<OnPrintAssetId>((event, emit) async {
-      final failureOrPrinter = await _getConnectionPrinterUseCase();
+      emit(state.copyWith(status: PrinterStatus.loading));
 
-      return failureOrPrinter.fold(
+      final failureOrAsset = await _useCase(
+        type: 'ASSET',
+        params: event.params,
+      );
+
+      return failureOrAsset.fold(
         (failure) => emit(
           state.copyWith(
             status: PrinterStatus.failed,
             message: failure.message,
           ),
         ),
-        (conn) async {
-          final command = ConfigLabel.AssetIdNormal(event.params);
-          final command1 = ConfigLabel.AssetIdLarge(event.params);
+        (asset) async {
+          final failureOrPrinter = await _getConnectionPrinterUseCase();
 
-          conn.write(command);
-          conn.write(command1);
+          return failureOrPrinter.fold(
+            (failure) => emit(
+              state.copyWith(
+                status: PrinterStatus.failed,
+                message: failure.message,
+              ),
+            ),
+            (conn) async {
+              final command = ConfigLabel.AssetIdNormal(asset['asset_code']);
+              final command1 = ConfigLabel.AssetIdLarge(asset['asset_code']);
 
-          await conn.flush();
-          await conn.close();
+              conn.write(command);
+              conn.write(command1);
 
-          emit(state.copyWith(status: PrinterStatus.success));
+              await conn.flush();
+              await conn.close();
+
+              emit(state.copyWith(status: PrinterStatus.success));
+            },
+          );
         },
       );
     });
     on<OnPrintLocation>((event, emit) async {
-      final failureOrPrinter = await _getConnectionPrinterUseCase();
+      emit(state.copyWith(status: PrinterStatus.loading));
 
-      return failureOrPrinter.fold(
+      final failureOrLocation = await _useCase(
+        type: 'LOCATION',
+        params: event.params,
+      );
+
+      return failureOrLocation.fold(
         (failure) => emit(
           state.copyWith(
             status: PrinterStatus.failed,
             message: failure.message,
           ),
         ),
-        (conn) async {
-          final command = ConfigLabel.Location(event.params);
+        (location) async {
+          final failureOrPrinter = await _getConnectionPrinterUseCase();
 
-          conn.write(command);
+          return failureOrPrinter.fold(
+            (failure) => emit(
+              state.copyWith(
+                status: PrinterStatus.failed,
+                message: failure.message,
+              ),
+            ),
+            (conn) async {
+              final command = ConfigLabel.Location(location['name']);
 
-          await conn.flush();
-          await conn.close();
+              print(location);
 
-          emit(state.copyWith(status: PrinterStatus.success));
+              conn.write(command);
+
+              await conn.flush();
+              await conn.close();
+
+              emit(state.copyWith(status: PrinterStatus.success));
+            },
+          );
         },
       );
     });

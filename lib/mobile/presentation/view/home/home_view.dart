@@ -1,11 +1,12 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:asset_management/mobile/presentation/bloc/picking/picking_bloc.dart';
 import 'package:asset_management/mobile/presentation/view/picking/picking_view.dart';
+import 'package:asset_management/mobile/presentation/view/reprint/reprint_asset_view.dart';
+import 'package:asset_management/mobile/presentation/view/reprint/reprint_location_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:asset_management/core/core.dart';
 import 'package:asset_management/mobile/presentation/components/app_drawer.dart';
-import 'package:asset_management/mobile/presentation/view/inventory/inventory_view.dart';
 import 'package:asset_management/mobile/presentation/view/migration/migration_view.dart';
 import 'package:asset_management/mobile/presentation/view/registration/registration_view.dart';
 import 'package:asset_management/mobile/presentation/view/transfer/asset_transfer_view.dart';
@@ -31,10 +32,20 @@ class _HomeViewState extends State<HomeView> {
       'view': MigrationView(),
       'icon': Assets.iAssetMigration,
     },
+    // {
+    //   'title': 'Inventory',
+    //   'view': InventoryView(),
+    //   'icon': Assets.iAssetManagement,
+    // },
     {
-      'title': 'Inventory',
-      'view': InventoryView(),
-      'icon': Assets.iAssetManagement,
+      'title': 'Reprint Asset',
+      'view': ReprintAssetView(),
+      'icon': Assets.iReprint,
+    },
+    {
+      'title': 'Reprint Location',
+      'view': ReprintLocationView(),
+      'icon': Assets.iReprint,
     },
     {'title': 'Transfer', 'view': TransferView(), 'icon': Assets.iTransfer},
     {'title': 'Picking', 'view': PickingView(), 'icon': Assets.iPicking},
